@@ -16,7 +16,7 @@ tours.newTour('My Tour', {
     ...config
     steps: [
         {
-            title: 'Step One'
+            title: 'Step One',
             element: '.tour-step-1',
             content: 'This is element one',
             // ...step config
