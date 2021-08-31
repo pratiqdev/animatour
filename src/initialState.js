@@ -7,7 +7,7 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 /// import p from '../package.json' /// do not import from package when using webpack, will include entire package json file in output
-import React from 'react'
+import React, {useRef, useState, useEffect, useImperativeHandle} from 'react'
 
 import modalTest from "./modals/modalTest";
 import createSteps from './utils/createSteps'
@@ -15,7 +15,7 @@ import createSteps from './utils/createSteps'
 
 
 
-const tours = {
+const InitialState = {
     /// declare a config object that contains all settings, values and steps for this instance 
     list: [
         {
@@ -76,4 +76,6 @@ const tours = {
 
 
 }
-export default tours
+
+
+export default Controlller

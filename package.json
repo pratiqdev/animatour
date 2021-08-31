@@ -1,9 +1,9 @@
 {
   "name": "animatour",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "private": false,
   "module": "src/main.js",
-  "main": "dist/main.js",
+  "main": "index.js",
   "dependencies": {
     "@babel/cli": "^7.14.8",
     "core-js": "3"
@@ -12,7 +12,24 @@
     "build": "webpack",
     "babel": "clear && NODE_ENV=production babel ./src --ignore index.js --out-dir ./dist",
     "serve": "webpack serve ",
-    "dev": "webpack --watch "
+    "dev": "webpack --watch ",
+    "packit":"npm run p0 && npm run p1 && npm run p2 && npm run p3 && npm run p4",
+
+      "0______ remove the old dist directory ____________________________________________":"",
+      "p0": "clear && rm -rf ./dist",
+
+      "1______ transpile ./src directory and create ./dist directory ____________________":"",
+      "p1": "NODE_ENV=production babel ./src --out-dir ./dist",
+
+      "2______ upgrade the version before copy __________________________________________":"",
+      "p2":"cd ./temp && npm --no-git-tag-version version patch && cd ..",
+
+      "3______ copy the temp package to the new dist directory __________________________":"",
+      "p3":"cp ./temp/package.json ./dist/package.json",
+
+      "4______ run the local scripts ____________________________________________________":"",
+      "p4":"cd ./dist && npm run packme"
+
   },
   "eslintConfig": {
     "extends": [
