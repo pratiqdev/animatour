@@ -39,43 +39,43 @@ const InitialState = {
             ]
         }
     ],
-
-    test: () => {console.log('test???')},
-
-    
-    //----------------------------------------------------------------------------------------------------------------- step modifiers -----
-    addSteps: (tourId, newSteps) => { 
-        let tour = this.list.find(x => x.id === tourId)
-        tour.steps = createSteps(newSteps, tourSteps) 
-    },
-    
-    
-    //---------------------------------------------------------------------------------------------------------------- ring modifiers ------
-    setRingColor: (x) => { this.config.ringColor = x },
-    setRingWidth: (x) => { this.config.ringWidth = x },
-    
-    
-    //---------------------------------------------------------------------------------------------------------------- step controls -------
-    nextStep: (tourId) => { 
-        let tour = tours.list.find(x => x.id === tourId)
-        tour.currentStep++ ;console.log(`NEXT!! step ${tour.currentStep}`);  
-    },
-
-    prevStep: () => { this.config.currentStep-- ;console.log(`PREV!! step ${this.config.currentStep}`);  },
-    setStep: (step) => {
-        console.log('ANIMATOUR | set step')
-        this.config.currentStep = step
-    },
-
-
-
-
-
-
-
-
-
 }
 
+    // test: () => {console.log('test???')},
 
-export default Controlller
+    
+    // //----------------------------------------------------------------------------------------------------------------- step modifiers -----
+    // addSteps: (tourId, newSteps) => { 
+    //     let tour = this.list.find(x => x.id === tourId)
+    //     tour.steps = createSteps(newSteps, tourSteps) 
+    // },
+    
+    
+    // //---------------------------------------------------------------------------------------------------------------- ring modifiers ------
+    // setRingColor: (x) => { this.config.ringColor = x },
+    // setRingWidth: (x) => { this.config.ringWidth = x },
+    
+    
+    // //---------------------------------------------------------------------------------------------------------------- step controls -------
+    // nextStep: (tourId) => { 
+    //     let tour = tours.list.find(x => x.id === tourId)
+    //     tour.currentStep++ ;console.log(`NEXT!! step ${tour.currentStep}`);  
+    // },
+
+    // prevStep: () => { this.config.currentStep-- ;console.log(`PREV!! step ${this.config.currentStep}`);  },
+    // setStep: (step) => {
+    //     console.log('ANIMATOUR | set step')
+    //     this.config.currentStep = step
+    // },
+
+
+
+
+
+
+
+
+
+
+
+export default InitialState

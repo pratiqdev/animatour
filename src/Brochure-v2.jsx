@@ -1,3 +1,7 @@
+//? Tried to create a brochure that can be used as separate instances
+//- you lose access to the inner functions from controller
+//- instances can not use inner functions either
+
 import React, {useEffect, useState, useImperativeHandle} from 'react'
 
 import animatour from './animatour'
@@ -8,56 +12,30 @@ import Tour from './utils/Tour'
 import shout from './utils/shout'
 
 
-class Main extends React.Component {
+class Brochure extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      mainProps: props,
-      activeTour: 'Default Tour',
-      list:[
+      testVal: props.testVal,
+      props: props,
+      id: 'Default Tour',
+      currentStep: 0,
+      steps:[
         {
-          id: 'Default Tour',
-          currentStep: 0,
-          steps:[
-              {
-                title: 'STEP 0',
-                element: '.step-0-element',
-                content: 'Step Zero Content'
-              },
-              {
-                title: 'STEP 1',
-                element: '.step-1-element',
-                content: 'Step One Content'
-              },
-              {
-                title: 'STEP 2',
-                element: '.step-2-element',
-                content: 'Step Two Content'
-            }
-          ]
+          title: 'STEP 0',
+          element: '.step-0-element',
+          content: 'Step Zero Content'
         },
         {
-          id: 'Tour Two',
-          currentStep: 0,
-          steps:[
-              {
-                title: 'STEP 0',
-                element: '.step-0-element',
-                content: 'Step Zero Content'
-              },
-              {
-                title: 'STEP 1',
-                element: '.step-1-element',
-                content: 'Step One Content'
-              },
-              {
-                title: 'STEP 2',
-                element: '.step-2-element',
-                content: 'Step Two Content'
-            }
-          ]
+          title: 'STEP 1',
+          element: '.step-1-element',
+          content: 'Step One Content'
         },
-        
+        {
+          title: 'STEP 2',
+          element: '.step-2-element',
+          content: 'Step Two Content'
+        }
       ]
     }
   }
@@ -77,19 +55,21 @@ class Main extends React.Component {
   }
 
   getSteps(tourId){ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    let STEPS = this.state.list.find(x => x.id === tourId).steps
-    if(!STEPS){
-      shout('error', `No steps found for '${tourId}'`)
-    }else{
-      return STEPS
-    }
+    // let STEPS = this.state.list.find(x => x.id === tourId).steps
+    // if(!STEPS){
+    //   shout('error', `No steps found for '${tourId}'`)
+    // }else{
+    //   return STEPS
+    // }
+    return this.state.steps
   }
   
   next (tourId){////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //- call next on the active tour unless a different tour is specified
     if(!tourId){
       shout('error', `Must specify a tour when calling nextStep()`); 
       return false
+    }else{
+      console.log(`tour: ${tourId} - ${this.state.list.find(x => x.id === tourId).currentStep} - next`)
     }
 
     let STEP = this.state.list.find(x => x.id === tourId).currentStep
@@ -103,8 +83,6 @@ class Main extends React.Component {
     this.setState(prevState => {
        return prevState.list.find(x => x.id === tourId).currentStep = STEP
     })
-
-    console.log(`${tourId} - ${this.state.list.find(x => x.id === tourId).currentStep}`)
 
 
   }
@@ -141,22 +119,15 @@ class Main extends React.Component {
 
 
 
-    
-    // Rest of the component's code
-    render(){
-      return <B.B1 tour={this.state.list.find(x=>x.id===this.state.activeTour)}/>
-      // switch(this.state.brochureType){
-      //   case 1: return <B.B1 {...this.state} {...this.state.mainProps}/>;
-      //   default: return <B.B2 {...this.state} {...this.state.mainProps}/>;
-      // }
-    }
+
+
+  
+  render(){
+    return <div>render() {this.state.testVal}</div>
+  }
 };
 
-const Brochure = (props) => {
-  return(
-    <Main ref={(component) => window.main = component } {...props}/>
-  )
-}
+
 
   
 export default Brochure

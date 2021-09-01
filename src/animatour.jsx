@@ -15,10 +15,18 @@ const w = (func) => {
 
 
 const animatour = {
-  test: (arg) =>    { w(`objTest(${arg})`)        && x.test(arg)    },
-  showGuide: () =>  { w('show guide')             && x.showGuide()  },
-  next: () =>       { w('next step')              && x.next()  },
-  getTours: () =>   { w('get tours')              && x.getTours()  },
+  getSteps: (tourId) =>   {return  w('get steps')       && x.getSteps(tourId)  },
+  // toggle the guide
+  showGuide: () =>        { w('show guide')             && x.showGuide()  },
+  hideGuide: () =>        { w('show guide')             && x.hideGuide()  },
+
+  // add steps
+  addSteps: (tourId, newSteps) => { w('show guide')     && x.addSteps(tourId, newSteps) },
+
+  // control the steps
+  next: (tourId) =>             { w('next step')              && x.next(tourId)  },
+  prev: (tourId) =>             { w('prev step')              && x.prev(tourId)  },
+  exit: (tourId) =>             { w('prev step')              && x.exit(tourId)  },
 }
   
 export default animatour
