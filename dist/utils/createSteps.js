@@ -5,20 +5,47 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _Step = _interopRequireDefault(require("./Step"));
+var _Step = _interopRequireDefault(require("../classes/Step"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var createSteps = function createSteps(steps, oldSteps) {
-  var stepsArray = Array.isArray(oldSteps) ? oldSteps : [oldSteps]; /// create a temporary array to hold steps during parse
+var _createSteps = function _createSteps(steps, oldSteps) {
+  if (!steps) {
+    if (oldSteps) {
+      return oldSteps;
+    } else {
+      return [];
+    }
+  }
 
-  Array.isArray(steps) /// if array of steps was passed - iterate and push to temp array
-  ? steps.forEach(function (x) {
-    stepsArray.push(new _Step["default"](x));
-  }) : stepsArray.push(new _Step["default"](steps)); /// else push single step to temp array
+  var stepsArray = [];
 
-  return stepsArray; /// return the temp array
+  if (Array.isArray(oldSteps)) {
+    oldSteps.forEach(function (x) {
+      if (x) {
+        stepsArray.push(x);
+      }
+    });
+  } else {
+    if (oldSteps) {
+      stepsArray.push(oldSteps);
+    }
+  }
+
+  if (Array.isArray(steps)) {
+    steps.forEach(function (x) {
+      if (x) {
+        stepsArray.push(x);
+      }
+    });
+  } else {
+    if (steps) {
+      stepsArray.push(steps);
+    }
+  }
+
+  return stepsArray;
 };
 
-var _default = createSteps;
+var _default = _createSteps;
 exports["default"] = _default;

@@ -9,7 +9,9 @@ exports["default"] = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
-var _animatour = _interopRequireDefault(require("../animatour"));
+var _animatour = _interopRequireDefault(require("../../animatour"));
+
+var _shout = _interopRequireDefault(require("../../utils/shout"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -17,17 +19,15 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-var B1 = function B1(props) {
-  var tour = props.tour;
-  (0, _react.useEffect)(function () {
-    console.log("Brochure | ".concat(tour.id, " - ").concat(tour.currentStep));
-  });
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
-  if (!tour) {
-    shout('error', "Must provide a tour when using a Brochure: '<Brochure tour=\"My Tour\"/>'");
-    return false;
-  }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
+  var TOUR = props.tour;
+  var STEP = props.tour.steps[props.tour.currentStep];
   var theme = {
     text: '#222',
     background: '#eee',
@@ -51,16 +51,18 @@ var B1 = function B1(props) {
     }
   };
   var s = {
-    container: {
-      margin: theme.spacing[3],
+    container: _objectSpread({
+      // margin: theme.spacing[3],
       background: theme.background,
       // color: theme.text,
-      maxWidth: theme.maxWidth,
-      minWidth: theme.minWidth,
-      width: theme.width,
-      fontSize: theme.fontSize[2]
-    },
+      // maxWidth: theme.maxWidth,
+      // minWidth: theme.minWidth,
+      // fontSize:theme.fontSize[1],
+      // position: 'absolute',
+      transition: '.5s'
+    }, props.pass_style),
     header: {
+      fontSize: theme.fontSize[2],
       borderBottom: border.secondary.type,
       borderColor: border.secondary.color,
       padding: theme.spacing[2]
@@ -79,35 +81,37 @@ var B1 = function B1(props) {
     }
   };
   return /*#__PURE__*/_react["default"].createElement("div", {
+    ref: ref,
+    key: TOUR.currentStep,
     style: s.container,
-    className: "brochure",
-    id: "B1"
+    className: "brochure1",
+    id: "BROCHURE"
   }, /*#__PURE__*/_react["default"].createElement("div", {
     style: s.header,
     className: "header"
-  }, "(", tour.id, "-", tour.currentStep, ") Step Title (B1)"), /*#__PURE__*/_react["default"].createElement("div", {
+  }, TOUR.currentStep, " - ", STEP.title), /*#__PURE__*/_react["default"].createElement("div", {
     style: s.content,
     className: "content"
-  }, tour.steps[tour.currentStep].content), /*#__PURE__*/_react["default"].createElement("div", {
+  }, "guide open: ", props.open ? 'open' : 'closed', /*#__PURE__*/_react["default"].createElement("br", null), STEP.content), /*#__PURE__*/_react["default"].createElement("div", {
     style: s.footer,
     className: "footer"
   }, /*#__PURE__*/_react["default"].createElement("button", {
     style: s.exitButton,
     onClick: function onClick() {
-      return _animatour["default"].exit(tour.id);
+      return _animatour["default"].close();
     }
   }, "exit"), /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("button", {
     style: s.prevButton,
     onClick: function onClick() {
-      return _animatour["default"].prev(tour.id);
+      return _animatour["default"].prev(TOUR.id);
     }
   }, '<'), /*#__PURE__*/_react["default"].createElement("button", {
     style: s.nextButton,
     onClick: function onClick() {
-      return _animatour["default"].next(tour.id);
+      return _animatour["default"].next(TOUR.id);
     }
-  }, '>'))));
-};
+  }, '>'))), props.children);
+});
 
 var _default = B1;
 exports["default"] = _default;

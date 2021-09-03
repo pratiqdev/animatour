@@ -1,15 +1,15 @@
 import React, {useEffect} from 'react'
-import animatour from '../animatour'
-import shout from '../utils/shout'
+import animatour from '../../animatour'
+import shout from '../../utils/shout'
 
-const B1 = (props) => {
+const B2 = (props) => {
 
   const {tour} = props
 
 
   const theme = {
-    text:'#222',
-    background:'#eee',
+    text:'#fff',
+    background:'#222',
     primary:'#99f',
     secondary:'#aaa',
     tertiary:'',
@@ -33,6 +33,7 @@ const B1 = (props) => {
     container:{
       margin: theme.spacing[3],
       background: theme.background,
+      color: theme.text,
       // color: theme.text,
       maxWidth: theme.maxWidth,
       minWidth: theme.minWidth,
@@ -68,12 +69,13 @@ const B1 = (props) => {
 
   return(
     <div style={s.container} className='brochure' id='B1'>
-      <div style={s.header} className='header'>({tour.id}-{tour.currentStep}) Step Title (B1)</div>
+      <div style={s.header} className='header'>({tour.id}-{tour.currentStep}) Step Title (B2)</div>
       <div style={s.content} className='content'>
+        guide open: {props.open ? 'open' : 'closed'}<br/>
         {tour.steps[tour.currentStep].content}
       </div>
       <div style={s.footer} className='footer'>
-        <button style={s.exitButton} onClick={()=>animatour.exit(tour.id)}>exit</button>
+        <button style={s.exitButton} onClick={()=>animatour.close()}>exit</button>
         <div>
           <button style={s.prevButton} onClick={()=>animatour.prev(tour.id)}>{'<'}</button>
           <button style={s.nextButton} onClick={()=>animatour.next(tour.id)}>{'>'}</button>
@@ -82,4 +84,4 @@ const B1 = (props) => {
     </div>
   )
 }
-export default B1
+export default B2

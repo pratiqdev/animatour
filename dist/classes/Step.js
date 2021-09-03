@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _shout = _interopRequireDefault(require("./shout"));
+var _shout = _interopRequireDefault(require("../utils/shout"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -20,14 +20,15 @@ var Step = function Step(x) {
       case 'nme':
       case 'nam':
       case 'name':
-        (0, _shout["default"])('error', "addSteps | '".concat(key, "' was used... did you mean 'title' ?"));
+        _shout["default"].warn("addSteps | '".concat(key, "' was used... did you mean 'title' ?"));
+
         break;
     }
   });
   this.id = x.id;
   this.title = x.title;
-  this.element = x.element ? x.element : (0, _shout["default"])('error', "Steps must include an element.", "Use element selectors ('.el', '#el')");
-  this.content = x.content ? x.content : (0, _shout["default"])('error', "Steps must include content");
+  this.element = x.element ? x.element : _shout["default"].error("Steps must include an element.", "Use element selectors ('.el', '#el')");
+  this.content = x.content ? x.content : _shout["default"].error("Steps must include content");
 };
 
 var _default = Step;

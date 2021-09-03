@@ -11,13 +11,17 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _animatour = _interopRequireDefault(require("./animatour"));
 
-var B = _interopRequireWildcard(require("./brochure"));
+var _Collection = _interopRequireDefault(require("./ui/Collection"));
 
-var _createSteps = _interopRequireDefault(require("./utils/createSteps"));
-
-var _Tour = _interopRequireDefault(require("./utils/Tour"));
+var _Tour = _interopRequireDefault(require("./classes/Tour"));
 
 var _shout = _interopRequireDefault(require("./utils/shout"));
+
+var _getLocation2 = _interopRequireDefault(require("./utils/getLocation"));
+
+var _scrollToElement2 = _interopRequireDefault(require("./utils/scrollToElement"));
+
+var _createSteps2 = _interopRequireDefault(require("./utils/createSteps"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -60,25 +64,52 @@ var Main = /*#__PURE__*/function (_React$Component) {
     _this = _super.call(this, props);
     _this.state = {
       mainProps: props,
+      activeTour: 'Default Tour',
+      guideOpen: false,
+      location: null,
+      guideMargin: 10,
+      brochureAlignment: ['top-left', 'left-top'],
       list: [{
         id: 'Default Tour',
         currentStep: 0,
+        brochureType: 1,
         steps: [{
-          title: 'STEP 0',
-          element: '.step-0-element',
-          content: 'Step Zero Content'
+          title: 'START',
+          element: '',
+          content: 'start page - no element (index 0)'
         }, {
           title: 'STEP 1',
           element: '.step-1-element',
-          content: 'Step One Content'
+          content: 'Step One content (index 1)'
         }, {
           title: 'STEP 2',
           element: '.step-2-element',
-          content: 'Step Two Content'
+          content: 'Step Two Content (index 2)'
+        }, {
+          title: 'STEP 3',
+          element: '.step-3-element',
+          content: 'Step Three Content (index 3)'
+        }, {
+          title: 'STEP 4',
+          element: '.step-4-element',
+          content: 'Step Four Content (index 4)'
+        }, {
+          title: 'STEP 5',
+          element: '.step-5-element',
+          content: 'Step Five Content (index 5)'
+        }, {
+          title: 'STEP 6',
+          element: '.step-6-element',
+          content: 'Step Six Content (index 6)'
+        }, {
+          title: 'END',
+          element: '',
+          content: 'end page - no element (index 4)'
         }]
       }, {
         id: 'Tour Two',
         currentStep: 0,
+        brochureType: 1,
         steps: [{
           title: 'STEP 0',
           element: '.step-0-element',
@@ -95,22 +126,86 @@ var Main = /*#__PURE__*/function (_React$Component) {
       }]
     };
     return _this;
-  }
+  } //- Utilities ----------------------------------------------------------------------------------------------------------------------------
+
 
   _createClass(Main, [{
+    key: "useTourOrActive",
+    value: function useTourOrActive(tourId) {
+      if (tourId) {
+        if (this.state.list.find(function (x) {
+          return x.id === tourId;
+        }) === false) {
+          _shout["default"].warn("No tour was found as '".concat(tourId, "'. Using currently active tour instead"));
+
+          return this.state.activeTour;
+        } else {
+          return tourId;
+        }
+      } else {
+        return this.state.activeTour;
+      }
+    }
+  }, {
+    key: "verifyTourExists",
+    value: function verifyTourExists(tourId) {
+      if (tourId) {
+        if (typeof this.state.list.find(function (x) {
+          return x.id === tourId;
+        }) === 'undefined') {
+          // shout.warn( `No tour was found as '${tourId}'. Using currently active tour instead`)
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    } //- Tours --------------------------------------------------------------------------------------------------------------------------------
+
+  }, {
     key: "newTour",
     value: function newTour(tourId, config) {
-      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      var LIST = this.state.list.push(new _Tour["default"](tourId, config));
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      if (this.verifyTourExists(tourId)) {
+        _shout["default"].error("newTour() \n A tour with the id '".concat(tourId, "' already exists"));
+
+        return false;
+      }
+
+      var LIST = this.state.list;
+      LIST.push(new _Tour["default"](tourId, config));
       this.setState({
         list: LIST
       });
     }
   }, {
+    key: "getAllTours",
+    value: function getAllTours() {
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      return this.state.list;
+    }
+  }, {
+    key: "getTour",
+    value: function getTour(tourId) {
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      var useTour = this.useTourOrActive(tourId);
+      var TOUR = this.state.list.find(function (x) {
+        return x.id === useTour;
+      });
+
+      if (!TOUR) {
+        _shout["default"].error("No tour found for '".concat(useTour, "'"));
+      } else {
+        return TOUR;
+      }
+    } //- Steps --------------------------------------------------------------------------------------------------------------------------------
+
+  }, {
     key: "addSteps",
     value: function addSteps(tourId, newSteps) {
       ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      STEPS = (0, _createSteps["default"])(newSteps, this.state.list.find(function (x) {
+      STEPS = (0, _createSteps2["default"])(newSteps, this.state.list.find(function (x) {
         return x.id === tourId;
       }).steps);
       this.setState(function (prevState) {
@@ -120,33 +215,15 @@ var Main = /*#__PURE__*/function (_React$Component) {
       });
     }
   }, {
-    key: "getSteps",
-    value: function getSteps(tourId) {
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      var STEPS = this.state.list.find(function (x) {
-        return x.id === tourId;
-      }).steps;
-
-      if (!STEPS) {
-        (0, _shout["default"])('error', "No steps found for '".concat(tourId, "'"));
-      } else {
-        return STEPS;
-      }
-    }
-  }, {
     key: "next",
     value: function next(tourId) {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      if (!tourId) {
-        (0, _shout["default"])('error', "Must specify a tour when calling nextStep()");
-        return false;
-      }
-
+      var TOUR = this.useTourOrActive(tourId);
       var STEP = this.state.list.find(function (x) {
-        return x.id === tourId;
+        return x.id === TOUR;
       }).currentStep;
       var LENGTH = this.state.list.find(function (x) {
-        return x.id === tourId;
+        return x.id === TOUR;
       }).steps.length - 1;
 
       if (STEP < LENGTH) {
@@ -155,31 +232,28 @@ var Main = /*#__PURE__*/function (_React$Component) {
         STEP = 0;
       }
 
+      var ELEMENT = this.state.list.find(function (x) {
+        return x.id === TOUR;
+      }).steps[STEP].element;
+      (0, _scrollToElement2["default"])(ELEMENT);
       this.setState(function (prevState) {
-        return prevState.list.find(function (x) {
-          return x.id === tourId;
-        }).currentStep = STEP;
+        prevState.list.find(function (x) {
+          return x.id === TOUR;
+        }).currentStep = STEP; //  prevState.guideLocation = this._findGuide(ELEMENT)
+
+        return prevState;
       });
-      console.log("".concat(tourId, " - ").concat(this.state.list.find(function (x) {
-        return x.id === tourId;
-      }).currentStep));
     }
   }, {
     key: "prev",
     value: function prev(tourId) {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      if (!tourId) {
-        (0, _shout["default"])('error', "Must specify a tour when calling prevStep()");
-        return false;
-      } else {
-        console.log("tour: ".concat(tourId, " - prev"));
-      }
-
+      var TOUR = this.useTourOrActive(tourId);
       var STEP = this.state.list.find(function (x) {
-        return x.id === tourId;
+        return x.id === TOUR;
       }).currentStep;
       var LENGTH = this.state.list.find(function (x) {
-        return x.id === tourId;
+        return x.id === TOUR;
       }).steps.length - 1;
 
       if (STEP > 0) {
@@ -188,43 +262,88 @@ var Main = /*#__PURE__*/function (_React$Component) {
         STEP = LENGTH;
       }
 
+      var ELEMENT = this.state.list.find(function (x) {
+        return x.id === TOUR;
+      }).steps[STEP].element;
+      (0, _scrollToElement2["default"])(ELEMENT);
       this.setState(function (prevState) {
-        return prevState.list.find(function (x) {
-          return x.id === tourId;
-        }).currentStep = STEP;
+        prevState.list.find(function (x) {
+          return x.id === TOUR;
+        }).currentStep = STEP; // prevState.guideLocation = this._findGuide(ELEMENT)
+
+        return prevState;
       });
-    }
+    } //- Brochure --------------------------------------------------------------------------------------------------------------------------------
+
   }, {
-    key: "exit",
-    value: function exit(tourId) {
+    key: "open",
+    value: function open(tourId) {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      var tour = this.list.find(function (x) {
-        return x.id === tourId;
-      });
+      var useTour = this.useTourOrActive(tourId);
       this.setState({
-        step: this.state.step + 1
+        guideOpen: true,
+        activeTour: useTour
       });
-      console.log("next step! ".concat(this.state.step));
     }
   }, {
-    key: "shouldComponentUpdate",
-    value: function shouldComponentUpdate() {
-      return true;
+    key: "close",
+    value: function close() {
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      this.setState({
+        guideOpen: false
+      });
+    } //- Guide --------------------------------------------------------------------------------------------------------------------------------
+
+  }, {
+    key: "getActiveGuideElement",
+    value: function getActiveGuideElement() {
+      var TOUR = this.state.activeTour;
+      var STEP = this.state.list.find(function (x) {
+        return x.id === TOUR;
+      }).currentStep;
+      var EL = this.state.list.find(function (x) {
+        return x.id === TOUR;
+      }).steps[STEP].element;
+      return EL;
+    }
+  }, {
+    key: "repeatUpdateGuideLocation",
+    value: function repeatUpdateGuideLocation() {
+      var _this2 = this;
+
+      var loop = function loop() {
+        _this2.setState({
+          location: (0, _getLocation2["default"])(_this2.getActiveGuideElement(), _this2.state.guideMargin)
+        });
+
+        setTimeout(function () {
+          loop();
+        }, 100);
+      };
+
+      loop();
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.repeatUpdateGuideLocation();
     } // Rest of the component's code
 
   }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
-      return /*#__PURE__*/_react["default"].createElement(B.B1, {
+      return /*#__PURE__*/_react["default"].createElement(_Collection["default"], {
+        type: this.state.list.find(function (x) {
+          return x.id === _this3.state.activeTour;
+        }).brochureType,
         tour: this.state.list.find(function (x) {
-          return x.id === _this2.state.mainProps.tour;
-        })
-      }); // switch(this.state.brochureType){
-      //   case 1: return <B.B1 {...this.state} {...this.state.mainProps}/>;
-      //   default: return <B.B2 {...this.state} {...this.state.mainProps}/>;
-      // }
+          return x.id === _this3.state.activeTour;
+        }),
+        open: this.state.guideOpen,
+        loc: this.state.location
+      });
     }
   }]);
 

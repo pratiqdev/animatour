@@ -1,5 +1,6 @@
 let x = null
 
+/** Verify access to the window and main component */
 const w = (func) => {
   if(window && typeof window !== 'undefined' && window.main && typeof window.main !== 'undefined'){
     if(!x){
@@ -15,18 +16,21 @@ const w = (func) => {
 
 
 const animatour = {
-  getSteps: (tourId) =>   {return  w('get steps')       && x.getSteps(tourId)  },
+  getAllTours:  () =>         {return  w('getAllTours')         && x.getAllTours() },
+  getTour:      (a) =>        {return  w('getTour')             && x.getTour(a) },
   // toggle the guide
-  showGuide: () =>        { w('show guide')             && x.showGuide()  },
-  hideGuide: () =>        { w('show guide')             && x.hideGuide()  },
+  showGuide:    () =>         { w('showGuide')                  && x.showGuide() },
+  hideGuide:    () =>         { w('hideGuide')                  && x.hideGuide() },
 
   // add steps
-  addSteps: (tourId, newSteps) => { w('show guide')     && x.addSteps(tourId, newSteps) },
+  addSteps:     (a, b) =>     { w('addSteps')                   && x.addSteps(a, b) },
+  newTour:      (a, b) =>     { w('newTour')                    && x.newTour(a, b) },
 
   // control the steps
-  next: (tourId) =>             { w('next step')              && x.next(tourId)  },
-  prev: (tourId) =>             { w('prev step')              && x.prev(tourId)  },
-  exit: (tourId) =>             { w('prev step')              && x.exit(tourId)  },
+  next:         (a) =>        { w('next')                       && x.next(a) },
+  prev:         (a) =>        { w('prev')                       && x.prev(a) },
+  close:        () =>         { w('close')                      && x.close() },
+  open:         (a) =>        { w('close')                      && x.open(a) },
 }
   
 export default animatour

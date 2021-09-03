@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 var x = null;
+/** Verify access to the window and main component */
 
 var w = function w(func) {
   if (window && typeof window !== 'undefined' && window.main && typeof window.main !== 'undefined') {
@@ -20,29 +21,38 @@ var w = function w(func) {
 };
 
 var animatour = {
-  getSteps: function getSteps(tourId) {
-    return w('get steps') && x.getSteps(tourId);
+  getAllTours: function getAllTours() {
+    return w('getAllTours') && x.getAllTours();
+  },
+  getTour: function getTour(a) {
+    return w('getTour') && x.getTour(a);
   },
   // toggle the guide
   showGuide: function showGuide() {
-    w('show guide') && x.showGuide();
+    w('showGuide') && x.showGuide();
   },
   hideGuide: function hideGuide() {
-    w('show guide') && x.hideGuide();
+    w('hideGuide') && x.hideGuide();
   },
   // add steps
-  addSteps: function addSteps(tourId, newSteps) {
-    w('show guide') && x.addSteps(tourId, newSteps);
+  addSteps: function addSteps(a, b) {
+    w('addSteps') && x.addSteps(a, b);
+  },
+  newTour: function newTour(a, b) {
+    w('newTour') && x.newTour(a, b);
   },
   // control the steps
-  next: function next(tourId) {
-    w('next step') && x.next(tourId);
+  next: function next(a) {
+    w('next') && x.next(a);
   },
-  prev: function prev(tourId) {
-    w('prev step') && x.prev(tourId);
+  prev: function prev(a) {
+    w('prev') && x.prev(a);
   },
-  exit: function exit(tourId) {
-    w('prev step') && x.exit(tourId);
+  close: function close() {
+    w('close') && x.close();
+  },
+  open: function open(a) {
+    w('close') && x.open(a);
   }
 };
 var _default = animatour;

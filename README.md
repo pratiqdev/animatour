@@ -10,9 +10,9 @@ A react-based component tour-guide with a focus on easy to follow animations and
 ## Usage
 
 ```js
-import { tours, Guide } from 'animatour'
+import { animatour, Brochure } from 'animatour'
 
-tours.newTour('My Tour', {
+animatour.newTour('My Tour', {
     ...config
     steps: [
         {
@@ -26,7 +26,7 @@ tours.newTour('My Tour', {
 return(
     <div>
         // ...components
-        <Guide tour='My Tour'>
+        <Brochure />
         <button onClick={() => tours.start('My Tour')}>
     </div>
 )

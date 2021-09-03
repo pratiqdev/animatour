@@ -1,16 +1,42 @@
-import Step from './Step'
+import Step from '../classes/Step'
 
-const createSteps = (steps, oldSteps) => {
+const _createSteps = (steps, oldSteps) => {
+    if(!steps){
+        if(oldSteps){
+            return oldSteps
+        }else{
+            return []
+        }
+    }
 
-    let stepsArray = Array.isArray(oldSteps) ? oldSteps : [oldSteps]                         /// create a temporary array to hold steps during parse
+    let stepsArray = []
 
-    Array.isArray(steps)                        /// if array of steps was passed - iterate and push to temp array
-        ? steps.forEach(x=> {
-            stepsArray.push(new Step(x))
+    if(Array.isArray(oldSteps)){
+        oldSteps.forEach(x=> {
+            if(x){
+                stepsArray.push(x)
+            }
         })
-        : stepsArray.push(new Step(steps))      /// else push single step to temp array
+    }else{
+        if(oldSteps){
+            stepsArray.push(oldSteps) 
+        }
+    }
 
-    return stepsArray                           /// return the temp array
+
+    if(Array.isArray(steps)){
+        steps.forEach(x=> {
+            if(x){
+                stepsArray.push(x)
+            }
+        })
+    }else{
+        if(steps){
+            stepsArray.push(steps) 
+        }
+    }
+
+    return stepsArray 
 }
 
-export default createSteps
+export default _createSteps
