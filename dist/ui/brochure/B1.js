@@ -58,8 +58,7 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
       // maxWidth: theme.maxWidth,
       // minWidth: theme.minWidth,
       // fontSize:theme.fontSize[1],
-      // position: 'absolute',
-      transition: '.5s'
+      position: 'fixed'
     }, props.pass_style),
     header: {
       fontSize: theme.fontSize[2],

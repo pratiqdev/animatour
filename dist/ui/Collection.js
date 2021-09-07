@@ -17,8 +17,6 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -63,23 +61,25 @@ var Collection = function Collection(props) {
   }),
       styles = _usePopper.styles,
       attributes = _usePopper.attributes,
-      scheduleUpdate = _usePopper.scheduleUpdate;
+      update = _usePopper.update;
 
   (0, _react.useEffect)(function () {
-    scheduleUpdate();
+    if (update) {
+      update();
+    }
   }, [props.loc]);
-  return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", _extends({
-    ref: setReferenceElement
-  }, attributes.popper, {
-    onClick: function onClick(e) {
-      e.preventDefault(), e.stopPropagation();
+  return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", {
+    ref: setReferenceElement // onClick={e=>{e.preventDefault(), e.stopPropagation()}}
+    ,
+    onClick: function onClick() {
+      return update();
     },
     style: {
       position: "absolute",
       display: 'block',
       zIndex: 10000,
       borderRadius: ".5rem",
-      opacity: LOC.exist ? "1" : "0",
+      opacity: LOC.E ? "1" : "0",
       border: "1px solid",
       borderColor: "red",
       width: "".concat(LOC.W, "px"),
@@ -87,18 +87,15 @@ var Collection = function Collection(props) {
       top: "".concat(LOC.T, "px"),
       left: "".concat(LOC.L, "px"),
       // boxShadow: `0 0 10000px 10000px grey`,
-      transition: "all .5s, opacity .2s",
-      pointerEvents: 'none'
+      transition: "all .5s, opacity .2s" // pointerEvents: 'none',
+
     }
-  })), /*#__PURE__*/_react["default"].createElement(B.B1, {
+  }), /*#__PURE__*/_react["default"].createElement(B.B1, {
     ref: setPopperElement,
     open: props.open,
-    tour: props.tour,
-    pass_style: styles.popper
-  }, /*#__PURE__*/_react["default"].createElement("div", {
-    ref: setArrowElement,
-    style: styles.arrow
-  })));
+    pass_style: styles.popper,
+    tour: props.tour
+  }));
 };
 
 var _default = Collection;

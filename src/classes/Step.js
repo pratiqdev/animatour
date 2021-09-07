@@ -7,7 +7,19 @@ class Step{
             switch(key){
                 case 'nme':
                 case 'nam':
-                case 'name': shout.warn(`addSteps | '${key}' was used... did you mean 'title' ?`) ;break;
+                    case 'name': shout.warn(`addSteps | '${key}' was used... did you mean 'title' ?`) ;break;
+                case 'txt':
+                case 'text':
+                case 'cont':
+                case 'conten':
+                    case 'cntent': shout.warn(`addSteps | '${key}' was used... did you mean 'content' ?`) ;break;
+                case 'el':
+                case 'el':
+                case 'elmnt':
+                case 'elemnt':
+                case 'lement':
+                case 'elemen':
+                    case 'elemet': shout.warn(`addSteps | '${key}' was used... did you mean 'element' ?`) ;break;
             }
         })
 

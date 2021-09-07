@@ -42,7 +42,7 @@ var Guide = function Guide(_ref) {
       display: 'block',
       zIndex: 10000,
       borderRadius: ".5rem",
-      opacity: LOC.exist ? "1" : "0",
+      opacity: LOC.E ? "1" : "0",
       border: "1px solid",
       borderColor: "red",
       width: "".concat(LOC.W, "px"),

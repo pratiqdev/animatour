@@ -273,7 +273,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
 
         return prevState;
       });
-    } //- Brochure --------------------------------------------------------------------------------------------------------------------------------
+    } //- Brochure ------------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "open",
@@ -311,14 +311,23 @@ var Main = /*#__PURE__*/function (_React$Component) {
     value: function repeatUpdateGuideLocation() {
       var _this2 = this;
 
+      var lastLoc = null;
+      var newLoc = null;
+
       var loop = function loop() {
-        _this2.setState({
-          location: (0, _getLocation2["default"])(_this2.getActiveGuideElement(), _this2.state.guideMargin)
-        });
+        newLoc = (0, _getLocation2["default"])(_this2.getActiveGuideElement(), _this2.state.guideMargin);
+
+        if (lastLoc !== newLoc) {
+          lastLoc = newLoc;
+
+          _this2.setState({
+            location: newLoc
+          });
+        }
 
         setTimeout(function () {
           loop();
-        }, 100);
+        }, 50);
       };
 
       loop();

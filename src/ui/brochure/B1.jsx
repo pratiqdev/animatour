@@ -40,8 +40,8 @@ const B1 = React.forwardRef((props, ref) => {
       // maxWidth: theme.maxWidth,
       // minWidth: theme.minWidth,
       // fontSize:theme.fontSize[1],
-      // position: 'absolute',
-      transition: '.5s',
+      position: 'fixed',
+      // transition: '.5s',
       ...props.pass_style,
     },
     header:{

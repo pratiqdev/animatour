@@ -1,4 +1,14 @@
+/**
+ * Post a branded message to the console
+ * 
+ * ---
+ * use built-in types warn, error, success and log
+ * 
+ * @param {string|string-array} - the message to post under the branded heading
+ * @returns void
+ */
 export const shout = {
+
     warn: (msg) => {
         console.warn(
             `%cAnimatour - WARNING\n`,

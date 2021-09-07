@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import Popper from '@popper';
+import React, { useState, useEffect, useRef } from 'react';
+import { usePopper } from 'react-popper';
 import * as B from './brochure'
 
 const Collection = props => {
@@ -10,29 +10,36 @@ const Collection = props => {
         return false
     }
 
+
     const [referenceElement, setReferenceElement] = useState(null);
     const [popperElement, setPopperElement] = useState(null);
     const [arrowElement, setArrowElement] = useState(null);
-    const { styles, attributes, scheduleUpdate } = usePopper(referenceElement, popperElement, {
+
+    const { styles, attributes, update } = usePopper(referenceElement, popperElement, {
         modifiers: [{ name: 'arrow', options: { element: arrowElement } }],
     });
 
     useEffect(()=>{
-        scheduleUpdate()
+        if(update){
+            update();
+        }
     }, [props.loc])
+
+    
+
 
     return(
         <>
         <div
             ref={setReferenceElement}
-            {...attributes.popper}
-            onClick={e=>{e.preventDefault(), e.stopPropagation()}}
+            // onClick={e=>{e.preventDefault(), e.stopPropagation()}}
+            onClick={()=>update()}
                 style={{
                 position: "absolute",
                 display: 'block',
                 zIndex: 10000,
                 borderRadius: ".5rem",
-                opacity: LOC.exist ? "1" : "0",
+                opacity: LOC.E ? "1" : "0",
                 border: "1px solid",
                 borderColor: "red",
                 width: `${LOC.W}px`,
@@ -40,15 +47,18 @@ const Collection = props => {
                 top: `${LOC.T}px`,
                 left: `${LOC.L}px`,
                 // boxShadow: `0 0 10000px 10000px grey`,
-                transition: "all .5s, opacity .2s",
-                pointerEvents: 'none',
+                transition: "all 5s, opacity .2s",
+                // pointerEvents: 'none',
                 }}
             />
 
+        {/* <div ref={setPopperElement} style={styles.popper} {...attributes.popper}>
+            Popper element
+            <div ref={setArrowElement} style={styles.arrow} />
+        </div> */}
 
-            <B.B1 ref={setPopperElement} open={props.open} tour={props.tour} pass_style={styles.popper}>
-                <div ref={setArrowElement} style={styles.arrow} />
-            </B.B1>
+
+            <B.B1 ref={setPopperElement} open={props.open} pass_style={styles.popper} tour={props.tour} />
         </>
     )
 }

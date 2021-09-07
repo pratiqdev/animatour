@@ -23,6 +23,26 @@ var Step = function Step(x) {
         _shout["default"].warn("addSteps | '".concat(key, "' was used... did you mean 'title' ?"));
 
         break;
+
+      case 'txt':
+      case 'text':
+      case 'cont':
+      case 'conten':
+      case 'cntent':
+        _shout["default"].warn("addSteps | '".concat(key, "' was used... did you mean 'content' ?"));
+
+        break;
+
+      case 'el':
+      case 'el':
+      case 'elmnt':
+      case 'elemnt':
+      case 'lement':
+      case 'elemen':
+      case 'elemet':
+        _shout["default"].warn("addSteps | '".concat(key, "' was used... did you mean 'element' ?"));
+
+        break;
     }
   });
   this.id = x.id;

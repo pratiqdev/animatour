@@ -1,4 +1,33 @@
-const _getLocation = (selector, margin) => {
+
+/**
+ * Find the location of an element within the document
+ * 
+ * ---
+ * @param {string} selector - the dom selector of the element
+ * ---
+ * @param {number} margin (number)- the margin to add to the highlighted element. defaults to 0
+ * ---
+ * @returns {object}
+ * 
+ * {
+ * 
+ *  E {bool} - does the element exist within the document
+ * 
+ *  H {number} - height of the element in pixels
+ * 
+ *  W {number} - width of the element in pixels
+ * 
+ *  T {number} - the distance from the top edge of the document in pixels
+ * 
+ *  L {number} - the distance from the left edge of the document in pixels
+ * 
+ * }
+ */
+
+const _getLocation = (D) => {
+
+    const selector = D.ELEMENT
+    const margin = D.MARGIN
 
     const LOC = {}
 
@@ -15,15 +44,12 @@ const _getLocation = (selector, margin) => {
     //> find the nearest scrollable parent of the target element and scroll to that target elements location plus the 'scroll padding' value
 
 
+    let SCROLL_TOP = window.pageYOffset || (document.EL || document.body.parentNode || document.body).scrollTop
     
-
     if(EL != null){
-
         const EL_RECT = EL.getBoundingClientRect();
-
-        let SCROLL_TOP = window.pageYOffset || (document.EL || document.body.parentNode || document.body).scrollTop
-
-        LOC.exist = true
+        
+        LOC.E = true
         LOC.L = Math.floor(EL_RECT.left - marg)
         LOC.T = Math.floor(EL_RECT.top + SCROLL_TOP - marg)
         LOC.H = Math.floor(EL_RECT.height + (marg * 2))
@@ -31,11 +57,11 @@ const _getLocation = (selector, margin) => {
         
         
     }else{
-        LOC.exist = false
+        LOC.E = false
         if(window){
             LOC.H = 0
             LOC.W = 0       
-            LOC.T = Math.floor(window.innerHeight / 2)
+            LOC.T = Math.floor((window.innerHeight / 2) + SCROLL_TOP)
             LOC.L = Math.floor(window.innerWidth / 2)
         }
     }

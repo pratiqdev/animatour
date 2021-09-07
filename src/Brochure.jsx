@@ -17,9 +17,10 @@ class Main extends React.Component {
     this.state = {
       mainProps: props,
       activeTour: 'Default Tour',
+      activeStepData: null,
       guideOpen: false,
       location: null,
-      guideMargin:10,
+      ringMargin:10,
       brochureAlignment: ['top-left', 'left-top'],
 
       list:[
@@ -36,17 +37,23 @@ class Main extends React.Component {
               {
                 title: 'STEP 1',
                 element: '.step-1-element',
-                content: 'Step One content (index 1)'
+                content: 'Step One content (index 1)',
+                margin: 0,
+                color: '#ffa'
               },
               {
                 title: 'STEP 2',
                 element: '.step-2-element',
-                content: 'Step Two Content (index 2)'
+                content: 'Step Two Content (index 2)',
+                margin: 10,
+                color: 'green',
               },
               {
                 title: 'STEP 3',
                 element: '.step-3-element',
-                content: 'Step Three Content (index 3)'
+                content: 'Step Three Content (index 3)',
+                margin: 20,
+                color: 'blue',
               },
               {
                 title: 'STEP 4',
@@ -165,22 +172,25 @@ class Main extends React.Component {
 
     let STEP      = this.state.list.find(x => x.id === TOUR).currentStep
     let LENGTH    = this.state.list.find(x => x.id === TOUR).steps.length - 1
+
     
     if(STEP < LENGTH){
       STEP = STEP + 1
     }else{
       STEP = 0
     }
-
+    
     let ELEMENT   = this.state.list.find(x => x.id === TOUR).steps[STEP].element
-
-    _scrollToElement(ELEMENT)
-
+    
+    
     this.setState(prevState => {
-       prevState.list.find(x => x.id === TOUR).currentStep = STEP
+      prevState.list.find(x => x.id === TOUR).currentStep = STEP
+      activeStepData = this.getStepData(STEP)
       //  prevState.guideLocation = this._findGuide(ELEMENT)
-       return prevState
+      return prevState
     })
+    
+    _scrollToElement(ELEMENT)
 
   }
 
@@ -198,16 +208,18 @@ class Main extends React.Component {
 
     let ELEMENT   = this.state.list.find(x => x.id === TOUR).steps[STEP].element
 
-    _scrollToElement(ELEMENT)
-
+    
     this.setState(prevState => {
       prevState.list.find(x => x.id === TOUR).currentStep = STEP
-      // prevState.guideLocation = this._findGuide(ELEMENT)
+      activeStepData = this.getStepData(STEP)
+      /// prevState.guideLocation = this._findGuide(ELEMENT)
       return prevState
-   })
+    })
+    _scrollToElement(ELEMENT)
+
   }
   
-  //- Brochure --------------------------------------------------------------------------------------------------------------------------------
+  //- Brochure ------------------------------------------------------------------------------------------------------------------------------------------
   open (tourId){////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     let useTour = this.useTourOrActive(tourId)
     this.setState({guideOpen: true, activeTour: useTour})
@@ -218,30 +230,55 @@ class Main extends React.Component {
   }
 
   //- Guide --------------------------------------------------------------------------------------------------------------------------------
-  getActiveGuideElement(){
-    let TOUR = this.state.activeTour
-    let STEP = this.state.list.find(x=>x.id === TOUR).currentStep
-    let EL = this.state.list.find(x=>x.id === TOUR).steps[STEP].element
+  /** Get all data for active or given step
+   * 
+   * ***
+   * this function handles setting a state object that contains all given step data or defaults if not provided.
+   */
+  getStepData(STEP){
+    let D = {}
 
-    return EL
+    /// if step is not specified - find the current step
+    if(!STEP){
+      D.STEP = this.state.list.find(x=>x.id === TOUR).currentStep
+    }else{
+      D.STEP = STEP
+    }
+
+    D.TOUR = this.state.activeTour
+    D.ELEMENT = this.state.list.find(x=>x.id === TOUR).steps[D.STEP].element
+    D.MARGIN = this.state.list.find(x=>x.id === TOUR).steps[D.STEP].margin    || this.state.guideMargin
+    D.COLOR = this.state.list.find(x=>x.id === TOUR).steps[D.STEP].color      || this.state.ringColor
+
+    return D
   }
 
 
 
   repeatUpdateGuideLocation(){
-    const loop = () => {
+    let lastD = null
+    let newD = null
+    let ASD = null
 
-      this.setState({location: _getLocation(this.getActiveGuideElement(), this.state.guideMargin)})
+    const loop = () => {
+      ASD = this.getStepData()
+      newD = _getLocation(ASD)
+
+      if(lastD !== newD){
+        lastD = newD
+        this.setState({location: newD})
+      }
 
 
 
       setTimeout(() => {
         loop()
-      }, 100);
+      }, 50);
     }
     loop()
   }
-  
+
+
 
 
 
@@ -269,6 +306,7 @@ class Main extends React.Component {
   render(){
     return(
       <Collection
+      data={this.state.activeStepData}
       type={this.state.list.find(x=>x.id===this.state.activeTour).brochureType}
       tour={this.state.list.find(x=>x.id===this.state.activeTour)}
       open={this.state.guideOpen}
