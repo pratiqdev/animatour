@@ -22,6 +22,9 @@ const ogDefaultSettings = {
   brochureType: 0, //? 'flat', 'simple', 'custom' ???
   
   stepDuration: 0, /// (ms) 0 means do not auto progress to next step 
+  exitLabel: 'Exit',
+  nextLabel: '>',
+  prevLabel: '<',
 }
 
 
@@ -38,6 +41,9 @@ class Main extends React.Component {
         ringShadowWidth: '10000px',
         brochureType: 0,
         stepDuration:0,
+        exitLabel: 'Exit',
+        nextLabel: '>',
+        prevLabel: '<',
       },
       mainProps: props,
       activeTour: 'Default Tour',
@@ -55,7 +61,8 @@ class Main extends React.Component {
               {
                 title: 'START',
                 element: '',
-                content: 'start page - no element (index 0)'
+                content: 'start page - no element (index 0)',
+                stepDuration: 1000,
               },
               {
                 title: 'STEP 1',
@@ -63,7 +70,7 @@ class Main extends React.Component {
                 content: 'Step One content (index 1)',
                 margin: 0,
                 ringColor: '#ffa',
-                stepDuration: 2000,
+                stepDuration: 1000,
               },
               {
                 title: 'STEP 2',
@@ -71,6 +78,9 @@ class Main extends React.Component {
                 content: 'Step Two Content (index 2)',
                 margin: 10,
                 ringColor: 'green',
+                ringWidth: '8px',
+                stepDuration: 1000,
+
               },
               {
                 title: 'STEP 3',
@@ -78,28 +88,39 @@ class Main extends React.Component {
                 content: 'Step Three Content (index 3)',
                 margin: 20,
                 ringColor: 'blue',
+                stepDuration: 1000,
+
               },
               {
                 title: 'STEP 4',
                 element: '.step-4-element',
-                content: 'Step Four Content (index 4)'
+                content: 'Step Four Content (index 4)',
+                stepDuration: 1000,
+
               },
               {
                 title: 'STEP 5',
                 element: '.step-5-element',
-                content: 'Step Five Content (index 5)'
+                content: 'Step Five Content (index 5)',
+                ringWidth: '15px',
+                stepDuration: 1000,
+
               },
               {
                 title: 'STEP 6',
                 element: '.step-6-element',
-                content: 'Step Six Content (index 6)'
+                content: 'Step Six Content (index 6)',
+                stepDuration: 1000,
+
               },
               {
                 title: 'END',
                 element: '',
-                content: 'end page - no element (index 4)'
+                content: 'end page - no element (index 4)',
+                stepDuration: 1000,
+
               },
-          ]
+            ]
         },
         {
           id: 'Tour Two',
@@ -204,16 +225,16 @@ class Main extends React.Component {
       STEP = 0
     }
     
-    let ELEMENT   = this.state.list.find(x => x.id === TOUR).steps[STEP].element
+    let ELEMENT = this.state.list.find(x => x.id === TOUR).steps[STEP].element
     
     let ASD = this.getStepData(STEP)
 
     //? This needs to check if active step is still the same as when it was called to prevent a different step from auto-progressing
-    // if(ASD.stepDuration !== 0){
-    //   setTimeout(() => {
-    //     this.next()
-    //   }, ASD.stepDuration);
-    // }
+    if(ASD.stepDuration !== 0){
+      setTimeout(() => {
+        this.next()
+      }, ASD.stepDuration);
+    }
     
     this.setState(prevState => {
       prevState.list.find(x => x.id === TOUR).currentStep = STEP
@@ -273,22 +294,24 @@ class Main extends React.Component {
   getStepData(STEP){
     let D = {}
     D.tour = this.state.activeTour
+    D.totalSteps = this.state.list.find(x=>x.id === D.tour).steps.length
 
     /// if step is not specified - find the current step
-    if(!STEP){
-      D.step = this.state.list.find(x=>x.id === D.tour).currentStep
-    }else{
+    if(typeof STEP === 'number' && STEP >= 0 && STEP <= D.totalSteps){
       D.step = STEP
+    }else{
+      D.step = this.state.list.find(x=>x.id === D.tour).currentStep
     }
 
-    D.totalSteps = this.state.list.find(x=>x.id === D.tour).steps.length
 
     D.element = this.state.list.find(x=>x.id === D.tour).steps[D.step].element
     D.margin = this.state.list.find(x=>x.id === D.tour).steps[D.step].margin                  || this.state.defaultSettings.guideMargin
     D.ringColor = this.state.list.find(x=>x.id === D.tour).steps[D.step].ringColor            || this.state.defaultSettings.ringColor
     D.ringWidth = this.state.list.find(x=>x.id === D.tour).steps[D.step].ringWidth            || this.state.defaultSettings.ringWidth
 
-    // D.exitLabel = this.state.list.find(x=>x.id === D.tour).steps[D.step].exitLabel            || this.state.defaultSettings.exitLabel
+    D.exitLabel = this.state.list.find(x=>x.id === D.tour).steps[D.step].exitLabel            || this.state.defaultSettings.exitLabel
+    D.nextLabel = this.state.list.find(x=>x.id === D.tour).steps[D.step].nextLabel            || this.state.defaultSettings.nextLabel
+    D.prevLabel = this.state.list.find(x=>x.id === D.tour).steps[D.step].prevLabel            || this.state.defaultSettings.prevLabel
 
 
     D.brochureType = this.state.list.find(x=>x.id === D.tour).steps[D.step].brochureType      || this.state.defaultSettings.brochureType

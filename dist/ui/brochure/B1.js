@@ -50,6 +50,7 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
   };
   var s = {
     container: _objectSpread({
+      boxSizing: 'border-box',
       // margin: theme.spacing[3],
       background: theme.background,
       // color: theme.text,
@@ -97,17 +98,17 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
     onClick: function onClick() {
       return _animatour["default"].close();
     }
-  }, "exit"), /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("button", {
+  }, props.data.exitLabel), /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("button", {
     style: s.prevButton,
     onClick: function onClick() {
       return _animatour["default"].prev(props.data.tour);
     }
-  }, '<'), /*#__PURE__*/_react["default"].createElement("button", {
+  }, props.data.prevLabel), /*#__PURE__*/_react["default"].createElement("button", {
     style: s.nextButton,
     onClick: function onClick() {
       return _animatour["default"].next(props.data.tour);
     }
-  }, '>'))), props.children);
+  }, props.data.nextLabel))), props.children);
 });
 
 var _default = B1;

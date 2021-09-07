@@ -60,8 +60,11 @@ var ogDefaultSettings = {
   ringShadowWidth: '10000px',
   brochureType: 0,
   //? 'flat', 'simple', 'custom' ???
-  stepDuration: 0 /// (ms) 0 means do not auto progress to next step 
-
+  stepDuration: 0,
+  /// (ms) 0 means do not auto progress to next step 
+  exitLabel: 'Exit',
+  nextLabel: '>',
+  prevLabel: '<'
 };
 
 var Main = /*#__PURE__*/function (_React$Component) {
@@ -84,7 +87,10 @@ var Main = /*#__PURE__*/function (_React$Component) {
         ringShadowColor: 'rgba(150,150,150,.8)',
         ringShadowWidth: '10000px',
         brochureType: 0,
-        stepDuration: 0
+        stepDuration: 0,
+        exitLabel: 'Exit',
+        nextLabel: '>',
+        prevLabel: '<'
       },
       mainProps: props,
       activeTour: 'Default Tour',
@@ -99,42 +105,51 @@ var Main = /*#__PURE__*/function (_React$Component) {
         steps: [{
           title: 'START',
           element: '',
-          content: 'start page - no element (index 0)'
+          content: 'start page - no element (index 0)',
+          stepDuration: 1000
         }, {
           title: 'STEP 1',
           element: '.step-1-element',
           content: 'Step One content (index 1)',
           margin: 0,
           ringColor: '#ffa',
-          stepDuration: 2000
+          stepDuration: 1000
         }, {
           title: 'STEP 2',
           element: '.step-2-element',
           content: 'Step Two Content (index 2)',
           margin: 10,
-          ringColor: 'green'
+          ringColor: 'green',
+          ringWidth: '8px',
+          stepDuration: 1000
         }, {
           title: 'STEP 3',
           element: '.step-3-element',
           content: 'Step Three Content (index 3)',
           margin: 20,
-          ringColor: 'blue'
+          ringColor: 'blue',
+          stepDuration: 1000
         }, {
           title: 'STEP 4',
           element: '.step-4-element',
-          content: 'Step Four Content (index 4)'
+          content: 'Step Four Content (index 4)',
+          stepDuration: 1000
         }, {
           title: 'STEP 5',
           element: '.step-5-element',
-          content: 'Step Five Content (index 5)'
+          content: 'Step Five Content (index 5)',
+          ringWidth: '15px',
+          stepDuration: 1000
         }, {
           title: 'STEP 6',
           element: '.step-6-element',
-          content: 'Step Six Content (index 6)'
+          content: 'Step Six Content (index 6)',
+          stepDuration: 1000
         }, {
           title: 'END',
           element: '',
-          content: 'end page - no element (index 4)'
+          content: 'end page - no element (index 4)',
+          stepDuration: 1000
         }]
       }, {
         id: 'Tour Two',
@@ -247,6 +262,8 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "next",
     value: function next(tourId) {
+      var _this2 = this;
+
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       var TOUR = this.useTourOrActive(tourId);
       var STEP = this.state.list.find(function (x) {
@@ -266,11 +283,12 @@ var Main = /*#__PURE__*/function (_React$Component) {
         return x.id === TOUR;
       }).steps[STEP].element;
       var ASD = this.getStepData(STEP); //? This needs to check if active step is still the same as when it was called to prevent a different step from auto-progressing
-      // if(ASD.stepDuration !== 0){
-      //   setTimeout(() => {
-      //     this.next()
-      //   }, ASD.stepDuration);
-      // }
+
+      if (ASD.stepDuration !== 0) {
+        setTimeout(function () {
+          _this2.next();
+        }, ASD.stepDuration);
+      }
 
       this.setState(function (prevState) {
         prevState.list.find(function (x) {
@@ -345,19 +363,19 @@ var Main = /*#__PURE__*/function (_React$Component) {
     key: "getStepData",
     value: function getStepData(STEP) {
       var D = {};
-      D.tour = this.state.activeTour; /// if step is not specified - find the current step
+      D.tour = this.state.activeTour;
+      D.totalSteps = this.state.list.find(function (x) {
+        return x.id === D.tour;
+      }).steps.length; /// if step is not specified - find the current step
 
-      if (!STEP) {
+      if (typeof STEP === 'number' && STEP >= 0 && STEP <= D.totalSteps) {
+        D.step = STEP;
+      } else {
         D.step = this.state.list.find(function (x) {
           return x.id === D.tour;
         }).currentStep;
-      } else {
-        D.step = STEP;
       }
 
-      D.totalSteps = this.state.list.find(function (x) {
-        return x.id === D.tour;
-      }).steps.length;
       D.element = this.state.list.find(function (x) {
         return x.id === D.tour;
       }).steps[D.step].element;
@@ -369,8 +387,16 @@ var Main = /*#__PURE__*/function (_React$Component) {
       }).steps[D.step].ringColor || this.state.defaultSettings.ringColor;
       D.ringWidth = this.state.list.find(function (x) {
         return x.id === D.tour;
-      }).steps[D.step].ringWidth || this.state.defaultSettings.ringWidth; // D.exitLabel = this.state.list.find(x=>x.id === D.tour).steps[D.step].exitLabel            || this.state.defaultSettings.exitLabel
-
+      }).steps[D.step].ringWidth || this.state.defaultSettings.ringWidth;
+      D.exitLabel = this.state.list.find(function (x) {
+        return x.id === D.tour;
+      }).steps[D.step].exitLabel || this.state.defaultSettings.exitLabel;
+      D.nextLabel = this.state.list.find(function (x) {
+        return x.id === D.tour;
+      }).steps[D.step].nextLabel || this.state.defaultSettings.nextLabel;
+      D.prevLabel = this.state.list.find(function (x) {
+        return x.id === D.tour;
+      }).steps[D.step].prevLabel || this.state.defaultSettings.prevLabel;
       D.brochureType = this.state.list.find(function (x) {
         return x.id === D.tour;
       }).steps[D.step].brochureType || this.state.defaultSettings.brochureType;
@@ -388,16 +414,16 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "repeatUpdateGuideLocation",
     value: function repeatUpdateGuideLocation() {
-      var _this2 = this;
+      var _this3 = this;
 
       var newD = null;
       var ASD = null;
 
       var loop = function loop() {
-        ASD = _this2.getStepData();
+        ASD = _this3.getStepData();
         newD = (0, _getLocation2["default"])(ASD);
 
-        _this2.setState(function (prevState) {
+        _this3.setState(function (prevState) {
           prevState.location = newD;
           return prevState;
         });

@@ -33,6 +33,7 @@ const B1 = React.forwardRef((props, ref) => {
   }
   const s = {
     container:{
+      boxSizing: 'border-box',
       // margin: theme.spacing[3],
       background: theme.background,
       // color: theme.text,
@@ -81,10 +82,10 @@ const B1 = React.forwardRef((props, ref) => {
         {props.data.content}
       </div>
       <div style={s.footer} className='footer'>
-        <button style={s.exitButton} onClick={()=>animatour.close()}>exit</button>
+        <button style={s.exitButton} onClick={()=>animatour.close()}>{props.data.exitLabel}</button>
         <div>
-          <button style={s.prevButton} onClick={()=>animatour.prev(props.data.tour)}>{'<'}</button>
-          <button style={s.nextButton} onClick={()=>animatour.next(props.data.tour)}>{'>'}</button>
+          <button style={s.prevButton} onClick={()=>animatour.prev(props.data.tour)}>{props.data.prevLabel}</button>
+          <button style={s.nextButton} onClick={()=>animatour.next(props.data.tour)}>{props.data.nextLabel}</button>
         </div>
       </div>
       {props.children}

@@ -30,9 +30,13 @@ function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Sy
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var Collection = function Collection(props) {
+  var D = {};
+
   if (!props.data) {
     console.log('No data was found for collectoin!!!');
     return false;
+  } else {
+    D = props.data;
   }
 
   var LOC = props.loc;
@@ -62,6 +66,11 @@ var Collection = function Collection(props) {
       options: {
         element: arrowElement
       }
+    }, {
+      name: 'offset',
+      options: {
+        offset: [0, 8]
+      }
     }]
   }),
       styles = _usePopper.styles,
@@ -85,14 +94,15 @@ var Collection = function Collection(props) {
       zIndex: 10000,
       borderRadius: ".5rem",
       opacity: LOC.E ? "1" : "0",
-      border: "1px solid",
-      borderColor: 'red',
+      border: "".concat(D.ringWidth, " solid"),
+      borderColor: "".concat(D.ringColor),
       width: "".concat(LOC.W, "px"),
       height: "".concat(LOC.H, "px"),
-      top: "".concat(LOC.T, "px"),
-      left: "".concat(LOC.L, "px"),
-      // boxShadow: `0 0 10000px 10000px grey`,
-      transition: "all .5s, opacity .2s" // pointerEvents: 'none',
+      // top: `${LOC.T}px`,
+      // left: `${LOC.L}px`,
+      transform: "translate(".concat(LOC.L, "px, ").concat(LOC.T, "px)"),
+      boxShadow: "0 0 10000px 10000px #8888",
+      transition: "all .8s, opacity .2s" // pointerEvents: 'none',
 
     }
   }), /*#__PURE__*/_react["default"].createElement(B.B1, {
@@ -100,7 +110,10 @@ var Collection = function Collection(props) {
     open: props.open,
     pass_style: styles.popper,
     data: props.data
-  }));
+  }, /*#__PURE__*/_react["default"].createElement("div", {
+    ref: setArrowElement,
+    style: styles.arrow
+  })));
 };
 
 var _default = Collection;
