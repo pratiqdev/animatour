@@ -26,8 +26,8 @@
 
 const _getLocation = (D) => {
 
-    const selector = D.ELEMENT
-    const margin = D.MARGIN
+    const selector = D.element
+    const margin = D.margin
 
     const LOC = {}
 

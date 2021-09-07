@@ -72,8 +72,7 @@ var _scrollToElement = function _scrollToElement(selector, behavior, alignment) 
         }
     }
   } else {
-    BEHAVIOR = 'smooth';
-    behaviorShout();
+    BEHAVIOR = 'smooth'; // behaviorShout()
   } /// determine the intended vertical/horizontal alignment
 
 
@@ -129,8 +128,7 @@ var _scrollToElement = function _scrollToElement(selector, behavior, alignment) 
     }
   } else {
     H_ALIGN = 'center';
-    V_ALIGN = 'center';
-    alignmentShout();
+    V_ALIGN = 'center'; // alignmentShout()
   } //   function getScrollParent(node) {
   //     const isElement = node instanceof HTMLElement;
   //     const overflowY = isElement && window.getComputedStyle(node).overflowY;

@@ -29,7 +29,9 @@ exports["default"] = void 0;
  * 
  * }
  */
-var _getLocation = function _getLocation(selector, margin) {
+var _getLocation = function _getLocation(D) {
+  var selector = D.element;
+  var margin = D.margin;
   var LOC = {};
   var marg = margin ? margin : 0;
   var EL;

@@ -4,11 +4,19 @@ import * as B from './brochure'
 
 const Collection = props => {
 
+    if(!props.data){
+        console.log('No data was found for collectoin!!!')
+        return false
+    }
+
 
     let LOC = props.loc
     if(!LOC){
         return false
     }
+
+
+
 
 
     const [referenceElement, setReferenceElement] = useState(null);
@@ -40,14 +48,14 @@ const Collection = props => {
                 zIndex: 10000,
                 borderRadius: ".5rem",
                 opacity: LOC.E ? "1" : "0",
-                border: "1px solid",
-                borderColor: "red",
+                border: `1px solid`,
+                borderColor: 'red',
                 width: `${LOC.W}px`,
                 height: `${LOC.H}px`,
                 top: `${LOC.T}px`,
                 left: `${LOC.L}px`,
                 // boxShadow: `0 0 10000px 10000px grey`,
-                transition: "all 5s, opacity .2s",
+                transition: "all .5s, opacity .2s",
                 // pointerEvents: 'none',
                 }}
             />
@@ -58,7 +66,7 @@ const Collection = props => {
         </div> */}
 
 
-            <B.B1 ref={setPopperElement} open={props.open} pass_style={styles.popper} tour={props.tour} />
+            <B.B1 ref={setPopperElement} open={props.open} pass_style={styles.popper} data={props.data} />
         </>
     )
 }

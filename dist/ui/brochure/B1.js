@@ -26,8 +26,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
-  var TOUR = props.tour;
-  var STEP = props.tour.steps[props.tour.currentStep];
   var theme = {
     text: '#222',
     background: '#eee',
@@ -81,17 +79,17 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
   };
   return /*#__PURE__*/_react["default"].createElement("div", {
     ref: ref,
-    key: TOUR.currentStep,
+    key: props.data.step,
     style: s.container,
     className: "brochure1",
     id: "BROCHURE"
   }, /*#__PURE__*/_react["default"].createElement("div", {
     style: s.header,
     className: "header"
-  }, TOUR.currentStep, " - ", STEP.title), /*#__PURE__*/_react["default"].createElement("div", {
+  }, props.data.step, " - ", props.data.title), /*#__PURE__*/_react["default"].createElement("div", {
     style: s.content,
     className: "content"
-  }, "guide open: ", props.open ? 'open' : 'closed', /*#__PURE__*/_react["default"].createElement("br", null), STEP.content), /*#__PURE__*/_react["default"].createElement("div", {
+  }, "guide open: ", props.open ? 'open' : 'closed', /*#__PURE__*/_react["default"].createElement("br", null), props.data.content), /*#__PURE__*/_react["default"].createElement("div", {
     style: s.footer,
     className: "footer"
   }, /*#__PURE__*/_react["default"].createElement("button", {
@@ -102,12 +100,12 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
   }, "exit"), /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("button", {
     style: s.prevButton,
     onClick: function onClick() {
-      return _animatour["default"].prev(TOUR.id);
+      return _animatour["default"].prev(props.data.tour);
     }
   }, '<'), /*#__PURE__*/_react["default"].createElement("button", {
     style: s.nextButton,
     onClick: function onClick() {
-      return _animatour["default"].next(TOUR.id);
+      return _animatour["default"].next(props.data.tour);
     }
   }, '>'))), props.children);
 });

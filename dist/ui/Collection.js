@@ -30,6 +30,11 @@ function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Sy
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var Collection = function Collection(props) {
+  if (!props.data) {
+    console.log('No data was found for collectoin!!!');
+    return false;
+  }
+
   var LOC = props.loc;
 
   if (!LOC) {
@@ -81,7 +86,7 @@ var Collection = function Collection(props) {
       borderRadius: ".5rem",
       opacity: LOC.E ? "1" : "0",
       border: "1px solid",
-      borderColor: "red",
+      borderColor: 'red',
       width: "".concat(LOC.W, "px"),
       height: "".concat(LOC.H, "px"),
       top: "".concat(LOC.T, "px"),
@@ -94,7 +99,7 @@ var Collection = function Collection(props) {
     ref: setPopperElement,
     open: props.open,
     pass_style: styles.popper,
-    tour: props.tour
+    data: props.data
   }));
 };
 

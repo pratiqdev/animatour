@@ -247,6 +247,8 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "next",
     value: function next(tourId) {
+      var _this2 = this;
+
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       var TOUR = this.useTourOrActive(tourId);
       var STEP = this.state.list.find(function (x) {
@@ -265,12 +267,13 @@ var Main = /*#__PURE__*/function (_React$Component) {
       var ELEMENT = this.state.list.find(function (x) {
         return x.id === TOUR;
       }).steps[STEP].element;
-      var ASD = this.getStepData(STEP); //? This needs to check if active step is still the same as when it was called to prevent a different step from auto-progressing
-      // if(ASD.stepDuration !== 0){
-      //   setTimeout(() => {
-      //     this.next()
-      //   }, ASD.stepDuration);
-      // }
+      var ASD = this.getStepData(STEP);
+
+      if (ASD.stepDuration !== 0) {
+        setTimeout(function () {
+          _this2.next();
+        }, ASD.stepDuration);
+      }
 
       this.setState(function (prevState) {
         prevState.list.find(function (x) {
@@ -294,7 +297,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
         return x.id === TOUR;
       }).steps.length - 1;
 
-      if (STEP >= 1) {
+      if (STEP > 0) {
         STEP = STEP - 1;
       } else {
         STEP = LENGTH;
@@ -303,7 +306,6 @@ var Main = /*#__PURE__*/function (_React$Component) {
       var ELEMENT = this.state.list.find(function (x) {
         return x.id === TOUR;
       }).steps[STEP].element;
-      console.log("prev | step: ".concat(STEP));
       var ASD = this.getStepData(STEP);
       this.setState(function (prevState) {
         prevState.list.find(function (x) {
@@ -388,17 +390,17 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "repeatUpdateGuideLocation",
     value: function repeatUpdateGuideLocation() {
-      var _this2 = this;
+      var _this3 = this;
 
       var newD = null;
       var ASD = null;
 
       var loop = function loop() {
-        ASD = _this2.getStepData();
+        ASD = _this3.getStepData();
         newD = (0, _getLocation2["default"])(ASD);
 
-        _this2.setState(function (prevState) {
-          prevState.location = newD;
+        _this3.setState(function (prevState) {
+          prevState.activeStepData.location = newD;
           return prevState;
         });
 
@@ -423,8 +425,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
     value: function render() {
       return /*#__PURE__*/_react["default"].createElement(_Collection["default"], {
         data: this.state.activeStepData,
-        open: this.state.guideOpen,
-        loc: this.state.location
+        open: this.state.guideOpen
       });
     }
   }]);

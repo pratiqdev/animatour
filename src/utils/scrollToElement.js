@@ -71,7 +71,7 @@ const _scrollToElement = (selector, behavior, alignment) => {
         }
       }
     }else{
-      BEHAVIOR = 'smooth'; behaviorShout()
+      BEHAVIOR = 'smooth'; // behaviorShout()
     }
 
     /// determine the intended vertical/horizontal alignment
@@ -102,7 +102,7 @@ const _scrollToElement = (selector, behavior, alignment) => {
     }else{
       H_ALIGN = 'center';
       V_ALIGN = 'center'; 
-      alignmentShout()
+      // alignmentShout()
     }
 
 

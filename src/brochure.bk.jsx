@@ -208,12 +208,11 @@ class Main extends React.Component {
     
     let ASD = this.getStepData(STEP)
 
-    //? This needs to check if active step is still the same as when it was called to prevent a different step from auto-progressing
-    // if(ASD.stepDuration !== 0){
-    //   setTimeout(() => {
-    //     this.next()
-    //   }, ASD.stepDuration);
-    // }
+    if(ASD.stepDuration !== 0){
+      setTimeout(() => {
+        this.next()
+      }, ASD.stepDuration);
+    }
     
     this.setState(prevState => {
       prevState.list.find(x => x.id === TOUR).currentStep = STEP
@@ -232,7 +231,7 @@ class Main extends React.Component {
     let STEP =    this.state.list.find(x => x.id === TOUR).currentStep
     let LENGTH =  this.state.list.find(x => x.id === TOUR).steps.length - 1
     
-    if(STEP >= 1){
+    if(STEP > 0){
       STEP = STEP - 1
     }else{
       STEP = LENGTH
@@ -240,7 +239,6 @@ class Main extends React.Component {
 
     let ELEMENT   = this.state.list.find(x => x.id === TOUR).steps[STEP].element
 
-    console.log(`prev | step: ${STEP}`)
     let ASD = this.getStepData(STEP)
 
     this.setState(prevState => {
@@ -316,7 +314,7 @@ class Main extends React.Component {
 
 
       this.setState(prevState => {
-        prevState.location = newD
+        prevState.activeStepData.location = newD
         return prevState
       })
     
@@ -361,7 +359,6 @@ class Main extends React.Component {
       <Collection
       data={this.state.activeStepData}
       open={this.state.guideOpen}
-      loc={this.state.location}
       />
     )
   }

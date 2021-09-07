@@ -4,8 +4,7 @@ import shout from '../../utils/shout'
 
 const B1 = React.forwardRef((props, ref) => {
 
-  const TOUR = props.tour
-  const STEP = props.tour.steps[props.tour.currentStep]
+
 
 
 
@@ -41,7 +40,7 @@ const B1 = React.forwardRef((props, ref) => {
       // minWidth: theme.minWidth,
       // fontSize:theme.fontSize[1],
       position: 'fixed',
-      // transition: '.5s',
+      // transition: '.5s', /// causes popper to start from 0,0 and animate to position
       ...props.pass_style,
     },
     header:{
@@ -75,17 +74,17 @@ const B1 = React.forwardRef((props, ref) => {
 
 
   return(
-    <div ref={ref} key={TOUR.currentStep} style={s.container} className='brochure1' id='BROCHURE'>
-      <div style={s.header} className='header'>{TOUR.currentStep} - {STEP.title}</div>
+    <div ref={ref} key={props.data.step} style={s.container} className='brochure1' id='BROCHURE'>
+      <div style={s.header} className='header'>{props.data.step} - {props.data.title}</div>
       <div style={s.content} className='content'>
         guide open: {props.open ? 'open' : 'closed'}<br/>
-        {STEP.content}
+        {props.data.content}
       </div>
       <div style={s.footer} className='footer'>
         <button style={s.exitButton} onClick={()=>animatour.close()}>exit</button>
         <div>
-          <button style={s.prevButton} onClick={()=>animatour.prev(TOUR.id)}>{'<'}</button>
-          <button style={s.nextButton} onClick={()=>animatour.next(TOUR.id)}>{'>'}</button>
+          <button style={s.prevButton} onClick={()=>animatour.prev(props.data.tour)}>{'<'}</button>
+          <button style={s.nextButton} onClick={()=>animatour.next(props.data.tour)}>{'>'}</button>
         </div>
       </div>
       {props.children}
