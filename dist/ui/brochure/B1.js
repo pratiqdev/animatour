@@ -51,6 +51,7 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
   var s = {
     container: _objectSpread({
       boxSizing: 'border-box',
+      zIndex: '10001',
       // margin: theme.spacing[3],
       background: theme.background,
       // color: theme.text,

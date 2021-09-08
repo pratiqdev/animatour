@@ -34,6 +34,7 @@ const B1 = React.forwardRef((props, ref) => {
   const s = {
     container:{
       boxSizing: 'border-box',
+      zIndex: '10001',
       // margin: theme.spacing[3],
       background: theme.background,
       // color: theme.text,

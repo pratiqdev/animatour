@@ -13,6 +13,10 @@ var _reactPopper = require("react-popper");
 
 var B = _interopRequireWildcard(require("./brochure"));
 
+var _gsap = _interopRequireDefault(require("gsap"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -77,33 +81,36 @@ var Collection = function Collection(props) {
       attributes = _usePopper.attributes,
       update = _usePopper.update;
 
+  var updatePositions = function updatePositions() {
+    _gsap["default"].to(referenceElement, {
+      duration: .8,
+      opacity: LOC.E ? 1 : 0,
+      width: "".concat(LOC.W + parseInt(D.ringWidth) * 2, "px"),
+      height: "".concat(LOC.H + parseInt(D.ringWidth) * 2, "px"),
+      left: "".concat(LOC.L - parseInt(D.ringWidth), "px"),
+      top: "".concat(LOC.T - parseInt(D.ringWidth), "px"),
+      borderWidth: D.ringWidth,
+      borderColor: D.ringColor,
+      borderRadius: '.5rem',
+      boxShadow: '0 0 10000px 10000px rgba(150,150,150,.8)'
+    });
+
+    update();
+  };
+
   (0, _react.useEffect)(function () {
     if (update) {
-      update();
+      updatePositions();
     }
   }, [props.loc]);
   return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", {
-    ref: setReferenceElement // onClick={e=>{e.preventDefault(), e.stopPropagation()}}
-    ,
-    onClick: function onClick() {
-      return update();
-    },
+    ref: setReferenceElement,
     style: {
+      boxSizing: 'border-box',
       position: "absolute",
       display: 'block',
-      zIndex: 10000,
-      borderRadius: ".5rem",
-      opacity: LOC.E ? "1" : "0",
-      border: "".concat(D.ringWidth, " solid"),
-      borderColor: "".concat(D.ringColor),
-      width: "".concat(LOC.W, "px"),
-      height: "".concat(LOC.H, "px"),
-      // top: `${LOC.T}px`,
-      // left: `${LOC.L}px`,
-      transform: "translate(".concat(LOC.L, "px, ").concat(LOC.T, "px)"),
-      boxShadow: "0 0 10000px 10000px #8888",
-      transition: "all .8s, opacity .2s" // pointerEvents: 'none',
-
+      border: '1px solid transparent',
+      zIndex: '10000'
     }
   }), /*#__PURE__*/_react["default"].createElement(B.B1, {
     ref: setPopperElement,

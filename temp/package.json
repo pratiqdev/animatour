@@ -1,6 +1,6 @@
 {
   "name": "animatour",
-  "version": "0.0.354",
+  "version": "0.0.408",
   "private": false,
   "main": "index.js",
   "scripts": {
@@ -21,6 +21,7 @@
     "react-dom": ">=16.8",
     "react-scripts": "4.0.3",
     "@popperjs/core": "^2.10.1",
-    "react-popper": "^2.2.5"
+    "react-popper": "^2.2.5",
+    "gsap": "^3.7.1"
   }
 }

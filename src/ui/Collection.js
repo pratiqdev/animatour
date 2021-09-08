@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { usePopper } from 'react-popper';
 import * as B from './brochure'
+import gsap from 'gsap'
 
 const Collection = props => {
 
@@ -17,7 +18,6 @@ const Collection = props => {
     if(!LOC){
         return false
     }
-
 
 
 
@@ -41,9 +41,32 @@ const Collection = props => {
         ],
     });
 
+
+    const updatePositions = () => {
+
+        gsap.to(referenceElement, {
+            duration: .8, 
+            opacity: LOC.E ? 1 : 0,
+            width:`${LOC.W + (parseInt(D.ringWidth) * 2)}px`, 
+            height: `${LOC.H + (parseInt(D.ringWidth) * 2)}px`, 
+            left: `${LOC.L - parseInt(D.ringWidth) }px`, 
+            top:`${LOC.T - parseInt(D.ringWidth) }px`,
+            borderWidth: D.ringWidth,
+            borderColor: D.ringColor,
+            borderRadius: '.5rem',
+            boxShadow: '0 0 10000px 10000px rgba(150,150,150,.8)',
+        });
+
+
+        update()
+
+    }
+
+
+
     useEffect(()=>{
         if(update){
-            update();
+            updatePositions();
         }
     }, [props.loc])
 
@@ -54,31 +77,17 @@ const Collection = props => {
         <>
         <div
             ref={setReferenceElement}
-            // onClick={e=>{e.preventDefault(), e.stopPropagation()}}
-            onClick={()=>update()}
-                style={{
+            style={{
+                boxSizing: 'border-box',
                 position: "absolute",
                 display: 'block',
-                zIndex: 10000,
-                borderRadius: ".5rem",
-                opacity: LOC.E ? "1" : "0",
-                border: `${D.ringWidth} solid`,
-                borderColor: `${D.ringColor}`,
-                width: `${LOC.W}px`,
-                height: `${LOC.H}px`,
-                // top: `${LOC.T}px`,
-                // left: `${LOC.L}px`,
-                transform: `translate(${LOC.L}px, ${LOC.T}px)`,
-                boxShadow: `0 0 10000px 10000px #8888`,
-                transition: "all .8s, opacity .2s",
-                // pointerEvents: 'none',
-                }}
+                border: '1px solid transparent',
+                zIndex: '10000',
+            }}
             />
 
-        {/* <div ref={setPopperElement} style={styles.popper} {...attributes.popper}>
-            Popper element
-            <div ref={setArrowElement} style={styles.arrow} />
-        </div> */}
+
+
 
 
             <B.B1 ref={setPopperElement} open={props.open} pass_style={styles.popper} data={props.data} >

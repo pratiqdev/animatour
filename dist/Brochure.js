@@ -106,14 +106,14 @@ var Main = /*#__PURE__*/function (_React$Component) {
           title: 'START',
           element: '',
           content: 'start page - no element (index 0)',
-          stepDuration: 1000
+          stepDuration: 3000
         }, {
           title: 'STEP 1',
           element: '.step-1-element',
           content: 'Step One content (index 1)',
           margin: 0,
           ringColor: '#ffa',
-          stepDuration: 1000
+          stepDuration: 3000
         }, {
           title: 'STEP 2',
           element: '.step-2-element',
@@ -121,35 +121,36 @@ var Main = /*#__PURE__*/function (_React$Component) {
           margin: 10,
           ringColor: 'green',
           ringWidth: '8px',
-          stepDuration: 1000
+          stepDuration: 3000
         }, {
           title: 'STEP 3',
           element: '.step-3-element',
           content: 'Step Three Content (index 3)',
           margin: 20,
           ringColor: 'blue',
-          stepDuration: 1000
+          stepDuration: 3000
         }, {
           title: 'STEP 4',
           element: '.step-4-element',
           content: 'Step Four Content (index 4)',
-          stepDuration: 1000
+          stepDuration: 3000
         }, {
           title: 'STEP 5',
           element: '.step-5-element',
           content: 'Step Five Content (index 5)',
           ringWidth: '15px',
-          stepDuration: 1000
+          margin: 4,
+          stepDuration: 3000
         }, {
           title: 'STEP 6',
           element: '.step-6-element',
           content: 'Step Six Content (index 6)',
-          stepDuration: 1000
+          stepDuration: 3000
         }, {
           title: 'END',
           element: '',
           content: 'end page - no element (index 4)',
-          stepDuration: 1000
+          stepDuration: 3000
         }]
       }, {
         id: 'Tour Two',
@@ -262,8 +263,6 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "next",
     value: function next(tourId) {
-      var _this2 = this;
-
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       var TOUR = this.useTourOrActive(tourId);
       var STEP = this.state.list.find(function (x) {
@@ -283,12 +282,11 @@ var Main = /*#__PURE__*/function (_React$Component) {
         return x.id === TOUR;
       }).steps[STEP].element;
       var ASD = this.getStepData(STEP); //? This needs to check if active step is still the same as when it was called to prevent a different step from auto-progressing
-
-      if (ASD.stepDuration !== 0) {
-        setTimeout(function () {
-          _this2.next();
-        }, ASD.stepDuration);
-      }
+      // if(ASD.stepDuration !== 0){
+      //   setTimeout(() => {
+      //     this.next()
+      //   }, ASD.stepDuration);
+      // }
 
       this.setState(function (prevState) {
         prevState.list.find(function (x) {
@@ -414,23 +412,40 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "repeatUpdateGuideLocation",
     value: function repeatUpdateGuideLocation() {
-      var _this3 = this;
+      var _this2 = this;
 
-      var newD = null;
+      var newD = {};
       var ASD = null;
+      var oldD = {};
+      var limit = 10;
 
       var loop = function loop() {
-        ASD = _this3.getStepData();
+        ASD = _this2.getStepData();
         newD = (0, _getLocation2["default"])(ASD);
 
-        _this3.setState(function (prevState) {
-          prevState.location = newD;
-          return prevState;
-        });
+        if (newD.E !== oldD.E || newD.L !== oldD.L || newD.T !== oldD.T || newD.H !== oldD.H || newD.W !== oldD.W || newD.S !== oldD.S || newD.WW !== oldD.WW || newD.WH !== oldD.WH) {
+          oldD = newD;
+
+          _this2.setState(function (prevState) {
+            prevState.location = newD;
+            return prevState;
+          });
+        } // limiting method---------------
+        // else if(limit === 0){
+        //   limit = 10
+        //   oldD = newD
+        //   this.setState(prevState => {
+        //     prevState.location = newD
+        //     return prevState
+        //   })
+        // }else{
+        //   limit--
+        // }
+
 
         setTimeout(function () {
           loop();
-        }, 50);
+        }, 16);
       };
 
       loop();

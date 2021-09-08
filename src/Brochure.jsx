@@ -62,7 +62,7 @@ class Main extends React.Component {
                 title: 'START',
                 element: '',
                 content: 'start page - no element (index 0)',
-                stepDuration: 1000,
+                stepDuration: 3000,
               },
               {
                 title: 'STEP 1',
@@ -70,7 +70,7 @@ class Main extends React.Component {
                 content: 'Step One content (index 1)',
                 margin: 0,
                 ringColor: '#ffa',
-                stepDuration: 1000,
+                stepDuration: 3000,
               },
               {
                 title: 'STEP 2',
@@ -79,7 +79,7 @@ class Main extends React.Component {
                 margin: 10,
                 ringColor: 'green',
                 ringWidth: '8px',
-                stepDuration: 1000,
+                stepDuration: 3000,
 
               },
               {
@@ -88,14 +88,14 @@ class Main extends React.Component {
                 content: 'Step Three Content (index 3)',
                 margin: 20,
                 ringColor: 'blue',
-                stepDuration: 1000,
+                stepDuration: 3000,
 
               },
               {
                 title: 'STEP 4',
                 element: '.step-4-element',
                 content: 'Step Four Content (index 4)',
-                stepDuration: 1000,
+                stepDuration: 3000,
 
               },
               {
@@ -103,21 +103,22 @@ class Main extends React.Component {
                 element: '.step-5-element',
                 content: 'Step Five Content (index 5)',
                 ringWidth: '15px',
-                stepDuration: 1000,
+                margin: 4,
+                stepDuration: 3000,
 
               },
               {
                 title: 'STEP 6',
                 element: '.step-6-element',
                 content: 'Step Six Content (index 6)',
-                stepDuration: 1000,
+                stepDuration: 3000,
 
               },
               {
                 title: 'END',
                 element: '',
                 content: 'end page - no element (index 4)',
-                stepDuration: 1000,
+                stepDuration: 3000,
 
               },
             ]
@@ -230,11 +231,11 @@ class Main extends React.Component {
     let ASD = this.getStepData(STEP)
 
     //? This needs to check if active step is still the same as when it was called to prevent a different step from auto-progressing
-    if(ASD.stepDuration !== 0){
-      setTimeout(() => {
-        this.next()
-      }, ASD.stepDuration);
-    }
+    // if(ASD.stepDuration !== 0){
+    //   setTimeout(() => {
+    //     this.next()
+    //   }, ASD.stepDuration);
+    // }
     
     this.setState(prevState => {
       prevState.list.find(x => x.id === TOUR).currentStep = STEP
@@ -329,26 +330,52 @@ class Main extends React.Component {
 
 
   repeatUpdateGuideLocation(){
-    let newD = null
+    let newD = {}
     let ASD = null
+    let oldD = {}
+    // let limit = 10
 
     const loop = () => {
       ASD = this.getStepData()
       newD = _getLocation(ASD)
 
+      // if(
+      //      newD.E !== oldD.E
+      //   || newD.L !== oldD.L
+      //   || newD.T !== oldD.T
+      //   || newD.H !== oldD.H
+      //   || newD.W !== oldD.W
+      //   || newD.S !== oldD.S
+      //   || newD.WW !== oldD.WW
+      //   || newD.WH !== oldD.WH
+      // ){
+        oldD = newD
+        this.setState(prevState => {
+          prevState.location = newD
+          return prevState
+        })
+      // }
+      // limiting method---------------
+      // else if(limit === 0){
+      //   limit = 10
+      //   oldD = newD
+      //   this.setState(prevState => {
+      //     prevState.location = newD
+      //     return prevState
+      //   })
+
+      // }else{
+      //   limit--
+      // }
 
 
-      this.setState(prevState => {
-        prevState.location = newD
-        return prevState
-      })
     
 
 
 
       setTimeout(() => {
         loop()
-      }, 50);
+      }, 16);
     }
     loop()
   }

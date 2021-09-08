@@ -45,6 +45,8 @@ var _getLocation = function _getLocation(D) {
 
 
   var SCROLL_TOP = window.pageYOffset || (document.EL || document.body.parentNode || document.body).scrollTop;
+  var WINDOW_W = Math.floor(window.innerWidth);
+  var WINDOW_H = Math.floor(window.innerHeight);
 
   if (EL != null) {
     var EL_RECT = EL.getBoundingClientRect();
@@ -53,6 +55,9 @@ var _getLocation = function _getLocation(D) {
     LOC.T = Math.floor(EL_RECT.top + SCROLL_TOP - marg);
     LOC.H = Math.floor(EL_RECT.height + marg * 2);
     LOC.W = Math.floor(EL_RECT.width + marg * 2);
+    LOC.S = SCROLL_TOP;
+    LOC.WW = WINDOW_W;
+    LOC.WH = WINDOW_H;
   } else {
     LOC.E = false;
 
@@ -61,6 +66,9 @@ var _getLocation = function _getLocation(D) {
       LOC.W = 0;
       LOC.T = Math.floor(window.innerHeight / 2 + SCROLL_TOP);
       LOC.L = Math.floor(window.innerWidth / 2);
+      LOC.S = SCROLL_TOP;
+      LOC.WW = WINDOW_W;
+      LOC.WH = WINDOW_H;
     }
   }
 
