@@ -34,13 +34,14 @@ function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Sy
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var Collection = function Collection(props) {
+  // console.log('collection props', props)
   var D = {};
 
   if (!props.data) {
-    console.log('No data was found for collectoin!!!');
+    // console.log('Collection | No data was found for collection')
     return false;
   } else {
-    D = props.data;
+    D = props.data; // console.log('Collection | data:', D)
   }
 
   var LOC = props.loc;
@@ -83,7 +84,7 @@ var Collection = function Collection(props) {
 
   var updatePositions = function updatePositions() {
     _gsap["default"].to(referenceElement, {
-      duration: .8,
+      duration: D.duration,
       opacity: LOC.E ? 1 : 0,
       width: "".concat(LOC.W + parseInt(D.ringWidth) * 2, "px"),
       height: "".concat(LOC.H + parseInt(D.ringWidth) * 2, "px"),

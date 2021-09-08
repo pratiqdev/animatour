@@ -5,12 +5,15 @@ import gsap from 'gsap'
 
 const Collection = props => {
 
+    // console.log('collection props', props)
+
     let D = {}
     if(!props.data){
-        console.log('No data was found for collectoin!!!')
+        // console.log('Collection | No data was found for collection')
         return false
     }else{
         D = props.data
+        // console.log('Collection | data:', D)
     }
 
 
@@ -45,7 +48,7 @@ const Collection = props => {
     const updatePositions = () => {
 
         gsap.to(referenceElement, {
-            duration: .8, 
+            duration: D.duration, 
             opacity: LOC.E ? 1 : 0,
             width:`${LOC.W + (parseInt(D.ringWidth) * 2)}px`, 
             height: `${LOC.H + (parseInt(D.ringWidth) * 2)}px`, 

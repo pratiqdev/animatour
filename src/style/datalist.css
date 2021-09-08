@@ -1,0 +1,19 @@
+.datalist{
+    position: fixed;
+    display: block;
+    padding: 1rem;
+    left: 0px;
+    top: 2rem;
+    width: 25rem;
+    transform: translateX(-24.5rem);
+    background: #222;
+    color: #fff;
+    font-size: .6rem;
+    transition:  .5s;
+    opacity: .2;
+
+}
+.datalist:hover{
+    transform: translateX(0rem);
+    opacity: .9;
+}

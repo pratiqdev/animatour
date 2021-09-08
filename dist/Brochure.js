@@ -23,6 +23,8 @@ var _scrollToElement2 = _interopRequireDefault(require("./utils/scrollToElement"
 
 var _createSteps2 = _interopRequireDefault(require("./utils/createSteps"));
 
+var _DataList = _interopRequireDefault(require("./ui/DataList"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -64,7 +66,9 @@ var ogDefaultSettings = {
   /// (ms) 0 means do not auto progress to next step 
   exitLabel: 'Exit',
   nextLabel: '>',
-  prevLabel: '<'
+  prevLabel: '<',
+  duration: '.8s' /// time it takes to move the ring
+
 };
 
 var Main = /*#__PURE__*/function (_React$Component) {
@@ -79,6 +83,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
 
     _this = _super.call(this, props);
     _this.state = {
+      perf: 0,
       defaultSettings: {
         ringColor: '#f00',
         ringWidth: '1px',
@@ -90,86 +95,16 @@ var Main = /*#__PURE__*/function (_React$Component) {
         stepDuration: 0,
         exitLabel: 'Exit',
         nextLabel: '>',
-        prevLabel: '<'
+        prevLabel: '<',
+        duration: .8
       },
       mainProps: props,
-      activeTour: 'Default Tour',
-      activeStepData: {},
+      activeTour: false,
+      activeStepData: false,
       guideOpen: false,
-      location: null,
+      location: false,
       brochureAlignment: ['top-left', 'left-top'],
-      list: [{
-        id: 'Default Tour',
-        currentStep: 0,
-        brochureType: 1,
-        steps: [{
-          title: 'START',
-          element: '',
-          content: 'start page - no element (index 0)',
-          stepDuration: 3000
-        }, {
-          title: 'STEP 1',
-          element: '.step-1-element',
-          content: 'Step One content (index 1)',
-          margin: 0,
-          ringColor: '#ffa',
-          stepDuration: 3000
-        }, {
-          title: 'STEP 2',
-          element: '.step-2-element',
-          content: 'Step Two Content (index 2)',
-          margin: 10,
-          ringColor: 'green',
-          ringWidth: '8px',
-          stepDuration: 3000
-        }, {
-          title: 'STEP 3',
-          element: '.step-3-element',
-          content: 'Step Three Content (index 3)',
-          margin: 20,
-          ringColor: 'blue',
-          stepDuration: 3000
-        }, {
-          title: 'STEP 4',
-          element: '.step-4-element',
-          content: 'Step Four Content (index 4)',
-          stepDuration: 3000
-        }, {
-          title: 'STEP 5',
-          element: '.step-5-element',
-          content: 'Step Five Content (index 5)',
-          ringWidth: '15px',
-          margin: 4,
-          stepDuration: 3000
-        }, {
-          title: 'STEP 6',
-          element: '.step-6-element',
-          content: 'Step Six Content (index 6)',
-          stepDuration: 3000
-        }, {
-          title: 'END',
-          element: '',
-          content: 'end page - no element (index 4)',
-          stepDuration: 3000
-        }]
-      }, {
-        id: 'Tour Two',
-        currentStep: 0,
-        brochureType: 1,
-        steps: [{
-          title: 'STEP 0',
-          element: '.step-0-element',
-          content: 'Step Zero Content'
-        }, {
-          title: 'STEP 1',
-          element: '.step-1-element',
-          content: 'Step One Content'
-        }, {
-          title: 'STEP 2',
-          element: '.step-2-element',
-          content: 'Step Two Content'
-        }]
-      }]
+      list: []
     };
     return _this;
   } //- Utilities ----------------------------------------------------------------------------------------------------------------------------
@@ -179,12 +114,16 @@ var Main = /*#__PURE__*/function (_React$Component) {
     key: "useTourOrActive",
     value: function useTourOrActive(tourId) {
       if (tourId) {
-        if (this.state.list.find(function (x) {
+        if (!this.state.list.find(function (x) {
           return x.id === tourId;
-        }) === false) {
-          _shout["default"].warn("No tour was found as '".concat(tourId, "'. Using currently active tour instead"));
+        })) {
+          _shout["default"].warn("useTourOrActive() | No tour was found as '".concat(tourId, "'. Using currently active tour instead"));
 
-          return this.state.activeTour;
+          if (this.state.activeTour) {
+            return this.state.activeTour;
+          } else {
+            _shout["default"].warn("useTourOrActive() | No tour was found as '".concat(tourId, "' and no active tour to use"));
+          }
         } else {
           return tourId;
         }
@@ -199,7 +138,8 @@ var Main = /*#__PURE__*/function (_React$Component) {
         if (typeof this.state.list.find(function (x) {
           return x.id === tourId;
         }) === 'undefined') {
-          // shout.warn( `No tour was found as '${tourId}'. Using currently active tour instead`)
+          _shout["default"].warn("verifyTourExists() | No tour was found as '".concat(tourId, "'"));
+
           return false;
         } else {
           return true;
@@ -224,6 +164,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
       this.setState({
         list: LIST
       });
+      console.log("tour added: ".concat(tourId), LIST);
     }
   }, {
     key: "getAllTours",
@@ -335,11 +276,27 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "open",
     value: function open(tourId) {
+      var _this2 = this;
+
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       var useTour = this.useTourOrActive(tourId);
+      console.log("open('".concat(useTour, "')")); /// used as callback for setState function
+
+      var setActiveStepData = function setActiveStepData() {
+        var ASD = _this2.getStepData();
+
+        console.log('open() - ASD', ASD);
+
+        _this2.setState({
+          activeStepData: ASD
+        });
+      };
+
       this.setState({
         guideOpen: true,
         activeTour: useTour
+      }, function () {
+        return setActiveStepData();
       });
     }
   }, {
@@ -360,11 +317,33 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "getStepData",
     value: function getStepData(STEP) {
+      var _this$state$list$find,
+          _this$state$list$find2,
+          _this3 = this,
+          _findStep,
+          _findStep2,
+          _findStep3,
+          _findStep4,
+          _findStep5,
+          _findStep6,
+          _findStep7,
+          _findStep8,
+          _findStep9,
+          _findStep10,
+          _findStep11,
+          _findStep12;
+
       var D = {};
+
+      if (this.state.activeTour == false || this.state.activeTour == null || this.state.activeTour === '') {
+        // console.log(`getStepData() | no active tour found`)
+        return false;
+      }
+
       D.tour = this.state.activeTour;
-      D.totalSteps = this.state.list.find(function (x) {
+      D.totalSteps = ((_this$state$list$find = this.state.list.find(function (x) {
         return x.id === D.tour;
-      }).steps.length; /// if step is not specified - find the current step
+      })) === null || _this$state$list$find === void 0 ? void 0 : (_this$state$list$find2 = _this$state$list$find.steps) === null || _this$state$list$find2 === void 0 ? void 0 : _this$state$list$find2.length) || 0; /// if step is not specified - find the current step
 
       if (typeof STEP === 'number' && STEP >= 0 && STEP <= D.totalSteps) {
         D.step = STEP;
@@ -374,78 +353,58 @@ var Main = /*#__PURE__*/function (_React$Component) {
         }).currentStep;
       }
 
-      D.element = this.state.list.find(function (x) {
-        return x.id === D.tour;
-      }).steps[D.step].element;
-      D.margin = this.state.list.find(function (x) {
-        return x.id === D.tour;
-      }).steps[D.step].margin || this.state.defaultSettings.guideMargin;
-      D.ringColor = this.state.list.find(function (x) {
-        return x.id === D.tour;
-      }).steps[D.step].ringColor || this.state.defaultSettings.ringColor;
-      D.ringWidth = this.state.list.find(function (x) {
-        return x.id === D.tour;
-      }).steps[D.step].ringWidth || this.state.defaultSettings.ringWidth;
-      D.exitLabel = this.state.list.find(function (x) {
-        return x.id === D.tour;
-      }).steps[D.step].exitLabel || this.state.defaultSettings.exitLabel;
-      D.nextLabel = this.state.list.find(function (x) {
-        return x.id === D.tour;
-      }).steps[D.step].nextLabel || this.state.defaultSettings.nextLabel;
-      D.prevLabel = this.state.list.find(function (x) {
-        return x.id === D.tour;
-      }).steps[D.step].prevLabel || this.state.defaultSettings.prevLabel;
-      D.brochureType = this.state.list.find(function (x) {
-        return x.id === D.tour;
-      }).steps[D.step].brochureType || this.state.defaultSettings.brochureType;
-      D.stepDuration = this.state.list.find(function (x) {
-        return x.id === D.tour;
-      }).steps[D.step].stepDuration || this.state.defaultSettings.stepDuration;
-      D.title = this.state.list.find(function (x) {
-        return x.id === D.tour;
-      }).steps[D.step].title || "Step ".concat(D.step);
-      D.content = this.state.list.find(function (x) {
-        return x.id === D.tour;
-      }).steps[D.step].title || "";
+      var findStep = function findStep(t, s) {
+        var _this3$state$list$fin;
+
+        return (_this3$state$list$fin = _this3.state.list.find(function (x) {
+          return x.id === t;
+        })) === null || _this3$state$list$fin === void 0 ? void 0 : _this3$state$list$fin.steps[s];
+      };
+
+      D.element = (_findStep = findStep(D.tour, D.step)) === null || _findStep === void 0 ? void 0 : _findStep.element;
+      D.margin = ((_findStep2 = findStep(D.tour, D.step)) === null || _findStep2 === void 0 ? void 0 : _findStep2.margin) || this.state.defaultSettings.guideMargin;
+      D.ringColor = ((_findStep3 = findStep(D.tour, D.step)) === null || _findStep3 === void 0 ? void 0 : _findStep3.ringColor) || this.state.defaultSettings.ringColor;
+      D.ringWidth = ((_findStep4 = findStep(D.tour, D.step)) === null || _findStep4 === void 0 ? void 0 : _findStep4.ringWidth) || this.state.defaultSettings.ringWidth;
+      D.exitLabel = ((_findStep5 = findStep(D.tour, D.step)) === null || _findStep5 === void 0 ? void 0 : _findStep5.exitLabel) || this.state.defaultSettings.exitLabel;
+      D.nextLabel = ((_findStep6 = findStep(D.tour, D.step)) === null || _findStep6 === void 0 ? void 0 : _findStep6.nextLabel) || this.state.defaultSettings.nextLabel;
+      D.prevLabel = ((_findStep7 = findStep(D.tour, D.step)) === null || _findStep7 === void 0 ? void 0 : _findStep7.prevLabel) || this.state.defaultSettings.prevLabel;
+      D.brochureType = ((_findStep8 = findStep(D.tour, D.step)) === null || _findStep8 === void 0 ? void 0 : _findStep8.brochureType) || this.state.defaultSettings.brochureType;
+      D.stepDuration = ((_findStep9 = findStep(D.tour, D.step)) === null || _findStep9 === void 0 ? void 0 : _findStep9.stepDuration) || this.state.defaultSettings.stepDuration;
+      D.duration = ((_findStep10 = findStep(D.tour, D.step)) === null || _findStep10 === void 0 ? void 0 : _findStep10.duration) || this.state.defaultSettings.duration;
+      D.title = ((_findStep11 = findStep(D.tour, D.step)) === null || _findStep11 === void 0 ? void 0 : _findStep11.title) || "Step ".concat(D.step);
+      D.content = ((_findStep12 = findStep(D.tour, D.step)) === null || _findStep12 === void 0 ? void 0 : _findStep12.content) || "";
       return D;
     }
   }, {
     key: "repeatUpdateGuideLocation",
     value: function repeatUpdateGuideLocation() {
-      var _this2 = this;
+      var _this4 = this;
 
       var newD = {};
       var ASD = null;
-      var oldD = {};
-      var limit = 10;
 
       var loop = function loop() {
-        ASD = _this2.getStepData();
-        newD = (0, _getLocation2["default"])(ASD);
+        var t0 = performance.now();
+        ASD = _this4.getStepData();
 
-        if (newD.E !== oldD.E || newD.L !== oldD.L || newD.T !== oldD.T || newD.H !== oldD.H || newD.W !== oldD.W || newD.S !== oldD.S || newD.WW !== oldD.WW || newD.WH !== oldD.WH) {
-          oldD = newD;
+        if (ASD) {
+          newD = (0, _getLocation2["default"])(ASD);
 
-          _this2.setState(function (prevState) {
+          _this4.setState(function (prevState) {
             prevState.location = newD;
             return prevState;
           });
-        } // limiting method---------------
-        // else if(limit === 0){
-        //   limit = 10
-        //   oldD = newD
-        //   this.setState(prevState => {
-        //     prevState.location = newD
-        //     return prevState
-        //   })
-        // }else{
-        //   limit--
-        // }
-
+        }
 
         setTimeout(function () {
+          var t1 = performance.now();
+
+          _this4.setState({
+            perf: t1 - t0
+          });
+
           loop();
-        }, 16);
+        }, 10);
       };
 
       loop();
@@ -462,11 +421,21 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      return /*#__PURE__*/_react["default"].createElement(_Collection["default"], {
+      return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", {
+        style: {
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          background: '#9f9',
+          padding: '5px',
+          width: '2rem',
+          zIndex: '9999999'
+        }
+      }, this.state.perf), /*#__PURE__*/_react["default"].createElement(_Collection["default"], {
         data: this.state.activeStepData,
         open: this.state.guideOpen,
         loc: this.state.location
-      });
+      }));
     }
   }]);
 

@@ -10,6 +10,7 @@ import _getLocation from './utils/getLocation'
 import _scrollToElement from './utils/scrollToElement'
 import _createSteps from './utils/createSteps'
 
+import DataList from './ui/DataList'
 
 const ogDefaultSettings = {
   ringColor: '#f00',
@@ -25,6 +26,8 @@ const ogDefaultSettings = {
   exitLabel: 'Exit',
   nextLabel: '>',
   prevLabel: '<',
+
+  duration: '.8s', /// time it takes to move the ring
 }
 
 
@@ -32,6 +35,7 @@ class Main extends React.Component {
   constructor(props){
     super(props)
     this.state = {
+      perf: 0,
       defaultSettings: {
         ringColor: '#f00',
         ringWidth: '1px',
@@ -44,118 +48,29 @@ class Main extends React.Component {
         exitLabel: 'Exit',
         nextLabel: '>',
         prevLabel: '<',
+        duration: .8,
       },
       mainProps: props,
-      activeTour: 'Default Tour',
-      activeStepData: {},
+      activeTour: false,
+      activeStepData: false,
       guideOpen: false,
-      location: null,
+      location: false,
       brochureAlignment: ['top-left', 'left-top'],
 
-      list:[
-        {
-          id: 'Default Tour',
-          currentStep: 0,
-          brochureType: 1,
-          steps:[
-              {
-                title: 'START',
-                element: '',
-                content: 'start page - no element (index 0)',
-                stepDuration: 3000,
-              },
-              {
-                title: 'STEP 1',
-                element: '.step-1-element',
-                content: 'Step One content (index 1)',
-                margin: 0,
-                ringColor: '#ffa',
-                stepDuration: 3000,
-              },
-              {
-                title: 'STEP 2',
-                element: '.step-2-element',
-                content: 'Step Two Content (index 2)',
-                margin: 10,
-                ringColor: 'green',
-                ringWidth: '8px',
-                stepDuration: 3000,
-
-              },
-              {
-                title: 'STEP 3',
-                element: '.step-3-element',
-                content: 'Step Three Content (index 3)',
-                margin: 20,
-                ringColor: 'blue',
-                stepDuration: 3000,
-
-              },
-              {
-                title: 'STEP 4',
-                element: '.step-4-element',
-                content: 'Step Four Content (index 4)',
-                stepDuration: 3000,
-
-              },
-              {
-                title: 'STEP 5',
-                element: '.step-5-element',
-                content: 'Step Five Content (index 5)',
-                ringWidth: '15px',
-                margin: 4,
-                stepDuration: 3000,
-
-              },
-              {
-                title: 'STEP 6',
-                element: '.step-6-element',
-                content: 'Step Six Content (index 6)',
-                stepDuration: 3000,
-
-              },
-              {
-                title: 'END',
-                element: '',
-                content: 'end page - no element (index 4)',
-                stepDuration: 3000,
-
-              },
-            ]
-        },
-        {
-          id: 'Tour Two',
-          currentStep: 0,
-          brochureType: 1,
-          steps:[
-              {
-                title: 'STEP 0',
-                element: '.step-0-element',
-                content: 'Step Zero Content'
-              },
-              {
-                title: 'STEP 1',
-                element: '.step-1-element',
-                content: 'Step One Content'
-              },
-              {
-                title: 'STEP 2',
-                element: '.step-2-element',
-                content: 'Step Two Content'
-            }
-          ]
-        },
-        
-      ]
+      list:[]
     }
   }
 
   //- Utilities ----------------------------------------------------------------------------------------------------------------------------
   useTourOrActive(tourId){
     if(tourId){
-      if(this.state.list.find(x=>x.id === tourId) === false){
-        shout.warn(`No tour was found as '${tourId}'. Using currently active tour instead`)
-        return this.state.activeTour
+      if(!this.state.list.find(x=>x.id === tourId)){
+        shout.warn(`useTourOrActive() | No tour was found as '${tourId}'. Using currently active tour instead`)
+        if(this.state.activeTour){
+          return this.state.activeTour
+        }else{
+          shout.warn(`useTourOrActive() | No tour was found as '${tourId}' and no active tour to use`)
+        }
       }else{
         return tourId
       }
@@ -167,7 +82,7 @@ class Main extends React.Component {
   verifyTourExists(tourId){
     if(tourId){
       if(typeof this.state.list.find(x=>x.id === tourId) === 'undefined'){
-        // shout.warn( `No tour was found as '${tourId}'. Using currently active tour instead`)
+        shout.warn( `verifyTourExists() | No tour was found as '${tourId}'`)
         return false
       }else{
         return true
@@ -188,6 +103,7 @@ class Main extends React.Component {
     let LIST = this.state.list
     LIST.push( new Tour(tourId, config) )
     this.setState({list: LIST})
+    console.log(`tour added: ${tourId}`, LIST)
   }
 
   getAllTours(){ ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -278,7 +194,18 @@ class Main extends React.Component {
   //- Brochure -----------------------------------------------------------------------------------------------------------------------------
   open (tourId){////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     let useTour = this.useTourOrActive(tourId)
-    this.setState({guideOpen: true, activeTour: useTour})
+    console.log(`open('${useTour}')`)
+
+    /// used as callback for setState function
+    const setActiveStepData = () => {
+      let ASD = this.getStepData()
+      console.log('open() - ASD', ASD)
+      this.setState({ activeStepData: ASD })
+
+    }
+
+    this.setState({guideOpen: true, activeTour: useTour}, ()=> setActiveStepData())
+    
   }
 
   close (){/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -294,88 +221,79 @@ class Main extends React.Component {
 
   getStepData(STEP){
     let D = {}
-    D.tour = this.state.activeTour
-    D.totalSteps = this.state.list.find(x=>x.id === D.tour).steps.length
+    
+    if(this.state.activeTour == false || this.state.activeTour == null || this.state.activeTour === ''){
+      // console.log(`getStepData() | no active tour found`)
+      return false
+    }
 
+    D.tour = this.state.activeTour
+
+
+
+    D.totalSteps = this.state.list.find(x=>x.id === D.tour)?.steps?.length || 0
+    
     /// if step is not specified - find the current step
     if(typeof STEP === 'number' && STEP >= 0 && STEP <= D.totalSteps){
       D.step = STEP
     }else{
       D.step = this.state.list.find(x=>x.id === D.tour).currentStep
     }
+    
 
 
-    D.element = this.state.list.find(x=>x.id === D.tour).steps[D.step].element
-    D.margin = this.state.list.find(x=>x.id === D.tour).steps[D.step].margin                  || this.state.defaultSettings.guideMargin
-    D.ringColor = this.state.list.find(x=>x.id === D.tour).steps[D.step].ringColor            || this.state.defaultSettings.ringColor
-    D.ringWidth = this.state.list.find(x=>x.id === D.tour).steps[D.step].ringWidth            || this.state.defaultSettings.ringWidth
-
-    D.exitLabel = this.state.list.find(x=>x.id === D.tour).steps[D.step].exitLabel            || this.state.defaultSettings.exitLabel
-    D.nextLabel = this.state.list.find(x=>x.id === D.tour).steps[D.step].nextLabel            || this.state.defaultSettings.nextLabel
-    D.prevLabel = this.state.list.find(x=>x.id === D.tour).steps[D.step].prevLabel            || this.state.defaultSettings.prevLabel
+    const findStep = (t, s) => this.state.list.find(x=>x.id === t)?.steps[s]
 
 
-    D.brochureType = this.state.list.find(x=>x.id === D.tour).steps[D.step].brochureType      || this.state.defaultSettings.brochureType
-    D.stepDuration = this.state.list.find(x=>x.id === D.tour).steps[D.step].stepDuration      || this.state.defaultSettings.stepDuration
+    D.element       = findStep(D.tour, D.step)?.element
+    D.margin        = findStep(D.tour, D.step)?.margin             || this.state.defaultSettings.guideMargin
+    D.ringColor     = findStep(D.tour, D.step)?.ringColor          || this.state.defaultSettings.ringColor
+    D.ringWidth     = findStep(D.tour, D.step)?.ringWidth          || this.state.defaultSettings.ringWidth
+
+    D.exitLabel     = findStep(D.tour, D.step)?.exitLabel          || this.state.defaultSettings.exitLabel
+    D.nextLabel     = findStep(D.tour, D.step)?.nextLabel          || this.state.defaultSettings.nextLabel
+    D.prevLabel     = findStep(D.tour, D.step)?.prevLabel          || this.state.defaultSettings.prevLabel
 
 
-    D.title = this.state.list.find(x=>x.id === D.tour).steps[D.step].title                    || `Step ${D.step}`
-    D.content = this.state.list.find(x=>x.id === D.tour).steps[D.step].title                  || ``
+    D.brochureType  = findStep(D.tour, D.step)?.brochureType       || this.state.defaultSettings.brochureType
+    D.stepDuration  = findStep(D.tour, D.step)?.stepDuration       || this.state.defaultSettings.stepDuration
+    D.duration      = findStep(D.tour, D.step)?.duration           || this.state.defaultSettings.duration
+
+
+    D.title         = findStep(D.tour, D.step)?.title              || `Step ${D.step}`
+    D.content       = findStep(D.tour, D.step)?.content            || ``
 
 
 
     return D
   }
 
+  
+
 
 
   repeatUpdateGuideLocation(){
     let newD = {}
     let ASD = null
-    let oldD = {}
-    // let limit = 10
 
     const loop = () => {
+      const t0 = performance.now()
       ASD = this.getStepData()
-      newD = _getLocation(ASD)
-
-      // if(
-      //      newD.E !== oldD.E
-      //   || newD.L !== oldD.L
-      //   || newD.T !== oldD.T
-      //   || newD.H !== oldD.H
-      //   || newD.W !== oldD.W
-      //   || newD.S !== oldD.S
-      //   || newD.WW !== oldD.WW
-      //   || newD.WH !== oldD.WH
-      // ){
-        oldD = newD
+      if(ASD){
+        newD = _getLocation(ASD)
         this.setState(prevState => {
           prevState.location = newD
           return prevState
         })
-      // }
-      // limiting method---------------
-      // else if(limit === 0){
-      //   limit = 10
-      //   oldD = newD
-      //   this.setState(prevState => {
-      //     prevState.location = newD
-      //     return prevState
-      //   })
-
-      // }else{
-      //   limit--
-      // }
-
-
-    
-
-
+      }
 
       setTimeout(() => {
+        
+        const t1 = performance.now()
+        this.setState({perf: t1 - t0})
         loop()
-      }, 16);
+
+      }, 10);
     }
     loop()
   }
@@ -408,11 +326,17 @@ class Main extends React.Component {
   // Rest of the component's code
   render(){
     return(
+      <>
+
+      <div style={{position: 'fixed', top: '0', left: '0', background: '#9f9', padding: '5px', width: '2rem', zIndex: '9999999'}}>{this.state.perf}</div>
+      {/* <DataList data={this.state} /> */}
+
       <Collection
       data={this.state.activeStepData}
       open={this.state.guideOpen}
       loc={this.state.location}
       />
+      </>
     )
   }
 };

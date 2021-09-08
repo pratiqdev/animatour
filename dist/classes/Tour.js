@@ -45,12 +45,12 @@ var Tour = function Tour(tourId, x) {
     _shout["default"].warn("newTour({currentStep: ".concat(x.currentStep, "}) \n 'currentStep' was less than 0 \n defaulting to 0 (first step)"));
 
     this.currentStep = 0;
-  }
-
-  if (x.currentStep > this.steps.length - 1) {
+  } else if (x.currentStep > this.steps.length - 1) {
     _shout["default"].warn("newTour() - currentStep \n currentStep was greater than the number of steps \n defaulting to ".concat(this.steps.length - 1, " (last step)"));
 
     this.currentStep = this.steps.length - 1;
+  } else {
+    this.currentStep = x.currentStep;
   }
 };
 
