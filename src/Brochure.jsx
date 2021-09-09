@@ -49,6 +49,7 @@ class Main extends React.Component {
         nextLabel: '>',
         prevLabel: '<',
         duration: .8,
+        guideOrigin: 'center-center',
       },
       mainProps: props,
       activeTour: false,
@@ -61,7 +62,8 @@ class Main extends React.Component {
     }
   }
 
-  //- Utilities ----------------------------------------------------------------------------------------------------------------------------
+  //= Utilities ----------------------------------------------------------------------------------------------------------------------------
+  /** return given tour if exists in list or the act */
   useTourOrActive(tourId){
     if(tourId){
       if(!this.state.list.find(x=>x.id === tourId)){
@@ -93,8 +95,19 @@ class Main extends React.Component {
     }
   }
   
+
+
+
+
+
+
+
+
+
+
+
   
-  //- Tours --------------------------------------------------------------------------------------------------------------------------------
+  //= Tours --------------------------------------------------------------------------------------------------------------------------------
   newTour(tourId, config){//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if(this.verifyTourExists(tourId)){
       shout.error(`newTour() \n A tour with the id '${tourId}' already exists`)
@@ -120,7 +133,22 @@ class Main extends React.Component {
     }
   }
 
-  //- Steps --------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //= Steps --------------------------------------------------------------------------------------------------------------------------------
   addSteps(tourId, newSteps){///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     STEPS = _createSteps(newSteps, this.state.list.find(x=>x.id===tourId).steps ) 
     
@@ -191,7 +219,17 @@ class Main extends React.Component {
 
   }
   
-  //- Brochure -----------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+  //= Brochure -----------------------------------------------------------------------------------------------------------------------------
   open (tourId){////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     let useTour = this.useTourOrActive(tourId)
     console.log(`open('${useTour}')`)
@@ -207,18 +245,28 @@ class Main extends React.Component {
     this.setState({guideOpen: true, activeTour: useTour}, ()=> setActiveStepData())
     
   }
-
   close (){/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     this.setState({guideOpen: false})
   }
 
-  //- Guide --------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+  //= Guide --------------------------------------------------------------------------------------------------------------------------------
   /** Get all data for active or given step
    * 
    * ***
    * this function handles setting a state object that contains all given step data or defaults if not provided.
    */
-
   getStepData(STEP){
     let D = {}
     
@@ -272,6 +320,28 @@ class Main extends React.Component {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   repeatUpdateGuideLocation(){
     let newD = {}
     let ASD = null
@@ -280,7 +350,7 @@ class Main extends React.Component {
       const t0 = performance.now()
       ASD = this.getStepData()
       if(ASD){
-        newD = _getLocation(ASD)
+        newD = _getLocation(ASD, this.state.defaultSettings.guideOrigin)
         this.setState(prevState => {
           prevState.location = newD
           return prevState
@@ -298,30 +368,10 @@ class Main extends React.Component {
     loop()
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   componentDidMount(){
     this.repeatUpdateGuideLocation()
     this.setState({activeStepData: this.getStepData()})
   }
-
-
-
     
   // Rest of the component's code
   render(){
@@ -349,3 +399,17 @@ const Brochure = (props) => {
 
   
 export default Brochure
+
+
+
+//! BROKEN FUNCTIONS -----------------------------------------------------------------------------------------------------------------------
+//! 'useTourOrActive()' has fatal flaw - if given tour does not exist and active tour is not found - what should the function return??
+
+
+//- TODO -----------------------------------------------------------------------------------------------------------------------------------
+//- create functions to update 'defaultSettings'
+//- create function to revert 'defaultSettings' to 'ogDefaultSettings'
+
+
+//? QUESTIONS ------------------------------------------------------------------------------------------------------------------------------
+//? 

@@ -25,6 +25,10 @@
  */
 
 const _getLocation = (D) => {
+    
+    //- TODO:
+    //- write some code to convert general location of 'guideOrigin' to an actual location on screen
+    //- then use that location as the backup if the element is not found
 
     const selector = D.element
     const margin = D.margin

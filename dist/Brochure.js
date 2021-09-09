@@ -376,6 +376,40 @@ var Main = /*#__PURE__*/function (_React$Component) {
       return D;
     }
   }, {
+    key: "setGuideOrigin",
+    value: function setGuideOrigin() {
+      // let SCROLL_TOP = 0 
+      // let WINDOW_W = 0
+      // let WINDOW_H = 0
+      // if(window){
+      //   SCROLL_TOP = window.pageYOffset || (document.EL || document.body.parentNode || document.body).scrollTop
+      //   WINDOW_W = Math.floor(window.innerWidth)
+      //   WINDOW_H = Math.floor(window.innerHeight)
+      //   this.setState({location: {
+      //     E: false,
+      //     H: 0,
+      //     W: 0, 
+      //     T: Math.floor((window.innerHeight / 2) + SCROLL_TOP),
+      //     L: Math.floor(window.innerWidth / 2),
+      //     S: SCROLL_TOP,
+      //     WW: WINDOW_W,
+      //     WH: WINDOW_H,
+      //   }})
+      // }
+      this.setState({
+        location: {
+          E: true,
+          H: 0,
+          W: 0,
+          T: 5000,
+          L: 5000,
+          S: 0,
+          WW: 0,
+          WH: 0
+        }
+      });
+    }
+  }, {
     key: "repeatUpdateGuideLocation",
     value: function repeatUpdateGuideLocation() {
       var _this4 = this;
@@ -412,6 +446,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
+      this.setGuideOrigin();
       this.repeatUpdateGuideLocation();
       this.setState({
         activeStepData: this.getStepData()
