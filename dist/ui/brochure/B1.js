@@ -49,7 +49,7 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
     }
   };
   var s = {
-    container: _objectSpread({
+    container: _objectSpread(_objectSpread({}, props.pass_style), {}, {
       boxSizing: 'border-box',
       zIndex: '10001',
       // margin: theme.spacing[3],
@@ -58,8 +58,10 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
       // maxWidth: theme.maxWidth,
       // minWidth: theme.minWidth,
       // fontSize:theme.fontSize[1],
-      position: 'fixed'
-    }, props.pass_style),
+      position: props.loc.E ? 'absolute' : 'fixed' //! if using 'fixed' - remove SCROLL_TOP from _getLocation()
+      // transition: '.5s', /// causes popper to start from 0,0 and animate to position
+
+    }),
     header: {
       fontSize: theme.fontSize[2],
       borderBottom: border.secondary.type,

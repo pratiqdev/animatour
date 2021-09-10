@@ -33,6 +33,7 @@ const B1 = React.forwardRef((props, ref) => {
   }
   const s = {
     container:{
+      ...props.pass_style,
       boxSizing: 'border-box',
       zIndex: '10001',
       // margin: theme.spacing[3],
@@ -41,9 +42,8 @@ const B1 = React.forwardRef((props, ref) => {
       // maxWidth: theme.maxWidth,
       // minWidth: theme.minWidth,
       // fontSize:theme.fontSize[1],
-      position: 'fixed',
+      position: props.loc.E ? 'absolute' : 'fixed', //! if using 'fixed' - remove SCROLL_TOP from _getLocation()
       // transition: '.5s', /// causes popper to start from 0,0 and animate to position
-      ...props.pass_style,
     },
     header:{
       fontSize:theme.fontSize[2],

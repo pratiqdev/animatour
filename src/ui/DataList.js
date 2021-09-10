@@ -4,13 +4,13 @@ import '../style/datalist.css'
 
 const DataList = ({data}) => {
 
-    let dataset = []
+    // let dataset = []
 
-    for (const [key, value] of Object.entries(data)) {
-        if(key !== 'defaultSettings' && key !== 'mainProps'){
-            dataset.push(`${key}: ${value}`)
-        }
-    }
+    // for (const [key, value] of Object.entries(data)) {
+    //     if(key !== 'defaultSettings' && key !== 'mainProps'){
+    //         dataset.push(`${key}: ${value}`)
+    //     }
+    // }
 
     return(
 
@@ -32,8 +32,8 @@ const DataList = ({data}) => {
                 </tr>
 
                 <tr>
-                    <td>Step</td>
-                    <td>{data.activeStepData.step}</td>
+                    <td>element</td>
+                    <td>{data.activeStepData.element}</td>
                 </tr>
                 </tbody>
             </table>
@@ -43,8 +43,11 @@ const DataList = ({data}) => {
             }
             <hr />
             <h4>State</h4>
-            <br />
-            {dataset.map(x=><div>{x}</div>)}
+            <p>Guide open: {data.guideOpen ? 'true' : 'false'}</p>
+            <p>T: {data.location ? data.location.T : 'none'}</p>
+            <p>L: {data.location ? data.location.L : 'none'}</p>
+            {/* <br /> */}
+            {/* {dataset.map(x=><div>{x}</div>)} */}
 
         </div>
     )

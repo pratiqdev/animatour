@@ -53,6 +53,8 @@ var _getLocation = function _getLocation(D) {
     LOC.E = true;
     LOC.L = Math.floor(EL_RECT.left - marg);
     LOC.T = Math.floor(EL_RECT.top + SCROLL_TOP - marg);
+    LOC.T_F = Math.floor(EL_RECT.top - marg); //! for fixed position brochure
+
     LOC.H = Math.floor(EL_RECT.height + marg * 2);
     LOC.W = Math.floor(EL_RECT.width + marg * 2);
     LOC.S = SCROLL_TOP;
@@ -63,8 +65,10 @@ var _getLocation = function _getLocation(D) {
 
     if (window) {
       LOC.H = 0;
-      LOC.W = 0;
-      LOC.T = Math.floor(window.innerHeight / 2 + SCROLL_TOP);
+      LOC.W = 0; // LOC.T = Math.floor((window.innerHeight / 2) + SCROLL_TOP) 
+
+      LOC.T = Math.floor(window.innerHeight / 2); //! ignoring scroll top here to allow fixed position of brochure and smoother scrolling
+
       LOC.L = Math.floor(window.innerWidth / 2);
       LOC.S = SCROLL_TOP;
       LOC.WW = WINDOW_W;

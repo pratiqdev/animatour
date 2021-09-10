@@ -93,7 +93,7 @@ const Collection = props => {
 
 
 
-            <B.B1 ref={setPopperElement} open={props.open} pass_style={styles.popper} data={props.data} >
+            <B.B1 ref={setPopperElement} open={props.open} pass_style={styles.popper} data={props.data} loc={props.loc}>
                 <div ref={setArrowElement} style={styles.arrow} />
             </B.B1>
         </>

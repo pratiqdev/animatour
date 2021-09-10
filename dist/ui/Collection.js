@@ -117,7 +117,8 @@ var Collection = function Collection(props) {
     ref: setPopperElement,
     open: props.open,
     pass_style: styles.popper,
-    data: props.data
+    data: props.data,
+    loc: props.loc
   }, /*#__PURE__*/_react["default"].createElement("div", {
     ref: setArrowElement,
     style: styles.arrow

@@ -232,12 +232,12 @@ class Main extends React.Component {
   //= Brochure -----------------------------------------------------------------------------------------------------------------------------
   open (tourId){////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     let useTour = this.useTourOrActive(tourId)
-    console.log(`open('${useTour}')`)
+    /// console.log(`open('${useTour}')`)
 
-    /// used as callback for setState function
+    // used as callback for setState function
     const setActiveStepData = () => {
       let ASD = this.getStepData()
-      console.log('open() - ASD', ASD)
+      ///console.log('open() - ASD', ASD)
       this.setState({ activeStepData: ASD })
 
     }
@@ -350,7 +350,7 @@ class Main extends React.Component {
       const t0 = performance.now()
       ASD = this.getStepData()
       if(ASD){
-        newD = _getLocation(ASD, this.state.defaultSettings.guideOrigin)
+        newD = _getLocation(ASD)
         this.setState(prevState => {
           prevState.location = newD
           return prevState
@@ -370,7 +370,7 @@ class Main extends React.Component {
 
   componentDidMount(){
     this.repeatUpdateGuideLocation()
-    this.setState({activeStepData: this.getStepData()})
+    this.setState({activeStepData: this.getStepData(), location: _getLocation()})
   }
     
   // Rest of the component's code
@@ -379,7 +379,7 @@ class Main extends React.Component {
       <>
 
       <div style={{position: 'fixed', top: '0', left: '0', background: '#9f9', padding: '5px', width: '2rem', zIndex: '9999999'}}>{this.state.perf}</div>
-      {/* <DataList data={this.state} /> */}
+      <DataList data={this.state} />
 
       <Collection
       data={this.state.activeStepData}

@@ -96,7 +96,8 @@ var Main = /*#__PURE__*/function (_React$Component) {
         exitLabel: 'Exit',
         nextLabel: '>',
         prevLabel: '<',
-        duration: .8
+        duration: .8,
+        guideOrigin: 'center-center'
       },
       mainProps: props,
       activeTour: false,
@@ -107,7 +108,9 @@ var Main = /*#__PURE__*/function (_React$Component) {
       list: []
     };
     return _this;
-  } //- Utilities ----------------------------------------------------------------------------------------------------------------------------
+  } //= Utilities ----------------------------------------------------------------------------------------------------------------------------
+
+  /** return given tour if exists in list or the act */
 
 
   _createClass(Main, [{
@@ -147,7 +150,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
       } else {
         return false;
       }
-    } //- Tours --------------------------------------------------------------------------------------------------------------------------------
+    } //= Tours --------------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "newTour",
@@ -186,7 +189,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
       } else {
         return TOUR;
       }
-    } //- Steps --------------------------------------------------------------------------------------------------------------------------------
+    } //= Steps --------------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "addSteps",
@@ -271,7 +274,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
         return prevState;
       });
       (0, _scrollToElement2["default"])(ELEMENT);
-    } //- Brochure -----------------------------------------------------------------------------------------------------------------------------
+    } //= Brochure -----------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "open",
@@ -279,13 +282,12 @@ var Main = /*#__PURE__*/function (_React$Component) {
       var _this2 = this;
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      var useTour = this.useTourOrActive(tourId);
-      console.log("open('".concat(useTour, "')")); /// used as callback for setState function
+      var useTour = this.useTourOrActive(tourId); /// console.log(`open('${useTour}')`)
+      // used as callback for setState function
 
       var setActiveStepData = function setActiveStepData() {
-        var ASD = _this2.getStepData();
+        var ASD = _this2.getStepData(); ///console.log('open() - ASD', ASD)
 
-        console.log('open() - ASD', ASD);
 
         _this2.setState({
           activeStepData: ASD
@@ -306,7 +308,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
       this.setState({
         guideOpen: false
       });
-    } //- Guide --------------------------------------------------------------------------------------------------------------------------------
+    } //= Guide --------------------------------------------------------------------------------------------------------------------------------
 
     /** Get all data for active or given step
      * 
@@ -376,40 +378,6 @@ var Main = /*#__PURE__*/function (_React$Component) {
       return D;
     }
   }, {
-    key: "setGuideOrigin",
-    value: function setGuideOrigin() {
-      // let SCROLL_TOP = 0 
-      // let WINDOW_W = 0
-      // let WINDOW_H = 0
-      // if(window){
-      //   SCROLL_TOP = window.pageYOffset || (document.EL || document.body.parentNode || document.body).scrollTop
-      //   WINDOW_W = Math.floor(window.innerWidth)
-      //   WINDOW_H = Math.floor(window.innerHeight)
-      //   this.setState({location: {
-      //     E: false,
-      //     H: 0,
-      //     W: 0, 
-      //     T: Math.floor((window.innerHeight / 2) + SCROLL_TOP),
-      //     L: Math.floor(window.innerWidth / 2),
-      //     S: SCROLL_TOP,
-      //     WW: WINDOW_W,
-      //     WH: WINDOW_H,
-      //   }})
-      // }
-      this.setState({
-        location: {
-          E: true,
-          H: 0,
-          W: 0,
-          T: 5000,
-          L: 5000,
-          S: 0,
-          WW: 0,
-          WH: 0
-        }
-      });
-    }
-  }, {
     key: "repeatUpdateGuideLocation",
     value: function repeatUpdateGuideLocation() {
       var _this4 = this;
@@ -446,10 +414,10 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.setGuideOrigin();
       this.repeatUpdateGuideLocation();
       this.setState({
-        activeStepData: this.getStepData()
+        activeStepData: this.getStepData(),
+        location: (0, _getLocation2["default"])()
       });
     } // Rest of the component's code
 
@@ -466,7 +434,9 @@ var Main = /*#__PURE__*/function (_React$Component) {
           width: '2rem',
           zIndex: '9999999'
         }
-      }, this.state.perf), /*#__PURE__*/_react["default"].createElement(_Collection["default"], {
+      }, this.state.perf), /*#__PURE__*/_react["default"].createElement(_DataList["default"], {
+        data: this.state
+      }), /*#__PURE__*/_react["default"].createElement(_Collection["default"], {
         data: this.state.activeStepData,
         open: this.state.guideOpen,
         loc: this.state.location
@@ -487,5 +457,12 @@ var Brochure = function Brochure(props) {
   }, props));
 };
 
-var _default = Brochure;
+var _default = Brochure; //! BROKEN FUNCTIONS -----------------------------------------------------------------------------------------------------------------------
+//! 'useTourOrActive()' has fatal flaw - if given tour does not exist and active tour is not found - what should the function return??
+//- TODO -----------------------------------------------------------------------------------------------------------------------------------
+//- create functions to update 'defaultSettings'
+//- create function to revert 'defaultSettings' to 'ogDefaultSettings'
+//? QUESTIONS ------------------------------------------------------------------------------------------------------------------------------
+//? 
+
 exports["default"] = _default;
