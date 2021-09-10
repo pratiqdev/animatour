@@ -58,9 +58,10 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
       // maxWidth: theme.maxWidth,
       // minWidth: theme.minWidth,
       // fontSize:theme.fontSize[1],
-      position: props.loc.E ? 'absolute' : 'fixed' //! if using 'fixed' - remove SCROLL_TOP from _getLocation()
+      position: props.loc.E ? 'absolute' : 'fixed',
+      //! if using 'fixed' - remove SCROLL_TOP from _getLocation()
       // transition: '.5s', /// causes popper to start from 0,0 and animate to position
-
+      opacity: props.open ? '1' : '.2'
     }),
     header: {
       fontSize: theme.fontSize[2],

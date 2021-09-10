@@ -22,6 +22,19 @@ const Collection = props => {
         return false
     }
 
+    let FTO = true /// First Time Opened
+
+    /// if the first element has been found, set FTO to false
+    /// this allows start step to appear centered
+    if(LOC.E){  
+        FTO = false
+    }
+
+    /// if brochure is closed, reset FTO to true so it reopens at location if exists
+    if(!props.open){
+        FTO = true
+    }
+
 
 
 
@@ -48,8 +61,8 @@ const Collection = props => {
     const updatePositions = () => {
 
         gsap.to(referenceElement, {
-            duration: D.duration, 
-            opacity: LOC.E ? 1 : 0,
+            duration: FTO ? 0 : D.duration, 
+            opacity: LOC.E ? 1 : .5,
             width:`${LOC.W + (parseInt(D.ringWidth) * 2)}px`, 
             height: `${LOC.H + (parseInt(D.ringWidth) * 2)}px`, 
             left: `${LOC.L - parseInt(D.ringWidth) }px`, 
@@ -83,7 +96,7 @@ const Collection = props => {
             style={{
                 boxSizing: 'border-box',
                 position: "absolute",
-                display: 'block',
+                display: props.open ? 'block' : 'none',
                 border: '1px solid transparent',
                 zIndex: '10000',
             }}

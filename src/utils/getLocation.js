@@ -24,18 +24,23 @@
  * }
  */
 
-const _getLocation = (D) => {
+const _getLocation = (data) => {
+    let D = {}
+    if(!data){
+        D.element = ''
+        D.margin = 0
+    }else{
+        D = data
+    }
 
-    const selector = D.element
-    const margin = D.margin
 
     const LOC = {}
 
-    const marg = margin ? margin : 0
+    const marg = D.margin ? D.margin : 0
 
     let EL
-    if(selector !== '' && typeof selector !== 'null'){
-        EL = document.querySelector( selector ) || null
+    if(D.element !== '' && typeof D.element !== 'null'){
+        EL = document.querySelector( D.element ) || null
     }
 
     //? is the current element is out of scroll range:

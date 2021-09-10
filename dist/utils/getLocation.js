@@ -29,15 +29,22 @@ exports["default"] = void 0;
  * 
  * }
  */
-var _getLocation = function _getLocation(D) {
-  var selector = D.element;
-  var margin = D.margin;
+var _getLocation = function _getLocation(data) {
+  var D = {};
+
+  if (!data) {
+    D.element = '';
+    D.margin = 0;
+  } else {
+    D = data;
+  }
+
   var LOC = {};
-  var marg = margin ? margin : 0;
+  var marg = D.margin ? D.margin : 0;
   var EL;
 
-  if (selector !== '' && typeof selector !== 'null') {
-    EL = document.querySelector(selector) || null;
+  if (D.element !== '' && typeof D.element !== 'null') {
+    EL = document.querySelector(D.element) || null;
   } //? is the current element is out of scroll range:
   //> get the current visible area of the page (from top to bottom of vp)
   //> check if the element is within this range (plus 'scroll padding' value - to make sure element isnt touching edge of vp)

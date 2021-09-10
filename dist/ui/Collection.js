@@ -50,6 +50,19 @@ var Collection = function Collection(props) {
     return false;
   }
 
+  var FTO = true; /// First Time Opened
+  /// if the first element has been found, set FTO to false
+  /// this allows start step to appear centered
+
+  if (LOC.E) {
+    FTO = false;
+  } /// if brochure is closed, reset FTO to true so it reopens at location if exists
+
+
+  if (!props.open) {
+    FTO = true;
+  }
+
   var _useState = (0, _react.useState)(null),
       _useState2 = _slicedToArray(_useState, 2),
       referenceElement = _useState2[0],
@@ -84,8 +97,8 @@ var Collection = function Collection(props) {
 
   var updatePositions = function updatePositions() {
     _gsap["default"].to(referenceElement, {
-      duration: D.duration,
-      opacity: LOC.E ? 1 : 0,
+      duration: FTO ? 0 : D.duration,
+      opacity: LOC.E ? 1 : .5,
       width: "".concat(LOC.W + parseInt(D.ringWidth) * 2, "px"),
       height: "".concat(LOC.H + parseInt(D.ringWidth) * 2, "px"),
       left: "".concat(LOC.L - parseInt(D.ringWidth), "px"),
@@ -109,7 +122,7 @@ var Collection = function Collection(props) {
     style: {
       boxSizing: 'border-box',
       position: "absolute",
-      display: 'block',
+      display: props.open ? 'block' : 'none',
       border: '1px solid transparent',
       zIndex: '10000'
     }
