@@ -24,7 +24,7 @@
  * }
  */
 
-const _getLocation = (data) => {
+const _getLocation = (data, guideOpen, defaultLocation, exitLocation) => {
     let D = {}
     if(!data){
         D.element = ''
@@ -32,6 +32,9 @@ const _getLocation = (data) => {
     }else{
         D = data
     }
+
+  
+    
 
 
     const LOC = {}
@@ -50,39 +53,62 @@ const _getLocation = (data) => {
 
 
     let SCROLL_TOP = window.pageYOffset || (document.EL || document.body.parentNode || document.body).scrollTop
-    let WINDOW_W = Math.floor(window.innerWidth)
-    let WINDOW_H = Math.floor(window.innerHeight)
-    
-    if(EL != null){
-        const EL_RECT = EL.getBoundingClientRect();
+    let WINDOW_W = Math.floor(window.innerWidth || 0)
+    let WINDOW_H = Math.floor(window.innerHeight || 0)
+
+    LOC.S = SCROLL_TOP
+    LOC.WW = WINDOW_W
+    LOC.WH = WINDOW_H
+
+
+    if(guideOpen){
         
-        LOC.E = true
-        LOC.L = Math.floor(EL_RECT.left - marg)
-        LOC.T = Math.floor(EL_RECT.top + SCROLL_TOP - marg) 
-        LOC.T_F = Math.floor(EL_RECT.top - marg) //! for fixed position brochure
-        LOC.H = Math.floor(EL_RECT.height + (marg * 2))
-        LOC.W = Math.floor(EL_RECT.width + (marg * 2))
-        LOC.S = SCROLL_TOP
-        LOC.WW = WINDOW_W
-        LOC.WH = WINDOW_H
-        
-    }else{
-        LOC.E = false
-        if(window){
+        if(EL != null){ /// if an element selector was found - return the location of the element and window dimensions 
+            const EL_RECT = EL.getBoundingClientRect();
+            
+            LOC.E = true
+            LOC.L = Math.floor(EL_RECT.left - marg)
+            LOC.T = Math.floor(EL_RECT.top + SCROLL_TOP - marg) 
+            LOC.H = Math.floor(EL_RECT.height + (marg * 2))
+            LOC.W = Math.floor(EL_RECT.width + (marg * 2))
+            
+        }else{ /// if no element selector was found - determine coordinates for the default location of the brochure
+
+            LOC.E = false
             LOC.H = 0
             LOC.W = 0       
-            // LOC.T = Math.floor((window.innerHeight / 2) + SCROLL_TOP) 
-            LOC.T = Math.floor((window.innerHeight / 2)) //! ignoring scroll top here to allow fixed position of brochure and smoother scrolling
-            LOC.L = Math.floor(window.innerWidth / 2)
-            LOC.S = SCROLL_TOP
-            LOC.WW = WINDOW_W
-            LOC.WH = WINDOW_H
+
+            switch(defaultLocation){
+                case 'top-center':
+                case 'top': {
+                    LOC.T = `${0 + marg}px`;
+                    LOC.L = `${WINDOW_W /2}px`;
+                }; break;
+                default:{ /// default of center-center
+                    LOC.T = `${WINDOW_H /2}px`;
+                    LOC.L = `${WINDOW_W /2}px`;
+                }
+            }
+        }
+
+    }else{
+
+        LOC.E = false
+        LOC.H = 0
+        LOC.W = 0       
+
+        //- Select the appropriate location for the exit reference element ---------------------------------------------------------------------
+        switch(exitLocation){
+            case 'top': {
+                exitT = `${0 - LOC.WH}px`;
+                exitL = `${LOC.WW /2}px`;
+            }; break;
+            default: {
+                LOC.T = `${LOC.WH /2}px`;
+                LOC.L = `${LOC.WW /2}px`;
+            }
         }
     }
-
-
-
-    
 
     return LOC
 }

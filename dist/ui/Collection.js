@@ -61,6 +61,28 @@ var Collection = function Collection(props) {
 
   if (!props.open) {
     FTO = true;
+  } //- Select the appropriate location for the exit reference element ---------------------------------------------------------------------
+
+
+  var exitDirection = 'top';
+  var exitT, exitL;
+
+  switch (exitDirection) {
+    case 'center':
+      {
+        exitT = "".concat(LOC.WH / 2, "px");
+        exitL = "".concat(LOC.WW / 2, "px");
+      }
+      ;
+      break;
+
+    case 'top':
+      {
+        exitT = "".concat(0 - LOC.WH, "px");
+        exitL = "".concat(LOC.WW / 2, "px");
+      }
+      ;
+      break;
   }
 
   var _useState = (0, _react.useState)(null),
@@ -78,7 +100,14 @@ var Collection = function Collection(props) {
       arrowElement = _useState6[0],
       setArrowElement = _useState6[1];
 
-  var _usePopper = (0, _reactPopper.usePopper)(referenceElement, popperElement, {
+  var _useState7 = (0, _react.useState)(null),
+      _useState8 = _slicedToArray(_useState7, 2),
+      referenceExit = _useState8[0],
+      setReferenceExit = _useState8[1];
+
+  var useReference = props.open ? referenceElement : referenceExit;
+
+  var _usePopper = (0, _reactPopper.usePopper)(useReference, popperElement, {
     modifiers: [{
       name: 'arrow',
       options: {
@@ -96,18 +125,32 @@ var Collection = function Collection(props) {
       update = _usePopper.update;
 
   var updatePositions = function updatePositions() {
-    _gsap["default"].to(referenceElement, {
-      duration: FTO ? 0 : D.duration,
-      opacity: LOC.E ? 1 : .5,
-      width: "".concat(LOC.W + parseInt(D.ringWidth) * 2, "px"),
-      height: "".concat(LOC.H + parseInt(D.ringWidth) * 2, "px"),
-      left: "".concat(LOC.L - parseInt(D.ringWidth), "px"),
-      top: "".concat(LOC.T - parseInt(D.ringWidth), "px"),
-      borderWidth: D.ringWidth,
-      borderColor: D.ringColor,
-      borderRadius: '.5rem',
-      boxShadow: '0 0 10000px 10000px rgba(150,150,150,.8)'
-    });
+    if (referenceElement) {
+      _gsap["default"].to(referenceElement, {
+        duration: FTO ? 0 : D.duration,
+        opacity: LOC.E ? 1 : .5,
+        width: "".concat(LOC.W + parseInt(D.ringWidth) * 2, "px"),
+        height: "".concat(LOC.H + parseInt(D.ringWidth) * 2, "px"),
+        left: "".concat(LOC.L - parseInt(D.ringWidth), "px"),
+        top: "".concat(LOC.T - parseInt(D.ringWidth), "px"),
+        borderWidth: D.ringWidth,
+        borderColor: D.ringColor,
+        borderRadius: '.5rem',
+        boxShadow: '0 0 10000px 10000px rgba(150,150,150,.8)'
+      });
+    }
+
+    if (referenceExit) {
+      _gsap["default"].to(referenceExit, {
+        duration: 1,
+        // D.duration, 
+        width: '10px',
+        height: '10px',
+        left: exitL,
+        top: exitT,
+        opactiy: .2
+      });
+    }
 
     update();
   };
@@ -117,7 +160,7 @@ var Collection = function Collection(props) {
       updatePositions();
     }
   }, [props.loc]);
-  return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", {
+  return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, props.open ? /*#__PURE__*/_react["default"].createElement("div", {
     ref: setReferenceElement,
     style: {
       boxSizing: 'border-box',
@@ -125,6 +168,15 @@ var Collection = function Collection(props) {
       display: props.open ? 'block' : 'none',
       border: '1px solid transparent',
       zIndex: '10000'
+    }
+  }) : /*#__PURE__*/_react["default"].createElement("div", {
+    ref: setReferenceExit,
+    style: {
+      position: "absolute",
+      zIndex: '10000',
+      width: '10px',
+      height: '10px',
+      background: 'red'
     }
   }), /*#__PURE__*/_react["default"].createElement(B.B1, {
     ref: setPopperElement,

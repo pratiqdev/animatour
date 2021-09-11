@@ -44,7 +44,8 @@ const B1 = React.forwardRef((props, ref) => {
       // fontSize:theme.fontSize[1],
       position: props.loc.E ? 'absolute' : 'fixed', //! if using 'fixed' - remove SCROLL_TOP from _getLocation()
       // transition: '.5s', /// causes popper to start from 0,0 and animate to position
-      opacity: props.open ? '1' : '.2' 
+      opacity: props.open ? '1' : '.2', 
+      transition: 'opacity .5s'
     },
     header:{
       fontSize:theme.fontSize[2],

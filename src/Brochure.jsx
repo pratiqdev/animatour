@@ -49,7 +49,8 @@ class Main extends React.Component {
         nextLabel: '>',
         prevLabel: '<',
         duration: .8,
-        guideOrigin: 'center-center',
+        defaultLocation: 'center-center',
+        exitLocation: 'top',
       },
       mainProps: props,
       activeTour: false,
@@ -350,7 +351,7 @@ class Main extends React.Component {
       const t0 = performance.now()
       ASD = this.getStepData()
       if(ASD){
-        newD = _getLocation(ASD)
+        newD = _getLocation(ASD, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)
         this.setState(prevState => {
           prevState.location = newD
           return prevState
@@ -370,7 +371,7 @@ class Main extends React.Component {
 
   componentDidMount(){
     this.repeatUpdateGuideLocation()
-    this.setState({activeStepData: this.getStepData(), location: _getLocation()})
+    this.setState({activeStepData: this.getStepData(), location: _getLocation({}, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)})
   }
     
   // Rest of the component's code
