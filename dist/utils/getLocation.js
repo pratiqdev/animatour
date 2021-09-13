@@ -29,7 +29,7 @@ exports["default"] = void 0;
  * 
  * }
  */
-var _getLocation = function _getLocation(data) {
+var _getLocation = function _getLocation(data, guideOpen, defaultLocation, exitLocation) {
   var D = {};
 
   if (!data) {
@@ -52,36 +52,60 @@ var _getLocation = function _getLocation(data) {
 
 
   var SCROLL_TOP = window.pageYOffset || (document.EL || document.body.parentNode || document.body).scrollTop;
-  var WINDOW_W = Math.floor(window.innerWidth);
-  var WINDOW_H = Math.floor(window.innerHeight);
+  var WINDOW_W = Math.floor(window.innerWidth || 0);
+  var WINDOW_H = Math.floor(window.innerHeight || 0);
+  LOC.S = SCROLL_TOP;
+  LOC.WW = WINDOW_W;
+  LOC.WH = WINDOW_H; // if(guideOpen){
 
   if (EL != null) {
+    /// if an element selector was found - return the location of the element and window dimensions 
     var EL_RECT = EL.getBoundingClientRect();
     LOC.E = true;
     LOC.L = Math.floor(EL_RECT.left - marg);
-    LOC.T = Math.floor(EL_RECT.top + SCROLL_TOP - marg);
-    LOC.T_F = Math.floor(EL_RECT.top - marg); //! for fixed position brochure
-
+    LOC.T = Math.floor(EL_RECT.top + LOC.S - marg);
     LOC.H = Math.floor(EL_RECT.height + marg * 2);
     LOC.W = Math.floor(EL_RECT.width + marg * 2);
-    LOC.S = SCROLL_TOP;
-    LOC.WW = WINDOW_W;
-    LOC.WH = WINDOW_H;
   } else {
+    /// if no element selector was found - determine coordinates for the default location of the brochure
     LOC.E = false;
+    LOC.H = 0;
+    LOC.W = 0;
 
-    if (window) {
-      LOC.H = 0;
-      LOC.W = 0; // LOC.T = Math.floor((window.innerHeight / 2) + SCROLL_TOP) 
+    switch (defaultLocation) {
+      case 'top-center':
+      case 'top':
+        {
+          LOC.T = 0 + marg;
+          LOC.L = WINDOW_W / 2;
+        }
+        ;
+        break;
 
-      LOC.T = Math.floor(window.innerHeight / 2); //! ignoring scroll top here to allow fixed position of brochure and smoother scrolling
-
-      LOC.L = Math.floor(window.innerWidth / 2);
-      LOC.S = SCROLL_TOP;
-      LOC.WW = WINDOW_W;
-      LOC.WH = WINDOW_H;
+      default:
+        {
+          /// default of center-center
+          LOC.T = WINDOW_H / 2;
+          LOC.L = WINDOW_W / 2;
+        }
     }
-  }
+  } // }else{
+  //     LOC.E = false
+  //     LOC.H = 0
+  //     LOC.W = 0       
+  //     //- Select the appropriate location for the exit reference element ---------------------------------------------------------------------
+  //     switch(exitLocation){
+  //         case 'top': {
+  //             LOC.T = 0 - LOC.WH;
+  //             LOC.L = LOC.WW /2;
+  //         }; break;
+  //         default: {
+  //             LOC.T = LOC.WH /2;
+  //             LOC.L = LOC.WW /2;
+  //         }
+  //     }
+  // }
+
 
   return LOC;
 };

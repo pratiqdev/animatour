@@ -7,20 +7,16 @@ const Collection = props => {
 
     // console.log('collection props', props)
 
-    let D = {}
-    if(!props.data){
-        // console.log('Collection | No data was found for collection')
+    const S = props.state
+    const LOC = S.location
+    const ASD = S.activeStepData
+
+    if(!S){
+        console.log('Collection | No state passed to collection')
         return false
-    }else{
-        D = props.data
-        // console.log('Collection | data:', D)
     }
 
 
-    let LOC = props.loc
-    if(!LOC){
-        return false
-    }
 
     let FTO = true /// First Time Opened
 
@@ -31,7 +27,7 @@ const Collection = props => {
     }
 
     /// if brochure is closed, reset FTO to true so it reopens at location if exists
-    if(!props.open){
+    if(!S.guideOpen){
         FTO = true
     }
 
@@ -57,10 +53,8 @@ const Collection = props => {
     const [popperElement, setPopperElement] = useState(null);
     const [arrowElement, setArrowElement] = useState(null);
     
-    const [referenceExit, setReferenceExit] = useState(null);
-    const useReference = props.open ? referenceElement : referenceExit
 
-    const { styles, attributes, update } = usePopper(useReference, popperElement, {
+    const { styles, attributes, update } = usePopper(referenceElement, popperElement, {
         modifiers: [
             { name: 'arrow', 
                 options: { 
@@ -80,27 +74,16 @@ const Collection = props => {
 
         if(referenceElement){
             gsap.to(referenceElement, {
-                duration: FTO ? 0 : D.duration, 
+                duration: .8, // FTO ? 0 : ASD.duration, 
                 opacity: LOC.E ? 1 : .5,
-                width:`${LOC.W + (parseInt(D.ringWidth) * 2)}px`, 
-                height: `${LOC.H + (parseInt(D.ringWidth) * 2)}px`, 
-                left: `${LOC.L - parseInt(D.ringWidth) }px`, 
-                top:`${LOC.T - parseInt(D.ringWidth) }px`,
-                borderWidth: D.ringWidth,
-                borderColor: D.ringColor,
+                width:LOC.W + (parseInt(ASD.ringWidth) * 2), 
+                height: LOC.H + (parseInt(ASD.ringWidth) * 2), 
+                left: LOC.L - parseInt(ASD.ringWidth), 
+                top: LOC.T - parseInt(ASD.ringWidth),
+                borderWidth: ASD.ringWidth,
+                borderColor: ASD.ringColor,
                 borderRadius: '.5rem',
                 boxShadow: '0 0 10000px 10000px rgba(150,150,150,.8)',
-            });
-        }
-
-        if(referenceExit){
-            gsap.to(referenceExit, {
-                duration: 1, // D.duration, 
-                width: '10px',
-                height: '10px',
-                left: exitL, 
-                top: exitT, 
-                opactiy: .2,
             });
         }
 
@@ -114,40 +97,32 @@ const Collection = props => {
         if(update){
             updatePositions();
         }
-    }, [props.loc])
+    }, [props.state])
 
     
 
 
     return(
         <>
-        {props.open ?
+
             <div
                 ref={setReferenceElement}
                 style={{
                     boxSizing: 'border-box',
                     position: "absolute",
-                    display: props.open ? 'block' : 'none',
+                    display: S.guideOpen ? 'block' : 'none',
                     border: '1px solid transparent',
                     zIndex: '10000',
                 }}
             />
-        :
-            <div ref={setReferenceExit} style={{
-                position: "absolute",
-                zIndex: '10000',
-                width: '10px',
-                height: '10px',
-                background: 'red',
-            }}/>
-        }
+
         
 
 
 
 
 
-            <B.B1 ref={setPopperElement} open={props.open} pass_style={styles.popper} data={props.data} loc={props.loc}>
+            <B.B1 ref={setPopperElement} pass_style={styles.popper} S={S}>
                 <div ref={setArrowElement} style={styles.arrow} />
             </B.B1>
         </>

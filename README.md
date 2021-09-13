@@ -34,7 +34,6 @@ return(
 
 
 
-
 ## Animatour options
 
 ### Config options

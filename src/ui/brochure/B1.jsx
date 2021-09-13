@@ -5,7 +5,9 @@ import shout from '../../utils/shout'
 const B1 = React.forwardRef((props, ref) => {
 
 
-
+  const S = props.S
+  const LOC = S.location
+  const ASD = S.activeStepData
 
 
 
@@ -42,9 +44,9 @@ const B1 = React.forwardRef((props, ref) => {
       // maxWidth: theme.maxWidth,
       // minWidth: theme.minWidth,
       // fontSize:theme.fontSize[1],
-      position: props.loc.E ? 'absolute' : 'fixed', //! if using 'fixed' - remove SCROLL_TOP from _getLocation()
+      position: LOC.E ? 'absolute' : 'fixed', //! if using 'fixed' - remove SCROLL_TOP from _getLocation()
       // transition: '.5s', /// causes popper to start from 0,0 and animate to position
-      opacity: props.open ? '1' : '.2', 
+      opacity: S.guideOpen ? '1' : '.2', 
       transition: 'opacity .5s'
     },
     header:{
@@ -78,17 +80,17 @@ const B1 = React.forwardRef((props, ref) => {
 
 
   return(
-    <div ref={ref} key={props.data.step} style={s.container} className='brochure1' id='BROCHURE'>
-      <div style={s.header} className='header'>{props.data.step} - {props.data.title}</div>
+    <div ref={ref} key={ASD.step} style={s.container} className='brochure1' id='BROCHURE'>
+      <div style={s.header} className='header'>{ASD.step} - {ASD.title}</div>
       <div style={s.content} className='content'>
-        guide open: {props.open ? 'open' : 'closed'}<br/>
-        {props.data.content}
+        guide open: {S.guideOpen ? 'open' : 'closed'}<br/>
+        {ASD.content}
       </div>
       <div style={s.footer} className='footer'>
-        <button style={s.exitButton} onClick={()=>animatour.close()}>{props.data.exitLabel}</button>
+        <button style={s.exitButton} onClick={()=>animatour.close()}>{ASD.exitLabel}</button>
         <div>
-          <button style={s.prevButton} onClick={()=>animatour.prev(props.data.tour)}>{props.data.prevLabel}</button>
-          <button style={s.nextButton} onClick={()=>animatour.next(props.data.tour)}>{props.data.nextLabel}</button>
+          <button style={s.prevButton} onClick={()=>animatour.prev(ASD.tour)}>{ASD.prevLabel}</button>
+          <button style={s.nextButton} onClick={()=>animatour.next(ASD.tour)}>{ASD.nextLabel}</button>
         </div>
       </div>
       {props.children}

@@ -36,11 +36,12 @@ class Main extends React.Component {
     super(props)
     this.state = {
       perf: 0,
+      debug: true,
       defaultSettings: {
         ringColor: '#f00',
-        ringWidth: '1px',
-        ringRadius: '0px',
-        ringMargin: '10px',
+        ringWidth: '1',
+        ringRadius: '0',
+        ringMargin: '10',
         ringShadowColor: 'rgba(150,150,150,.8)',
         ringShadowWidth: '10000px',
         brochureType: 0,
@@ -66,6 +67,7 @@ class Main extends React.Component {
   //= Utilities ----------------------------------------------------------------------------------------------------------------------------
   /** return given tour if exists in list or the act */
   useTourOrActive(tourId){
+    /// if tour exists
     if(tourId){
       if(!this.state.list.find(x=>x.id === tourId)){
         shout.warn(`useTourOrActive() | No tour was found as '${tourId}'. Using currently active tour instead`)
@@ -77,8 +79,16 @@ class Main extends React.Component {
       }else{
         return tourId
       }
-    }else{
-      return this.state.activeTour
+    }
+    /// no tour was found
+    else{
+      if(this.state.activeTour){
+        shout.warn(`useTourOrActive() | No tour was supplied. Using currently active tour instead`)
+        return this.state.activeTour
+      }else{
+        shout.error(`useTourOrActive() | No tour was found and no active tour to use!`)
+        return false
+      }
     }
   }
 
@@ -92,7 +102,6 @@ class Main extends React.Component {
       }
     }else{
       return false
-
     }
   }
   
@@ -174,6 +183,7 @@ class Main extends React.Component {
     let ELEMENT = this.state.list.find(x => x.id === TOUR).steps[STEP].element
     
     let ASD = this.getStepData(STEP)
+    console.log('ASD + location', ASD, this.state.location)
 
     //? This needs to check if active step is still the same as when it was called to prevent a different step from auto-progressing
     // if(ASD.stepDuration !== 0){
@@ -209,6 +219,9 @@ class Main extends React.Component {
 
     console.log(`prev | step: ${STEP}`)
     let ASD = this.getStepData(STEP)
+    console.log('ASD + location', ASD, this.state.location)
+
+
 
     this.setState(prevState => {
       prevState.list.find(x => x.id === TOUR).currentStep = STEP
@@ -236,19 +249,24 @@ class Main extends React.Component {
     /// console.log(`open('${useTour}')`)
 
     // used as callback for setState function
+    
     const setActiveStepData = () => {
       let ASD = this.getStepData()
-      ///console.log('open() - ASD', ASD)
+      //~ ASD is returning undefined??? --------------------------------------------------------------------------------------
+      /console.log(`open(id:${tourId}, useTour:${useTour}) - ASD`, ASD) 
       this.setState({ activeStepData: ASD })
-
     }
-
-    this.setState({guideOpen: true, activeTour: useTour}, ()=> setActiveStepData())
+    
+    if(useTour){
+      this.setState({guideOpen: true, activeTour: useTour}, ()=> setActiveStepData())
+    }
     
   }
+
   close (){/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     this.setState({guideOpen: false})
   }
+
 
 
 
@@ -271,8 +289,13 @@ class Main extends React.Component {
   getStepData(STEP){
     let D = {}
     
-    if(this.state.activeTour == false || this.state.activeTour == null || this.state.activeTour === ''){
-      // console.log(`getStepData() | no active tour found`)
+    if(!this.state.activeTour || this.state.activeTour == false || this.state.activeTour == null || this.state.activeTour === ''){
+      console.log('getStepData() | active tour is false or null! (1)')
+      return false
+    }
+
+    if(!this.useTourOrActive()){
+      console.log('getStepData() | active tour is false or null! (2)')
       return false
     }
 
@@ -280,7 +303,7 @@ class Main extends React.Component {
 
 
 
-    D.totalSteps = this.state.list.find(x=>x.id === D.tour)?.steps?.length || 0
+    D.totalSteps = this.state.list.find(x=>x.id === D.tour)?.steps?.length - 1 || 0
     
     /// if step is not specified - find the current step
     if(typeof STEP === 'number' && STEP >= 0 && STEP <= D.totalSteps){
@@ -295,7 +318,7 @@ class Main extends React.Component {
 
 
     D.element       = findStep(D.tour, D.step)?.element
-    D.margin        = findStep(D.tour, D.step)?.margin             || this.state.defaultSettings.guideMargin
+    D.margin        = findStep(D.tour, D.step)?.margin             || this.state.defaultSettings.ringMargin
     D.ringColor     = findStep(D.tour, D.step)?.ringColor          || this.state.defaultSettings.ringColor
     D.ringWidth     = findStep(D.tour, D.step)?.ringWidth          || this.state.defaultSettings.ringWidth
 
@@ -311,7 +334,6 @@ class Main extends React.Component {
 
     D.title         = findStep(D.tour, D.step)?.title              || `Step ${D.step}`
     D.content       = findStep(D.tour, D.step)?.content            || ``
-
 
 
     return D
@@ -371,7 +393,7 @@ class Main extends React.Component {
 
   componentDidMount(){
     this.repeatUpdateGuideLocation()
-    this.setState({activeStepData: this.getStepData(), location: _getLocation({}, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)})
+    this.setState({activeStepData: this.getStepData(), location: _getLocation(null, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)}, console.log(this.state))
   }
     
   // Rest of the component's code
@@ -383,9 +405,9 @@ class Main extends React.Component {
       <DataList data={this.state} />
 
       <Collection
-      data={this.state.activeStepData}
-      open={this.state.guideOpen}
-      loc={this.state.location}
+        state={this.state}
+      // open={this.state.guideOpen}
+      // loc={this.state.location}
       />
       </>
     )

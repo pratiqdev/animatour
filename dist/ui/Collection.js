@@ -35,18 +35,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var Collection = function Collection(props) {
   // console.log('collection props', props)
-  var D = {};
+  var S = props.state;
+  var LOC = S.location;
+  var ASD = S.activeStepData;
 
-  if (!props.data) {
-    // console.log('Collection | No data was found for collection')
-    return false;
-  } else {
-    D = props.data; // console.log('Collection | data:', D)
-  }
-
-  var LOC = props.loc;
-
-  if (!LOC) {
+  if (!S) {
+    console.log('Collection | No state passed to collection');
     return false;
   }
 
@@ -59,31 +53,22 @@ var Collection = function Collection(props) {
   } /// if brochure is closed, reset FTO to true so it reopens at location if exists
 
 
-  if (!props.open) {
+  if (!S.guideOpen) {
     FTO = true;
-  } //- Select the appropriate location for the exit reference element ---------------------------------------------------------------------
+  } // //- Select the appropriate location for the exit reference element ---------------------------------------------------------------------
+  // const exitDirection = 'top'
+  // let exitT, exitL
+  // switch(exitDirection){
+  //     case 'center': {
+  //         exitT = `${LOC.WH /2}px`;
+  //         exitL = `${LOC.WW /2}px`;
+  //     }; break;
+  //     case 'top': {
+  //         exitT = `${0 - LOC.WH}px`;
+  //         exitL = `${LOC.WW /2}px`;
+  //     }; break;
+  // }
 
-
-  var exitDirection = 'top';
-  var exitT, exitL;
-
-  switch (exitDirection) {
-    case 'center':
-      {
-        exitT = "".concat(LOC.WH / 2, "px");
-        exitL = "".concat(LOC.WW / 2, "px");
-      }
-      ;
-      break;
-
-    case 'top':
-      {
-        exitT = "".concat(0 - LOC.WH, "px");
-        exitL = "".concat(LOC.WW / 2, "px");
-      }
-      ;
-      break;
-  }
 
   var _useState = (0, _react.useState)(null),
       _useState2 = _slicedToArray(_useState, 2),
@@ -100,14 +85,7 @@ var Collection = function Collection(props) {
       arrowElement = _useState6[0],
       setArrowElement = _useState6[1];
 
-  var _useState7 = (0, _react.useState)(null),
-      _useState8 = _slicedToArray(_useState7, 2),
-      referenceExit = _useState8[0],
-      setReferenceExit = _useState8[1];
-
-  var useReference = props.open ? referenceElement : referenceExit;
-
-  var _usePopper = (0, _reactPopper.usePopper)(useReference, popperElement, {
+  var _usePopper = (0, _reactPopper.usePopper)(referenceElement, popperElement, {
     modifiers: [{
       name: 'arrow',
       options: {
@@ -127,28 +105,17 @@ var Collection = function Collection(props) {
   var updatePositions = function updatePositions() {
     if (referenceElement) {
       _gsap["default"].to(referenceElement, {
-        duration: FTO ? 0 : D.duration,
+        duration: .8,
+        // FTO ? 0 : ASD.duration, 
         opacity: LOC.E ? 1 : .5,
-        width: "".concat(LOC.W + parseInt(D.ringWidth) * 2, "px"),
-        height: "".concat(LOC.H + parseInt(D.ringWidth) * 2, "px"),
-        left: "".concat(LOC.L - parseInt(D.ringWidth), "px"),
-        top: "".concat(LOC.T - parseInt(D.ringWidth), "px"),
-        borderWidth: D.ringWidth,
-        borderColor: D.ringColor,
+        width: LOC.W + parseInt(ASD.ringWidth) * 2,
+        height: LOC.H + parseInt(ASD.ringWidth) * 2,
+        left: LOC.L - parseInt(ASD.ringWidth),
+        top: LOC.T - parseInt(ASD.ringWidth),
+        borderWidth: ASD.ringWidth,
+        borderColor: ASD.ringColor,
         borderRadius: '.5rem',
         boxShadow: '0 0 10000px 10000px rgba(150,150,150,.8)'
-      });
-    }
-
-    if (referenceExit) {
-      _gsap["default"].to(referenceExit, {
-        duration: 1,
-        // D.duration, 
-        width: '10px',
-        height: '10px',
-        left: exitL,
-        top: exitT,
-        opactiy: .2
       });
     }
 
@@ -159,31 +126,20 @@ var Collection = function Collection(props) {
     if (update) {
       updatePositions();
     }
-  }, [props.loc]);
-  return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, props.open ? /*#__PURE__*/_react["default"].createElement("div", {
+  }, [props.state]);
+  return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", {
     ref: setReferenceElement,
     style: {
       boxSizing: 'border-box',
       position: "absolute",
-      display: props.open ? 'block' : 'none',
+      display: S.guideOpen ? 'block' : 'none',
       border: '1px solid transparent',
       zIndex: '10000'
     }
-  }) : /*#__PURE__*/_react["default"].createElement("div", {
-    ref: setReferenceExit,
-    style: {
-      position: "absolute",
-      zIndex: '10000',
-      width: '10px',
-      height: '10px',
-      background: 'red'
-    }
   }), /*#__PURE__*/_react["default"].createElement(B.B1, {
     ref: setPopperElement,
-    open: props.open,
     pass_style: styles.popper,
-    data: props.data,
-    loc: props.loc
+    S: S
   }, /*#__PURE__*/_react["default"].createElement("div", {
     ref: setArrowElement,
     style: styles.arrow

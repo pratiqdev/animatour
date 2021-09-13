@@ -26,6 +26,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
+  var S = props.S;
+  var LOC = S.location;
+  var ASD = S.activeStepData;
   var theme = {
     text: '#222',
     background: '#eee',
@@ -58,10 +61,10 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
       // maxWidth: theme.maxWidth,
       // minWidth: theme.minWidth,
       // fontSize:theme.fontSize[1],
-      position: props.loc.E ? 'absolute' : 'fixed',
+      position: LOC.E ? 'absolute' : 'fixed',
       //! if using 'fixed' - remove SCROLL_TOP from _getLocation()
       // transition: '.5s', /// causes popper to start from 0,0 and animate to position
-      opacity: props.open ? '1' : '.2',
+      opacity: S.guideOpen ? '1' : '.2',
       transition: 'opacity .5s'
     }),
     header: {
@@ -85,17 +88,17 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
   };
   return /*#__PURE__*/_react["default"].createElement("div", {
     ref: ref,
-    key: props.data.step,
+    key: ASD.step,
     style: s.container,
     className: "brochure1",
     id: "BROCHURE"
   }, /*#__PURE__*/_react["default"].createElement("div", {
     style: s.header,
     className: "header"
-  }, props.data.step, " - ", props.data.title), /*#__PURE__*/_react["default"].createElement("div", {
+  }, ASD.step, " - ", ASD.title), /*#__PURE__*/_react["default"].createElement("div", {
     style: s.content,
     className: "content"
-  }, "guide open: ", props.open ? 'open' : 'closed', /*#__PURE__*/_react["default"].createElement("br", null), props.data.content), /*#__PURE__*/_react["default"].createElement("div", {
+  }, "guide open: ", S.guideOpen ? 'open' : 'closed', /*#__PURE__*/_react["default"].createElement("br", null), ASD.content), /*#__PURE__*/_react["default"].createElement("div", {
     style: s.footer,
     className: "footer"
   }, /*#__PURE__*/_react["default"].createElement("button", {
@@ -103,17 +106,17 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
     onClick: function onClick() {
       return _animatour["default"].close();
     }
-  }, props.data.exitLabel), /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("button", {
+  }, ASD.exitLabel), /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("button", {
     style: s.prevButton,
     onClick: function onClick() {
-      return _animatour["default"].prev(props.data.tour);
+      return _animatour["default"].prev(ASD.tour);
     }
-  }, props.data.prevLabel), /*#__PURE__*/_react["default"].createElement("button", {
+  }, ASD.prevLabel), /*#__PURE__*/_react["default"].createElement("button", {
     style: s.nextButton,
     onClick: function onClick() {
-      return _animatour["default"].next(props.data.tour);
+      return _animatour["default"].next(ASD.tour);
     }
-  }, props.data.nextLabel))), props.children);
+  }, ASD.nextLabel))), props.children);
 });
 
 var _default = B1;

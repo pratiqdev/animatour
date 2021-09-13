@@ -61,14 +61,14 @@ const _getLocation = (data, guideOpen, defaultLocation, exitLocation) => {
     LOC.WH = WINDOW_H
 
 
-    if(guideOpen){
+    // if(guideOpen){
         
         if(EL != null){ /// if an element selector was found - return the location of the element and window dimensions 
             const EL_RECT = EL.getBoundingClientRect();
             
             LOC.E = true
             LOC.L = Math.floor(EL_RECT.left - marg)
-            LOC.T = Math.floor(EL_RECT.top + SCROLL_TOP - marg) 
+            LOC.T = Math.floor(EL_RECT.top + LOC.S - marg) 
             LOC.H = Math.floor(EL_RECT.height + (marg * 2))
             LOC.W = Math.floor(EL_RECT.width + (marg * 2))
             
@@ -76,39 +76,39 @@ const _getLocation = (data, guideOpen, defaultLocation, exitLocation) => {
 
             LOC.E = false
             LOC.H = 0
-            LOC.W = 0       
+            LOC.W = 0
 
             switch(defaultLocation){
                 case 'top-center':
                 case 'top': {
-                    LOC.T = `${0 + marg}px`;
-                    LOC.L = `${WINDOW_W /2}px`;
+                    LOC.T = 0 + marg;
+                    LOC.L = WINDOW_W /2;
                 }; break;
                 default:{ /// default of center-center
-                    LOC.T = `${WINDOW_H /2}px`;
-                    LOC.L = `${WINDOW_W /2}px`;
+                    LOC.T = WINDOW_H /2;
+                    LOC.L = WINDOW_W /2;
                 }
             }
         }
 
-    }else{
+    // }else{
 
-        LOC.E = false
-        LOC.H = 0
-        LOC.W = 0       
+    //     LOC.E = false
+    //     LOC.H = 0
+    //     LOC.W = 0       
 
-        //- Select the appropriate location for the exit reference element ---------------------------------------------------------------------
-        switch(exitLocation){
-            case 'top': {
-                exitT = `${0 - LOC.WH}px`;
-                exitL = `${LOC.WW /2}px`;
-            }; break;
-            default: {
-                LOC.T = `${LOC.WH /2}px`;
-                LOC.L = `${LOC.WW /2}px`;
-            }
-        }
-    }
+    //     //- Select the appropriate location for the exit reference element ---------------------------------------------------------------------
+    //     switch(exitLocation){
+    //         case 'top': {
+    //             LOC.T = 0 - LOC.WH;
+    //             LOC.L = LOC.WW /2;
+    //         }; break;
+    //         default: {
+    //             LOC.T = LOC.WH /2;
+    //             LOC.L = LOC.WW /2;
+    //         }
+    //     }
+    // }
 
     return LOC
 }

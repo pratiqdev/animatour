@@ -84,11 +84,12 @@ var Main = /*#__PURE__*/function (_React$Component) {
     _this = _super.call(this, props);
     _this.state = {
       perf: 0,
+      debug: true,
       defaultSettings: {
         ringColor: '#f00',
-        ringWidth: '1px',
-        ringRadius: '0px',
-        ringMargin: '10px',
+        ringWidth: '1',
+        ringRadius: '0',
+        ringMargin: '10',
         ringShadowColor: 'rgba(150,150,150,.8)',
         ringShadowWidth: '10000px',
         brochureType: 0,
@@ -97,7 +98,8 @@ var Main = /*#__PURE__*/function (_React$Component) {
         nextLabel: '>',
         prevLabel: '<',
         duration: .8,
-        guideOrigin: 'center-center'
+        defaultLocation: 'center-center',
+        exitLocation: 'top'
       },
       mainProps: props,
       activeTour: false,
@@ -116,6 +118,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
   _createClass(Main, [{
     key: "useTourOrActive",
     value: function useTourOrActive(tourId) {
+      /// if tour exists
       if (tourId) {
         if (!this.state.list.find(function (x) {
           return x.id === tourId;
@@ -130,8 +133,17 @@ var Main = /*#__PURE__*/function (_React$Component) {
         } else {
           return tourId;
         }
-      } else {
-        return this.state.activeTour;
+      } /// no tour was found
+      else {
+        if (this.state.activeTour) {
+          _shout["default"].warn("useTourOrActive() | No tour was supplied. Using currently active tour instead");
+
+          return this.state.activeTour;
+        } else {
+          _shout["default"].error("useTourOrActive() | No tour was found and no active tour to use!");
+
+          return false;
+        }
       }
     }
   }, {
@@ -225,7 +237,8 @@ var Main = /*#__PURE__*/function (_React$Component) {
       var ELEMENT = this.state.list.find(function (x) {
         return x.id === TOUR;
       }).steps[STEP].element;
-      var ASD = this.getStepData(STEP); //? This needs to check if active step is still the same as when it was called to prevent a different step from auto-progressing
+      var ASD = this.getStepData(STEP);
+      console.log('ASD + location', ASD, this.state.location); //? This needs to check if active step is still the same as when it was called to prevent a different step from auto-progressing
       // if(ASD.stepDuration !== 0){
       //   setTimeout(() => {
       //     this.next()
@@ -265,6 +278,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
       }).steps[STEP].element;
       console.log("prev | step: ".concat(STEP));
       var ASD = this.getStepData(STEP);
+      console.log('ASD + location', ASD, this.state.location);
       this.setState(function (prevState) {
         prevState.list.find(function (x) {
           return x.id === TOUR;
@@ -286,20 +300,22 @@ var Main = /*#__PURE__*/function (_React$Component) {
       // used as callback for setState function
 
       var setActiveStepData = function setActiveStepData() {
-        var ASD = _this2.getStepData(); ///console.log('open() - ASD', ASD)
-
+        var ASD = _this2.getStepData() //~ ASD is returning undefined??? --------------------------------------------------------------------------------------
+        / console.log("open(id:".concat(tourId, ", useTour:").concat(useTour, ") - ASD"), ASD);
 
         _this2.setState({
           activeStepData: ASD
         });
       };
 
-      this.setState({
-        guideOpen: true,
-        activeTour: useTour
-      }, function () {
-        return setActiveStepData();
-      });
+      if (useTour) {
+        this.setState({
+          guideOpen: true,
+          activeTour: useTour
+        }, function () {
+          return setActiveStepData();
+        });
+      }
     }
   }, {
     key: "close",
@@ -337,15 +353,20 @@ var Main = /*#__PURE__*/function (_React$Component) {
 
       var D = {};
 
-      if (this.state.activeTour == false || this.state.activeTour == null || this.state.activeTour === '') {
-        // console.log(`getStepData() | no active tour found`)
+      if (!this.state.activeTour || this.state.activeTour == false || this.state.activeTour == null || this.state.activeTour === '') {
+        console.log('getStepData() | active tour is false or null! (1)');
+        return false;
+      }
+
+      if (!this.useTourOrActive()) {
+        console.log('getStepData() | active tour is false or null! (2)');
         return false;
       }
 
       D.tour = this.state.activeTour;
       D.totalSteps = ((_this$state$list$find = this.state.list.find(function (x) {
         return x.id === D.tour;
-      })) === null || _this$state$list$find === void 0 ? void 0 : (_this$state$list$find2 = _this$state$list$find.steps) === null || _this$state$list$find2 === void 0 ? void 0 : _this$state$list$find2.length) || 0; /// if step is not specified - find the current step
+      })) === null || _this$state$list$find === void 0 ? void 0 : (_this$state$list$find2 = _this$state$list$find.steps) === null || _this$state$list$find2 === void 0 ? void 0 : _this$state$list$find2.length) - 1 || 0; /// if step is not specified - find the current step
 
       if (typeof STEP === 'number' && STEP >= 0 && STEP <= D.totalSteps) {
         D.step = STEP;
@@ -364,7 +385,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
       };
 
       D.element = (_findStep = findStep(D.tour, D.step)) === null || _findStep === void 0 ? void 0 : _findStep.element;
-      D.margin = ((_findStep2 = findStep(D.tour, D.step)) === null || _findStep2 === void 0 ? void 0 : _findStep2.margin) || this.state.defaultSettings.guideMargin;
+      D.margin = ((_findStep2 = findStep(D.tour, D.step)) === null || _findStep2 === void 0 ? void 0 : _findStep2.margin) || this.state.defaultSettings.ringMargin;
       D.ringColor = ((_findStep3 = findStep(D.tour, D.step)) === null || _findStep3 === void 0 ? void 0 : _findStep3.ringColor) || this.state.defaultSettings.ringColor;
       D.ringWidth = ((_findStep4 = findStep(D.tour, D.step)) === null || _findStep4 === void 0 ? void 0 : _findStep4.ringWidth) || this.state.defaultSettings.ringWidth;
       D.exitLabel = ((_findStep5 = findStep(D.tour, D.step)) === null || _findStep5 === void 0 ? void 0 : _findStep5.exitLabel) || this.state.defaultSettings.exitLabel;
@@ -390,7 +411,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
         ASD = _this4.getStepData();
 
         if (ASD) {
-          newD = (0, _getLocation2["default"])(ASD);
+          newD = (0, _getLocation2["default"])(ASD, _this4.state.guideOpen, _this4.state.defaultLocation, _this4.state.exitLocation);
 
           _this4.setState(function (prevState) {
             prevState.location = newD;
@@ -417,8 +438,8 @@ var Main = /*#__PURE__*/function (_React$Component) {
       this.repeatUpdateGuideLocation();
       this.setState({
         activeStepData: this.getStepData(),
-        location: (0, _getLocation2["default"])()
-      });
+        location: (0, _getLocation2["default"])(null, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)
+      }, console.log(this.state));
     } // Rest of the component's code
 
   }, {
@@ -437,9 +458,9 @@ var Main = /*#__PURE__*/function (_React$Component) {
       }, this.state.perf), /*#__PURE__*/_react["default"].createElement(_DataList["default"], {
         data: this.state
       }), /*#__PURE__*/_react["default"].createElement(_Collection["default"], {
-        data: this.state.activeStepData,
-        open: this.state.guideOpen,
-        loc: this.state.location
+        state: this.state // open={this.state.guideOpen}
+        // loc={this.state.location}
+
       }));
     }
   }]);
