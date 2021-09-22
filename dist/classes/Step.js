@@ -11,7 +11,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Step = function Step(x) {
+var Step = function Step(x, state) {
   _classCallCheck(this, Step);
 
   /// alert user of incorrect keys
@@ -46,9 +46,11 @@ var Step = function Step(x) {
     }
   });
   this.id = x.id;
-  this.title = x.title;
-  this.element = x.element ? x.element : _shout["default"].error("Steps must include an element.", "Use element selectors ('.el', '#el')");
-  this.content = x.content ? x.content : _shout["default"].error("Steps must include content");
+  this.title = x.title ? x.title : _shout["default"].error("Steps must at least include a title.");
+  this.element = x.element || null;
+  this.content = x.content || null;
+  this.transitionDuration = x.transitionDuration || state.defaultSettings.transitionDuration;
+  this.stepDuration = x.stepDuration || state.defaultSettings.stepDuration;
 };
 
 var _default = Step;

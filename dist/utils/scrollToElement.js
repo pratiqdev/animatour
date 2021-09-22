@@ -21,7 +21,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
  * ---
  * @returns void
  */
-var _scrollToElement = function _scrollToElement(selector, behavior, alignment) {
+var _scrollToElement = function _scrollToElement(selector, behavior, alignment, success) {
   var ELEMENT = null; /// define the scroll speed/behavior
 
   var BEHAVIOR = 'auto'; /// define the vertical alignment (block)

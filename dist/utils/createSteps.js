@@ -9,7 +9,11 @@ var _Step = _interopRequireDefault(require("../classes/Step"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _createSteps = function _createSteps(steps, oldSteps) {
+var _createSteps = function _createSteps(x) {
+  var steps = x.steps,
+      oldSteps = x.oldSteps,
+      state = x.state;
+
   if (!steps) {
     if (oldSteps) {
       return oldSteps;
@@ -35,7 +39,7 @@ var _createSteps = function _createSteps(steps, oldSteps) {
   if (Array.isArray(steps)) {
     steps.forEach(function (x) {
       if (x) {
-        stepsArray.push(x);
+        stepsArray.push(new _Step["default"](x, state));
       }
     });
   } else {

@@ -25,7 +25,13 @@
  */
 
 const _getLocation = (data, guideOpen, defaultLocation, exitLocation) => {
+    // console.log('_getLocation')
+    
     let D = {}
+    let LOC = {}
+    let EL
+
+
     if(!data){
         D.element = ''
         D.margin = 0
@@ -37,20 +43,11 @@ const _getLocation = (data, guideOpen, defaultLocation, exitLocation) => {
     
 
 
-    const LOC = {}
 
-    const marg = D.margin ? D.margin : 0
 
-    let EL
     if(D.element !== '' && typeof D.element !== 'null'){
         EL = document.querySelector( D.element ) || null
     }
-
-    //? is the current element is out of scroll range:
-    //> get the current visible area of the page (from top to bottom of vp)
-    //> check if the element is within this range (plus 'scroll padding' value - to make sure element isnt touching edge of vp)
-    //> find the nearest scrollable parent of the target element and scroll to that target elements location plus the 'scroll padding' value
-
 
     let SCROLL_TOP = window.pageYOffset || (document.EL || document.body.parentNode || document.body).scrollTop
     let WINDOW_W = Math.floor(window.innerWidth || 0)
@@ -67,10 +64,10 @@ const _getLocation = (data, guideOpen, defaultLocation, exitLocation) => {
             const EL_RECT = EL.getBoundingClientRect();
             
             LOC.E = true
-            LOC.L = Math.floor(EL_RECT.left - marg)
-            LOC.T = Math.floor(EL_RECT.top + LOC.S - marg) 
-            LOC.H = Math.floor(EL_RECT.height + (marg * 2))
-            LOC.W = Math.floor(EL_RECT.width + (marg * 2))
+            LOC.L = Math.floor(EL_RECT.left - D.margin)
+            LOC.T = Math.floor(EL_RECT.top + LOC.S - D.margin) 
+            LOC.H = Math.floor(EL_RECT.height + (D.margin * 2))
+            LOC.W = Math.floor(EL_RECT.width + (D.margin * 2))
             
         }else{ /// if no element selector was found - determine coordinates for the default location of the brochure
 

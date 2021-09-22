@@ -13,6 +13,8 @@ var _animatour = _interopRequireDefault(require("../../animatour"));
 
 var _shout = _interopRequireDefault(require("../../utils/shout"));
 
+var _gsap = _interopRequireDefault(require("gsap"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -30,9 +32,9 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
   var LOC = S.location;
   var ASD = S.activeStepData;
   var theme = {
-    text: '#222',
-    background: '#eee',
-    primary: '#99f',
+    text: '#fff',
+    background: '#000',
+    primary: '#20c',
     secondary: '#aaa',
     tertiary: '',
     spacing: ['0', '.2em', '.4em', '.8em', '1.6em'],
@@ -57,15 +59,16 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
       zIndex: '10001',
       // margin: theme.spacing[3],
       background: theme.background,
-      // color: theme.text,
+      color: theme.text,
       // maxWidth: theme.maxWidth,
       // minWidth: theme.minWidth,
       // fontSize:theme.fontSize[1],
       position: LOC.E ? 'absolute' : 'fixed',
       //! if using 'fixed' - remove SCROLL_TOP from _getLocation()
       // transition: '.5s', /// causes popper to start from 0,0 and animate to position
-      opacity: S.guideOpen ? '1' : '.2',
-      transition: 'opacity .5s'
+      // opacity: S.guideOpen ? '1' : '.2', 
+      // transition: 'opacity .5s'
+      opacity: .6
     }),
     header: {
       fontSize: theme.fontSize[2],
@@ -86,37 +89,105 @@ var B1 = /*#__PURE__*/_react["default"].forwardRef(function (props, ref) {
       color: 'red'
     }
   };
+  var data = {
+    /// tour / steps
+    tour: S.activeTour,
+    stepTime: S.apValue,
+    stepTimeTotal: S.activeStepData.stepDuration,
+    /// content
+    currentStep: S.activeStepData.step,
+    totalSteps: S.activeStepData.totalSteps,
+    title: S.activeStepData.title,
+    content: S.activeStepData.content,
+    /// labels
+    closeLabel: S.activeStepData.closeLabel,
+    nextLabel: S.activeStepData.nextLabel,
+    prevLabel: S.activeStepData.prevLabel,
+    /// controls
+    next: function next() {
+      return _animatour["default"].next();
+    },
+    prev: function prev() {
+      return _animatour["default"].prev();
+    },
+    play: function play() {
+      return _animatour["default"].play();
+    },
+    pause: function pause() {
+      return _animatour["default"].pause();
+    },
+    close: function close() {
+      return _animatour["default"].close();
+    },
+    reset: function reset() {
+      return _animatour["default"].reset();
+    },
+    /// animations
+    transitionDuration: S.activeStepData.duration,
+    /// adv data
+    debugMode: S.debug
+  };
+
+  var NoBrochure = function NoBrochure() {
+    return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", {
+      style: s.header,
+      className: "header"
+    }, ASD.step, " - ", ASD.title), /*#__PURE__*/_react["default"].createElement("div", {
+      style: s.content,
+      className: "content"
+    }, ASD.content), /*#__PURE__*/_react["default"].createElement("div", {
+      style: s.footer,
+      className: "footer"
+    }, /*#__PURE__*/_react["default"].createElement("button", {
+      style: s.exitButton,
+      onClick: function onClick() {
+        return _animatour["default"].close();
+      }
+    }, ASD.exitLabel), /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("button", {
+      style: s.prevButton,
+      onClick: function onClick() {
+        return _animatour["default"].play();
+      }
+    }, "Play"), /*#__PURE__*/_react["default"].createElement("button", {
+      style: s.prevButton,
+      onClick: function onClick() {
+        return _animatour["default"].pause();
+      }
+    }, "Pause"), /*#__PURE__*/_react["default"].createElement("button", {
+      style: s.prevButton,
+      onClick: function onClick() {
+        return _animatour["default"].prev(ASD.tour);
+      }
+    }, ASD.prevLabel), /*#__PURE__*/_react["default"].createElement("button", {
+      style: s.nextButton,
+      onClick: function onClick() {
+        return _animatour["default"].next(ASD.tour);
+      }
+    }, ASD.nextLabel))), props.children, S.apActive && /*#__PURE__*/_react["default"].createElement("progress", {
+      id: "apv",
+      style: {
+        width: '100%',
+        margin: '0'
+      },
+      value: ASD.stepDuration - S.apValue,
+      max: ASD.stepDuration
+    }));
+  };
+
+  var determineActiveBrochure = function determineActiveBrochure() {
+    if (S.modal && /*#__PURE__*/_react["default"].isValidElement(S.modal)) {
+      return /*#__PURE__*/_react["default"].cloneElement(S.modal, _objectSpread({}, data));
+    } else {
+      return NoBrochure;
+    }
+  };
+
   return /*#__PURE__*/_react["default"].createElement("div", {
     ref: ref,
-    key: ASD.step,
     style: s.container,
     className: "brochure1",
     id: "BROCHURE"
-  }, /*#__PURE__*/_react["default"].createElement("div", {
-    style: s.header,
-    className: "header"
-  }, ASD.step, " - ", ASD.title), /*#__PURE__*/_react["default"].createElement("div", {
-    style: s.content,
-    className: "content"
-  }, "guide open: ", S.guideOpen ? 'open' : 'closed', /*#__PURE__*/_react["default"].createElement("br", null), ASD.content), /*#__PURE__*/_react["default"].createElement("div", {
-    style: s.footer,
-    className: "footer"
-  }, /*#__PURE__*/_react["default"].createElement("button", {
-    style: s.exitButton,
-    onClick: function onClick() {
-      return _animatour["default"].close();
-    }
-  }, ASD.exitLabel), /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("button", {
-    style: s.prevButton,
-    onClick: function onClick() {
-      return _animatour["default"].prev(ASD.tour);
-    }
-  }, ASD.prevLabel), /*#__PURE__*/_react["default"].createElement("button", {
-    style: s.nextButton,
-    onClick: function onClick() {
-      return _animatour["default"].next(ASD.tour);
-    }
-  }, ASD.nextLabel))), props.children);
+  }, determineActiveBrochure());
 });
 
 var _default = B1;

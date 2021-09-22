@@ -68,7 +68,7 @@ var B2 = function B2(props) {
       display: 'flex',
       justifyContent: 'space-between'
     },
-    exitButton: {
+    closeButton: {
       color: 'red'
     }
   };
@@ -86,11 +86,11 @@ var B2 = function B2(props) {
     style: s.footer,
     className: "footer"
   }, /*#__PURE__*/_react["default"].createElement("button", {
-    style: s.exitButton,
+    style: s.closeButton,
     onClick: function onClick() {
       return _animatour["default"].close();
     }
-  }, "exit"), /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("button", {
+  }, "close"), /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("button", {
     style: s.prevButton,
     onClick: function onClick() {
       return _animatour["default"].prev(tour.id);

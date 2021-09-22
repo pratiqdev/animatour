@@ -27,6 +27,9 @@ var animatour = {
   getTour: function getTour(a) {
     return w('getTour') && x.getTour(a);
   },
+  getAllData: function getAllData() {
+    return w('getAllData') && x.getAllData();
+  },
   // toggle the guide
   showGuide: function showGuide() {
     w('showGuide') && x.showGuide();
@@ -48,11 +51,24 @@ var animatour = {
   prev: function prev(a) {
     w('prev') && x.prev(a);
   },
+  open: function open() {
+    w('open') && x.open();
+  },
   close: function close() {
     w('close') && x.close();
   },
-  open: function open(a) {
-    w('close') && x.open(a);
+  start: function start(a) {
+    w('start') && x.start(a);
+  },
+  reset: function reset(a) {
+    w('reset') && x.reset(a);
+  },
+  // control auto progression
+  play: function play() {
+    w('play') && x.play();
+  },
+  pause: function pause() {
+    w('pause') && x.pause();
   }
 };
 var _default = animatour;

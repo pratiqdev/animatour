@@ -15,7 +15,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var totalNumberOfBrochureVariants = 1; // (2) - 0,1
 
-var Tour = function Tour(tourId, x) {
+var Tour = function Tour(tourId, x, state) {
   _classCallCheck(this, Tour);
 
   if (!tourId) {
@@ -38,8 +38,11 @@ var Tour = function Tour(tourId, x) {
     }
   });
   this.id = tourId;
-  this.brochureType = x.brochureType || 0;
-  this.steps = (0, _createSteps["default"])(x.steps); //- currentStep ____________________________________________________________________________________________________________________
+  this.modal = x.modal || null;
+  this.steps = (0, _createSteps["default"])({
+    steps: x.steps,
+    state: state
+  }); //- currentStep ____________________________________________________________________________________________________________________
 
   if (x.currentStep < 0) {
     _shout["default"].warn("newTour({currentStep: ".concat(x.currentStep, "}) \n 'currentStep' was less than 0 \n defaulting to 0 (first step)"));

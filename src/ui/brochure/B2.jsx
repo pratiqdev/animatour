@@ -55,7 +55,7 @@ const B2 = (props) => {
       justifyContent: 'space-between',
 
     },
-    exitButton:{
+    closeButton:{
       color: 'red'
     }
   }
@@ -75,7 +75,7 @@ const B2 = (props) => {
         {tour.steps[tour.currentStep].content}
       </div>
       <div style={s.footer} className='footer'>
-        <button style={s.exitButton} onClick={()=>animatour.close()}>exit</button>
+        <button style={s.closeButton} onClick={()=>animatour.close()}>close</button>
         <div>
           <button style={s.prevButton} onClick={()=>animatour.prev(tour.id)}>{'<'}</button>
           <button style={s.nextButton} onClick={()=>animatour.next(tour.id)}>{'>'}</button>

@@ -1,7 +1,7 @@
 import shout from '../utils/shout'
 
 class Step{
-    constructor(x){
+    constructor(x, state){
         /// alert user of incorrect keys
         Object.keys(x).forEach(key =>{
             switch(key){
@@ -23,10 +23,16 @@ class Step{
             }
         })
 
-        this.id =           x.id
-        this.title =        x.title
-        this.element =      x.element       ? x.element         : shout.error(`Steps must include an element.`, `Use element selectors ('.el', '#el')`)
-        this.content =      x.content       ? x.content         : shout.error(`Steps must include content`)
+        // use unique id for tracking or filtering a step?
+        // this.id                     = x.id
+        this.title                  = x.title                   ? x.title           : shout.error(`Steps must at least include a title.`)
+        this.element                = x.element                 || null
+        this.content                = x.content                 || null
+
+        /// use default setting if step setting does not exist
+        // step settings will override default settings
+        this.transitionDuration     = x.transitionDuration      || state.defaultSettings.transitionDuration
+        this.stepDuration           = x.stepDuration            || state.defaultSettings.stepDuration
     }
 }
 export default Step

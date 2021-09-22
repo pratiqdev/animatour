@@ -1,6 +1,8 @@
 import Step from '../classes/Step'
 
-const _createSteps = (steps, oldSteps) => {
+const _createSteps = (x) => {
+    let {steps, oldSteps, state} = x
+
     if(!steps){
         if(oldSteps){
             return oldSteps
@@ -27,7 +29,7 @@ const _createSteps = (steps, oldSteps) => {
     if(Array.isArray(steps)){
         steps.forEach(x=> {
             if(x){
-                stepsArray.push(x)
+                stepsArray.push( new Step(x, state) )
             }
         })
     }else{

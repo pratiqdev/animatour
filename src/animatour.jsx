@@ -18,6 +18,8 @@ const w = (func) => {
 const animatour = {
   getAllTours:  () =>         {return  w('getAllTours')         && x.getAllTours() },
   getTour:      (a) =>        {return  w('getTour')             && x.getTour(a) },
+  getAllData:   () =>         {return  w('getAllData')          && x.getAllData() },
+
   // toggle the guide
   showGuide:    () =>         { w('showGuide')                  && x.showGuide() },
   hideGuide:    () =>         { w('hideGuide')                  && x.hideGuide() },
@@ -29,8 +31,20 @@ const animatour = {
   // control the steps
   next:         (a) =>        { w('next')                       && x.next(a) },
   prev:         (a) =>        { w('prev')                       && x.prev(a) },
+  open:         () =>         { w('open')                       && x.open() },
   close:        () =>         { w('close')                      && x.close() },
-  open:         (a) =>        { w('close')                      && x.open(a) },
+
+  start:        (a) =>        { w('start')                      && x.start(a) },
+  reset:        (a) =>        { w('reset')                      && x.reset(a) },
+
+  // control auto progression
+  play:         () =>         { w('play')                       && x.play() },
+  pause:        () =>         { w('pause')                      && x.pause() },
+
+
+
+
 }
   
+
 export default animatour

@@ -1,6 +1,6 @@
 import React from 'react'
 import '../style/datalist.css'
-
+import animatour from '../animatour'
 
 const DataList = ({data}) => {
 
@@ -15,6 +15,16 @@ const DataList = ({data}) => {
     return(
 
         <div className='datalist'>
+            <button onClick={()=>animatour.start()}>Start</button>
+            <button onClick={()=>animatour.open()}>Open</button>
+            <button onClick={()=>animatour.close()}>Close</button>
+            <button onClick={()=>animatour.next()}>Next</button>
+            <button onClick={()=>animatour.prev()}>Prev</button>
+            <button onClick={()=>animatour.reset()}>Reset</button>
+            <br />
+            <button onClick={()=>console.log(animatour.getTour('Default Tour'))}>Get Tour ('Default Tour')</button>
+
+
             {data.activeStepData ?
             <>
             <h4>Active Step Data</h4>
@@ -43,6 +53,7 @@ const DataList = ({data}) => {
             }
             <hr />
             <h4>State</h4>
+            <p>Active Tour: {data.activeTour}</p>
             <p>Guide open: {data.guideOpen ? 'true' : 'false'}</p>
             <p>T: {data.location ? data.location.T : 'none'}</p>
             <p>L: {data.location ? data.location.L : 'none'}</p>

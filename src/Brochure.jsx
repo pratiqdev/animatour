@@ -1,80 +1,64 @@
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 
 import animatour from './animatour'
-import Collection from './ui/Collection'
-
-
-import Tour from './classes/Tour'
 import shout from './utils/shout'
 import _getLocation from './utils/getLocation'
-import _scrollToElement from './utils/scrollToElement'
 import _createSteps from './utils/createSteps'
+import _defaultSettings from './utils/defaultSettings'
+import _scrollToElement from './utils/scrollToElement'
 
+import Collection from './ui/Collection'
+import Tour from './classes/Tour'
 import DataList from './ui/DataList'
 
-const ogDefaultSettings = {
-  ringColor: '#f00',
-  ringWidth: '1px',
-  ringRadius: '0px',
-  ringMargin: '10px',
-  ringShadowColor: 'rgba(150,150,150,.8)',
-  ringShadowWidth: '10000px',
 
-  brochureType: 0, //? 'flat', 'simple', 'custom' ???
-  
-  stepDuration: 0, /// (ms) 0 means do not auto progress to next step 
-  exitLabel: 'Exit',
-  nextLabel: '>',
-  prevLabel: '<',
-
-  duration: '.8s', /// time it takes to move the ring
-}
 
 
 class Main extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      perf: 0,
+      /// default
+      globalSettings: _defaultSettings,
+
+      /// global scoped state
+      requestRef: React.createRef(),
+      apHandle: React.createRef(),
+      apValue: 0,
+      apActive: false,
+      perf: 'X',
       debug: true,
-      defaultSettings: {
-        ringColor: '#f00',
-        ringWidth: '1',
-        ringRadius: '0',
-        ringMargin: '10',
-        ringShadowColor: 'rgba(150,150,150,.8)',
-        ringShadowWidth: '10000px',
-        brochureType: 0,
-        stepDuration:0,
-        exitLabel: 'Exit',
-        nextLabel: '>',
-        prevLabel: '<',
-        duration: .8,
-        defaultLocation: 'center-center',
-        exitLocation: 'top',
-      },
       mainProps: props,
+      modal: null,
       activeTour: false,
       activeStepData: false,
       guideOpen: false,
       location: false,
-      brochureAlignment: ['top-left', 'left-top'],
 
       list:[]
     }
+
+    this.updateLocation = this.updateLocation.bind(this);
   }
 
-  //= Utilities ----------------------------------------------------------------------------------------------------------------------------
-  /** return given tour if exists in list or the act */
-  useTourOrActive(tourId){
+
+
+
+
+
+  //= Utilities
+  //= ======================================================================================================================================
+
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  useTourOrActive (tourId){
     /// if tour exists
     if(tourId){
       if(!this.state.list.find(x=>x.id === tourId)){
-        shout.warn(`useTourOrActive() | No tour was found as '${tourId}'. Using currently active tour instead`)
+        // shout.warn(`useTourOrActive() | No tour was found as '${tourId}'. Using currently active tour instead`)
         if(this.state.activeTour){
           return this.state.activeTour
         }else{
-          shout.warn(`useTourOrActive() | No tour was found as '${tourId}' and no active tour to use`)
+          // shout.warn(`useTourOrActive() | No tour was found as '${tourId}' and no active tour to use`)
         }
       }else{
         return tourId
@@ -83,16 +67,17 @@ class Main extends React.Component {
     /// no tour was found
     else{
       if(this.state.activeTour){
-        shout.warn(`useTourOrActive() | No tour was supplied. Using currently active tour instead`)
+        // shout.warn(`useTourOrActive() | No tour was supplied. Using currently active tour instead`)
         return this.state.activeTour
       }else{
-        shout.error(`useTourOrActive() | No tour was found and no active tour to use!`)
+        // shout.error(`useTourOrActive() | No tour was found and no active tour to use!`)
         return false
       }
     }
   }
 
-  verifyTourExists(tourId){
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  verifyTourExists (tourId){
     if(tourId){
       if(typeof this.state.list.find(x=>x.id === tourId) === 'undefined'){
         shout.warn( `verifyTourExists() | No tour was found as '${tourId}'`)
@@ -104,203 +89,55 @@ class Main extends React.Component {
       return false
     }
   }
-  
+  //----------------------------------------------------------------------------------------------------------------------------------------
 
+  enableAutoProgression (){
+    clearTimeout(this.state.apHandle)
+    this.setState({apActive: true})
 
+    let ASD = this.state.activeStepData
+    let APTI = this.state.globalSettings.autoProgressionTimingIncrement
+    console.log(`EAP | stepDuration: ${ASD.stepDuration}, apValue: ${this.state.apValue}`)
 
+      const updateApValue = () => {
+        clearTimeout(this.state.apHandle)
+        this.state.apHandle = setTimeout(() => {
+          if(this.state.apValue < APTI){
+            this.setState({apValue: 0})
+            this.next()
+          }else{
+            this.setState({apValue: this.state.apValue - APTI}, ()=> updateApValue())
+          }
+        }, APTI);
+      }
 
-
-
-
-
-
-
-
-  
-  //= Tours --------------------------------------------------------------------------------------------------------------------------------
-  newTour(tourId, config){//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    if(this.verifyTourExists(tourId)){
-      shout.error(`newTour() \n A tour with the id '${tourId}' already exists`)
-      return false
-    }
-    let LIST = this.state.list
-    LIST.push( new Tour(tourId, config) )
-    this.setState({list: LIST})
-    console.log(`tour added: ${tourId}`, LIST)
-  }
-
-  getAllTours(){ ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    return this.state.list
-  }
-  
-  getTour(tourId){ /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    let useTour = this.useTourOrActive(tourId)
-    let TOUR = this.state.list.find(x => x.id === useTour)
-    if(!TOUR){
-      shout.error(`No tour found for '${useTour}'`)
-    }else{
-      return TOUR
+    if(ASD && ASD.stepDuration !== 0){
+      if(this.state.apValue === 0){
+        this.setState({apValue: ASD.stepDuration}, ()=> updateApValue())
+      }else{
+        updateApValue()
+      }
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //= Steps --------------------------------------------------------------------------------------------------------------------------------
-  addSteps(tourId, newSteps){///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    STEPS = _createSteps(newSteps, this.state.list.find(x=>x.id===tourId).steps ) 
-    
-    this.setState(prevState => {
-      return prevState.list.find(x => x.id === tourId).steps = STEPS
-    })
-  }
-  
-  next (tourId){////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    let TOUR = this.useTourOrActive(tourId)
-
-    let STEP      = this.state.list.find(x => x.id === TOUR).currentStep
-    let LENGTH    = this.state.list.find(x => x.id === TOUR).steps.length - 1
-
-    
-    if(STEP < LENGTH){
-      STEP = STEP + 1
-    }else{
-      STEP = 0
-    }
-    
-    let ELEMENT = this.state.list.find(x => x.id === TOUR).steps[STEP].element
-    
-    let ASD = this.getStepData(STEP)
-    console.log('ASD + location', ASD, this.state.location)
-
-    //? This needs to check if active step is still the same as when it was called to prevent a different step from auto-progressing
-    // if(ASD.stepDuration !== 0){
-    //   setTimeout(() => {
-    //     this.next()
-    //   }, ASD.stepDuration);
-    // }
-    
-    this.setState(prevState => {
-      prevState.list.find(x => x.id === TOUR).currentStep = STEP
-      prevState.activeStepData = ASD
-      //  prevState.guideLocation = this._findGuide(ELEMENT)
-      return prevState
-    })
-    
-    _scrollToElement(ELEMENT)
-
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  disableAutoProgression (){
+    clearTimeout(this.state.apHandle)
+    this.setState({apActive: false})
+    // this.state.apValue = 0
   }
 
-  prev (tourId){////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    let TOUR = this.useTourOrActive(tourId)
-
-    let STEP =    this.state.list.find(x => x.id === TOUR).currentStep
-    let LENGTH =  this.state.list.find(x => x.id === TOUR).steps.length - 1
-    
-    if(STEP >= 1){
-      STEP = STEP - 1
-    }else{
-      STEP = LENGTH
-    }
-
-    let ELEMENT   = this.state.list.find(x => x.id === TOUR).steps[STEP].element
-
-    console.log(`prev | step: ${STEP}`)
-    let ASD = this.getStepData(STEP)
-    console.log('ASD + location', ASD, this.state.location)
-
-
-
-    this.setState(prevState => {
-      prevState.list.find(x => x.id === TOUR).currentStep = STEP
-      prevState.activeStepData = ASD
-      /// prevState.guideLocation = this._findGuide(ELEMENT)
-      return prevState
-    })
-    _scrollToElement(ELEMENT)
-
-  }
-  
-
-
-
-
-
-
-
-
-
-
-  //= Brochure -----------------------------------------------------------------------------------------------------------------------------
-  open (tourId){////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    let useTour = this.useTourOrActive(tourId)
-    /// console.log(`open('${useTour}')`)
-
-    // used as callback for setState function
-    
-    const setActiveStepData = () => {
-      let ASD = this.getStepData()
-      //~ ASD is returning undefined??? --------------------------------------------------------------------------------------
-      /console.log(`open(id:${tourId}, useTour:${useTour}) - ASD`, ASD) 
-      this.setState({ activeStepData: ASD })
-    }
-    
-    if(useTour){
-      this.setState({guideOpen: true, activeTour: useTour}, ()=> setActiveStepData())
-    }
-    
-  }
-
-  close (){/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    this.setState({guideOpen: false})
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //= Guide --------------------------------------------------------------------------------------------------------------------------------
-  /** Get all data for active or given step
-   * 
-   * ***
-   * this function handles setting a state object that contains all given step data or defaults if not provided.
-   */
-  getStepData(STEP){
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  getStepData (STEP){
     let D = {}
     
-    if(!this.state.activeTour || this.state.activeTour == false || this.state.activeTour == null || this.state.activeTour === ''){
-      console.log('getStepData() | active tour is false or null! (1)')
-      return false
-    }
-
-    if(!this.useTourOrActive()){
-      console.log('getStepData() | active tour is false or null! (2)')
+    if(!this.state.activeTour || this.state.activeTour == false || this.state.activeTour == null || this.state.activeTour === '' || !this.useTourOrActive()){
+      // console.log('getStepData() | active tour is false or null! (1)')
       return false
     }
 
     D.tour = this.state.activeTour
-
+    // console.log(`getStepData() | active tour: ${D.tour}`)
 
 
     D.totalSteps = this.state.list.find(x=>x.id === D.tour)?.steps?.length - 1 || 0
@@ -317,98 +154,358 @@ class Main extends React.Component {
     const findStep = (t, s) => this.state.list.find(x=>x.id === t)?.steps[s]
 
 
-    D.element       = findStep(D.tour, D.step)?.element
-    D.margin        = findStep(D.tour, D.step)?.margin             || this.state.defaultSettings.ringMargin
-    D.ringColor     = findStep(D.tour, D.step)?.ringColor          || this.state.defaultSettings.ringColor
-    D.ringWidth     = findStep(D.tour, D.step)?.ringWidth          || this.state.defaultSettings.ringWidth
+    D.element                 = findStep(D.tour, D.step)?.element
+    D.margin                  = findStep(D.tour, D.step)?.margin                      //|| this.state.globalSettings.ringMargin
+    D.ringColor               = findStep(D.tour, D.step)?.ringColor                   //|| this.state.globalSettings.ringColor
+    D.ringWidth               = findStep(D.tour, D.step)?.ringWidth                   //|| this.state.globalSettings.ringWidth
 
-    D.exitLabel     = findStep(D.tour, D.step)?.exitLabel          || this.state.defaultSettings.exitLabel
-    D.nextLabel     = findStep(D.tour, D.step)?.nextLabel          || this.state.defaultSettings.nextLabel
-    D.prevLabel     = findStep(D.tour, D.step)?.prevLabel          || this.state.defaultSettings.prevLabel
-
-
-    D.brochureType  = findStep(D.tour, D.step)?.brochureType       || this.state.defaultSettings.brochureType
-    D.stepDuration  = findStep(D.tour, D.step)?.stepDuration       || this.state.defaultSettings.stepDuration
-    D.duration      = findStep(D.tour, D.step)?.duration           || this.state.defaultSettings.duration
+    D.closeLabel              = findStep(D.tour, D.step)?.closeLabel                  //|| this.state.globalSettings.closeLabel
+    D.nextLabel               = findStep(D.tour, D.step)?.nextLabel                   //|| this.state.globalSettings.nextLabel
+    D.prevLabel               = findStep(D.tour, D.step)?.prevLabel                   //|| this.state.globalSettings.prevLabel
 
 
-    D.title         = findStep(D.tour, D.step)?.title              || `Step ${D.step}`
-    D.content       = findStep(D.tour, D.step)?.content            || ``
+    D.stepDuration            = findStep(D.tour, D.step)?.stepDuration                //|| this.state.globalSettings.stepDuration
+    D.transitionDuration      = findStep(D.tour, D.step)?.transitionDuration          //|| this.state.globalSettings.transitionDuration
+
+    D.title                   = findStep(D.tour, D.step)?.title                       //|| `Step ${D.step}`
+    D.content                 = findStep(D.tour, D.step)?.content                     //|| ``
 
 
     return D
   }
 
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  updateLocation (){
+    const t0 = performance.now()
+    this.setState({
+      location: _getLocation(
+        this.getStepData(), 
+        this.state.guideOpen, 
+        this.state.defaultLocation, 
+        this.state.exitLocation
+        )
+    })
+    const t1 = performance.now()
+    this.setState({perf: t1 - t0})
+
+    if(this.state.guideOpen){
+      this.state.requestRef.current = requestAnimationFrame(this.updateLocation);
+    }else{
+      this.setState({perf:'X'})
+      cancelAnimationFrame(this.state.requestRef.current);
+    }
+  }
+
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  init (){
+    this.setState({
+      activeStepData: this.getStepData(), 
+      location: _getLocation(null, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)
+    }, ()=> console.log('INIT',this.state))
+  }
+  
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  run (){
+    console.log(`RUN`)
+
+    this.setState({
+      guideOpen: true,
+      activeTour: this.useTourOrActive(),
+      activeStepData: this.getStepData(),
+    }, ()=>{
+      _scrollToElement(this.activeStepData && this.activeStepData.element)
+      this.enableAutoProgression()
+      this.setState(prevState => {
+        prevState.apValue = this.state.activeStepData.stepDuration
+        // pull the modal from the active tour
+        prevState.modal = this.state.list.find(x=>x.id === this.state.activeTour).modal
+        return prevState
+      })
+      this.state.requestRef.current = requestAnimationFrame(this.updateLocation);
+    })
+  }
+
+    
+  
   
 
+  //= Tours
+  //= ======================================================================================================================================
 
+  //----------------------------------------------------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  repeatUpdateGuideLocation(){
-    let newD = {}
-    let ASD = null
-
-    const loop = () => {
-      const t0 = performance.now()
-      ASD = this.getStepData()
-      if(ASD){
-        newD = _getLocation(ASD, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)
-        this.setState(prevState => {
-          prevState.location = newD
-          return prevState
-        })
-      }
-
-      setTimeout(() => {
-        
-        const t1 = performance.now()
-        this.setState({perf: t1 - t0})
-        loop()
-
-      }, 10);
+  newTour (tourId, config){
+    if(this.verifyTourExists(tourId)){
+      shout.error(`newTour() \n A tour with the id '${tourId}' already exists`)
+      return false
     }
-    loop()
+    let LIST = this.state.list
+    // create a new Tour and push to list => requires tour id, tour config and current state
+    LIST.push( new Tour(tourId, config, this.state) )
+    this.setState({list: LIST, activeTour: tourId})
+    // console.log(`tour added: ${tourId}`, LIST)
+    // console.log(`tour modal:`, config.modal)
   }
+
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  getAllTours (){
+    return this.state.list
+  }
+  
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  getTour (tourId){
+    let useTour = this.useTourOrActive(tourId)
+    let TOUR = this.state.list.find(x => x.id === useTour)
+    if(!TOUR){
+      shout.error(`No tour found for '${useTour}'`)
+    }else{
+      console.log(`getTour(${useTour})`)
+      return TOUR
+    }
+  }
+
+
+
+
+
+
+
+  //= Steps 
+  //= ======================================================================================================================================
+
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  addSteps (tourId, newSteps){
+    console.log(`ADD STEPS ${tourId}`)
+
+    STEPS = _createSteps(newSteps, this.state.list.find(x=>x.id===tourId).steps ) 
+    
+    this.setState(prevState => {
+      return prevState.list.find(x => x.id === tourId).steps = STEPS
+    })
+  }
+  
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  next (tourId){
+    console.log(`NEXT ${tourId}`)
+
+    let useTour = this.useTourOrActive(tourId)
+    if(!useTour){
+      shout.error(`next() | Unable to advance a tour to the next step without an active tour available.`,`Set an active tour with animatour.start('My Tour')`)
+      return false
+    }
+    
+    let STEP      = this.state.list.find(x => x.id === useTour).currentStep
+    let LENGTH    = this.state.list.find(x => x.id === useTour).steps.length - 1
+    
+    
+    if(STEP < LENGTH){
+      STEP = STEP + 1
+    }else{
+      STEP = 0
+    }
+    
+    let ELEMENT = this.state.list.find(x => x.id === useTour).steps[STEP].element
+    _scrollToElement(ELEMENT)
+    
+    let ASD = this.getStepData(STEP)
+    console.log(`Brochure | next() - transitionDuration: ${ASD.transitionDuration}`)
+    // console.log('ASD + location', ASD, this.state.location)
+
+    if(this.state.globalSettings.enableAutoProgressionOnNext){
+      this.enableAutoProgression()
+    }else{
+      this.disableAutoProgression()
+    }
+    
+    this.setState(prevState => {
+      prevState.list.find(x => x.id === useTour).currentStep = STEP
+      prevState.activeStepData = ASD
+      prevState.apValue = ASD.stepDuration || 0
+
+      return prevState
+    })
+    
+
+  }
+
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  prev (tourId){
+    console.log(`PREV ${tourId}`)
+
+    let useTour = this.useTourOrActive(tourId)
+    if(!useTour){
+      shout.error(
+        `prev() | Unable to advance a tour to the previous step without an active tour available.`,
+        `Set an active tour with animatour.start('My Tour')`
+        )
+      return false
+    }
+
+    let STEP =    this.state.list.find(x => x.id === useTour).currentStep
+    let LENGTH =  this.state.list.find(x => x.id === useTour).steps.length - 1
+    
+    if(STEP >= 1){
+      STEP = STEP - 1
+    }else{
+      STEP = LENGTH
+    }
+
+    let ELEMENT   = this.state.list.find(x => x.id === useTour).steps[STEP].element
+
+    // console.log(`prev | step: ${STEP}`)
+    let ASD = this.getStepData(STEP)
+    // console.log('ASD + location', ASD, this.state.location)
+
+    if(this.state.globalSettings.enableAutoProgressionOnPrev){
+      this.enableAutoProgression(ASD)
+    }else{
+      this.disableAutoProgression()
+    }
+
+
+
+    this.setState(prevState => {
+      prevState.list.find(x => x.id === useTour).currentStep = STEP
+      prevState.activeStepData = ASD
+      prevState.apValue = ASD.stepDuration || 0
+      /// prevState.guideLocation = this._findGuide(ELEMENT)
+      return prevState
+    })
+    _scrollToElement(ELEMENT)
+
+  }
+  
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  reset (tourId){
+    console.log(`RESET ${tourId}`)
+    
+    let useTour = this.useTourOrActive(tourId)
+    console.log(`reset | tour: ${tourId} - ${useTour}`)
+
+    if(!useTour){
+      shout.error(`Unable to reset a tour without starting a tour first. Tours will automatically start from step 0 unless 'currentStep' is set at tour creation.`)
+      return false
+    }
+
+    let ELEMENT   = this.state.list.find(x => x.id === useTour).steps[this.state.list.find(x => x.id === useTour).currentStep].element
+
+    this.setState(prevState => {
+      prevState.list.find(x => x.id === useTour).currentStep = 0
+      prevState.activeStepData = this.getStepData()
+      return prevState
+    })
+    _scrollToElement(ELEMENT)
+
+  }
+
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  start (tourId){
+    console.log(`START ${tourId}`)
+
+     let useTour = this.useTourOrActive(tourId)
+     
+    //  const setActiveStepData = () => {
+    //    let ASD = 'not defined yet'
+    //    ASD = this.getStepData()
+    //    _scrollToElement(ASD.element)
+    //   //  this.updateLocation()
+    //   this.run()
+    //  }
+
+     if(!useTour){
+      shout.error(
+        'Not able to start a tour - starting a tour first.',
+        'Use animatour.start("My Tour") to start a tour and open the guide)'
+      )
+      return false
+    }else{
+      this.setState({activeTour: useTour}, () => this.run())
+    }
+  }
+
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  play(){
+    console.log('PLAY')
+
+    this.enableAutoProgression()
+  }
+
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  pause(){
+    console.log('PAUSE')
+
+    this.disableAutoProgression()
+  }
+
+
+
+
+
+
+
+  //= Brochure 
+  //= ======================================================================================================================================
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  open (){
+    console.log('OPEN')
+    this.run()
+    // used as callback for setState function
+    // let useTour = this.useTourOrActive()
+    // // console.log(`open('${useTour}')`)
+
+    // if(!useTour){
+    //   shout.error('Not able to open guide without starting a tour first.','Use animatour.start("My Tour") to start a tour and open the guide)')
+    //   return false
+    // }
+    
+    // const setActiveStepData = () => {
+    //   let ASD = 'not defined yet'
+    //   ASD = this.getStepData()
+      
+    //   // console.log(`open(id:${tourId}, useTour:${useTour}) - ASD`, ASD) 
+    //   this.setState({ activeStepData: ASD })
+    //   // this.init()
+    //   // console.log(`active tour: ${this.state.activeTour}`)
+    // }
+    
+    // if(useTour){
+    //   this.setState({guideOpen: true, activeTour: useTour}, () => setActiveStepData())
+    // }
+    
+  }
+
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  close (){
+    console.log('CLOSE')
+
+    this.setState({guideOpen: false})
+    this.disableAutoProgression()
+  }
+
+
+
+
+
+
+
 
   componentDidMount(){
-    this.repeatUpdateGuideLocation()
-    this.setState({activeStepData: this.getStepData(), location: _getLocation(null, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)}, console.log(this.state))
+    this.init()
   }
-    
-  // Rest of the component's code
+
+  componentWillUnmount(){
+    cancelAnimationFrame(this.state.requestRef.current);
+  }
+
   render(){
     return(
       <>
 
       <div style={{position: 'fixed', top: '0', left: '0', background: '#9f9', padding: '5px', width: '2rem', zIndex: '9999999'}}>{this.state.perf}</div>
       <DataList data={this.state} />
-
-      <Collection
-        state={this.state}
-      // open={this.state.guideOpen}
-      // loc={this.state.location}
-      />
+        <Collection
+          state={this.state}
+        />
       </>
     )
   }
@@ -422,17 +519,3 @@ const Brochure = (props) => {
 
   
 export default Brochure
-
-
-
-//! BROKEN FUNCTIONS -----------------------------------------------------------------------------------------------------------------------
-//! 'useTourOrActive()' has fatal flaw - if given tour does not exist and active tour is not found - what should the function return??
-
-
-//- TODO -----------------------------------------------------------------------------------------------------------------------------------
-//- create functions to update 'defaultSettings'
-//- create function to revert 'defaultSettings' to 'ogDefaultSettings'
-
-
-//? QUESTIONS ------------------------------------------------------------------------------------------------------------------------------
-//? 

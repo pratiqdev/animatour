@@ -13,9 +13,9 @@ import shout from './shout'
  * ---
  * @returns void
  */
-const _scrollToElement = (selector, behavior, alignment) => {
+const _scrollToElement = (selector, behavior, alignment, success) => {
 
-
+    
     let ELEMENT = null
     /// define the scroll speed/behavior
     let BEHAVIOR = 'auto'
