@@ -7,7 +7,7 @@
  * @param {string|string-array} - the message to post under the branded heading
  * @returns void
  */
-export const shout = {
+const shout = {
 
     warn: (msg) => {
         console.warn(
@@ -39,4 +39,5 @@ export const shout = {
         )   
     }
 }
+
 export default shout

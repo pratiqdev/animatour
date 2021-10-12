@@ -9,43 +9,38 @@ var _Step = _interopRequireDefault(require("../classes/Step"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _createSteps = function _createSteps(x) {
-  var steps = x.steps,
-      oldSteps = x.oldSteps,
-      state = x.state;
+var _createSteps = function _createSteps(data) {
+  var oldSteps = data.oldSteps,
+      newSteps = data.newSteps,
+      tourSettings = data.tourSettings; // console.log('createSteps | data: ', data)
 
-  if (!steps) {
-    if (oldSteps) {
-      return oldSteps;
-    } else {
+  if (!newSteps) {
+    if (!oldSteps) {
       return [];
+    } else {
+      return oldSteps;
     }
   }
 
   var stepsArray = [];
 
   if (Array.isArray(oldSteps)) {
-    oldSteps.forEach(function (x) {
-      if (x) {
-        stepsArray.push(x);
-      }
+    oldSteps.forEach(function (step_x) {
+      step_x && stepsArray.push(step_x);
     });
   } else {
-    if (oldSteps) {
-      stepsArray.push(oldSteps);
-    }
+    oldSteps && stepsArray.push(oldSteps);
   }
 
-  if (Array.isArray(steps)) {
-    steps.forEach(function (x) {
-      if (x) {
-        stepsArray.push(new _Step["default"](x, state));
-      }
+  if (Array.isArray(newSteps)) {
+    newSteps.forEach(function (step_x) {
+      step_x && stepsArray.push(new _Step["default"]({
+        step: step_x,
+        tourSettings: tourSettings
+      }));
     });
   } else {
-    if (steps) {
-      stepsArray.push(steps);
-    }
+    newSteps && stepsArray.push(steps);
   }
 
   return stepsArray;

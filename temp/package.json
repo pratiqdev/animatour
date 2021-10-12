@@ -1,10 +1,10 @@
 {
   "name": "animatour",
-  "version": "0.0.928",
+  "version": "0.1.87",
   "private": false,
   "main": "index.js",
   "scripts": {
-    "packme": "npm run p5 && npm run p6   && clear && echo \"Successfully created animatour@$npm_package_version\"",
+    "packme": "npm run p5 && npm run p6   && clear && echo \"Successfully created animatour @ $npm_package_version\"",
     "5______ pack the files __________________________________________________________": "",
     "p5": "npm pack",
     "6______ move the finished package to the documets/packages directory ____________": "",

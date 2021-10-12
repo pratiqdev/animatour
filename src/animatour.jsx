@@ -41,6 +41,9 @@ const animatour = {
   play:         () =>         { w('play')                       && x.play() },
   pause:        () =>         { w('pause')                      && x.pause() },
 
+  test:        () =>           { w('test')                      && x.test() },
+
+
 
 
 

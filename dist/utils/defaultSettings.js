@@ -4,26 +4,36 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
-var originalDefaults = {
+var defaultSettings = {
+  /// modal
   modal: 0,
+  brochureType: 0,
+  /// ring
   ringColor: '#f00',
-  ringWidth: '1',
-  ringRadius: '0',
-  ringMargin: '10',
+  ringWidth: 1,
+  ringRadius: 0,
+  ringMargin: 10,
   ringShadowColor: 'rgba(150,150,150,.8)',
   ringShadowWidth: '10000px',
-  brochureType: 0,
+  /// durations
+  transitionDuration: 800,
   stepDuration: 0,
+  /// labels
   closeLabel: 'Exit',
   nextLabel: '>',
   prevLabel: '<',
-  transitionDuration: .8,
+  /// locations
   defaultLocation: 'center-center',
   brochureAlignment: 'top-left',
   exitLocation: 'top',
-  enableAutoProgressionOnNext: true,
+  /// scroll
+  scrollBehavior: 'smooth',
+  scrollAlignmentVertical: 'center',
+  scrollAlignmentHorizontal: 'center',
+  /// config
+  enableAutoProgressionOnNext: false,
   enableAutoProgressionOnPrev: false,
   autoProgressionTimingIncrement: 100
 };
-var _default = originalDefaults;
+var _default = defaultSettings;
 exports["default"] = _default;

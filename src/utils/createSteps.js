@@ -1,41 +1,34 @@
 import Step from '../classes/Step'
 
-const _createSteps = (x) => {
-    let {steps, oldSteps, state} = x
+const _createSteps = (data) => {
+    const {oldSteps, newSteps, tourSettings} = data
+    // console.log('createSteps | data: ', data)
 
-    if(!steps){
-        if(oldSteps){
-            return oldSteps
-        }else{
+    if(!newSteps){
+        if(!oldSteps){
             return []
+        }else{
+            return oldSteps
         }
     }
 
     let stepsArray = []
 
     if(Array.isArray(oldSteps)){
-        oldSteps.forEach(x=> {
-            if(x){
-                stepsArray.push(x)
-            }
+        oldSteps.forEach(step_x=> {
+            step_x && stepsArray.push(step_x)
         })
     }else{
-        if(oldSteps){
-            stepsArray.push(oldSteps) 
-        }
+        oldSteps && stepsArray.push(oldSteps) 
     }
 
 
-    if(Array.isArray(steps)){
-        steps.forEach(x=> {
-            if(x){
-                stepsArray.push( new Step(x, state) )
-            }
+    if(Array.isArray(newSteps)){
+        newSteps.forEach(step_x=> {
+            step_x && stepsArray.push( new Step({step: step_x, tourSettings}) )
         })
     }else{
-        if(steps){
-            stepsArray.push(steps) 
-        }
+        newSteps && stepsArray.push(steps) 
     }
 
     return stepsArray 

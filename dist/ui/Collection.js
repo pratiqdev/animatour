@@ -45,67 +45,33 @@ function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Sy
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+var FTO = true;
+
 var Collection = function Collection(props) {
-  var LOC = props.state.location;
-  var ASD = props.state.activeStepData;
-
-  var _useState = (0, _react.useState)(true),
-      _useState2 = _slicedToArray(_useState, 2),
-      FTO = _useState2[0],
-      setFTO = _useState2[1];
-
-  var _useState3 = (0, _react.useState)(null),
-      _useState4 = _slicedToArray(_useState3, 2),
-      referenceElement = _useState4[0],
-      setReferenceElement = _useState4[1];
-
-  var _useState5 = (0, _react.useState)(null),
-      _useState6 = _slicedToArray(_useState5, 2),
-      popperElement = _useState6[0],
-      setPopperElement = _useState6[1];
-
-  var _useState7 = (0, _react.useState)(null),
-      _useState8 = _slicedToArray(_useState7, 2),
-      arrowElement = _useState8[0],
-      setArrowElement = _useState8[1];
-
+  // console.log(`Collection | render()`)
   if (!props.state) {
     console.log('Collection | No state passed to collection');
     return false;
-  } //~ A.2 - check if reference exists and exec anims
+  }
 
+  var LOC = props.state.location;
+  var ASD = props.state.activeStepData;
 
-  var handleGuideOpen = function handleGuideOpen() {
-    console.log('Collection | handleGuideOpen');
+  var _useState = (0, _react.useState)(null),
+      _useState2 = _slicedToArray(_useState, 2),
+      referenceElement = _useState2[0],
+      setReferenceElement = _useState2[1];
 
-    if (referenceElement) {
-      console.log('Collection | opening'); // let tl_open = new TimelineMax()
+  var _useState3 = (0, _react.useState)(null),
+      _useState4 = _slicedToArray(_useState3, 2),
+      popperElement = _useState4[0],
+      setPopperElement = _useState4[1];
 
-      _gsap["default"].to([referenceElement, popperElement], {
-        display: 'block',
-        duration: 3 || ASD.transitionDuration,
-        // FTO ? 0 : ASD.duration, 
-        opacity: 1
-      });
-    }
-  };
+  var _useState5 = (0, _react.useState)(null),
+      _useState6 = _slicedToArray(_useState5, 2),
+      arrowElement = _useState6[0],
+      setArrowElement = _useState6[1]; // console.log(`Collection | usePopper()`)
 
-  var handleGuideClose = function handleGuideClose() {
-    console.log('Collection | handleGuideClose');
-
-    if (referenceElement) {
-      console.log('Collection | closing');
-      var tl_close = new _gsap.TimelineMax();
-      tl_close.to([referenceElement, popperElement], {
-        duration: 3 || ASD.transitionDuration,
-        // FTO ? 0 : ASD.duration, 
-        opacity: 0
-      }, 0);
-      tl_close.to([referenceElement, popperElement], {
-        display: 'none'
-      }, 3 || ASD.transitionDuration);
-    }
-  };
 
   var _usePopper = (0, _reactPopper.usePopper)(referenceElement, popperElement, {
     modifiers: [{
@@ -125,40 +91,74 @@ var Collection = function Collection(props) {
       attributes = _usePopper.attributes,
       update = _usePopper.update;
 
+  var handleGuideOpen = function handleGuideOpen() {
+    FTO = true;
+    console.log('Collection | handleGuideOpen');
+
+    if (referenceElement) {
+      console.log('Collection | opening');
+
+      _gsap["default"].to([referenceElement, popperElement], {
+        display: 'block',
+        duration: 3 || ASD.transitionDuration,
+        // FTO ? 0 : ASD.duration, 
+        opacity: 1
+      });
+    }
+  };
+
+  var handleGuideClose = function handleGuideClose() {
+    console.log('Collection | handleGuideClose');
+
+    if (referenceElement) {
+      console.log('Collection | closing');
+      var tl_close = new _gsap.TimelineMax();
+      tl_close.to([referenceElement, popperElement], {
+        duration: 3 || ASD.transitionDuration,
+        // FTO ? 0 : ASD.duration, 
+        opacity: .5
+      }, 0);
+      tl_close.to([referenceElement, popperElement], {
+        display: 'none'
+      }, 3 || ASD.transitionDuration);
+    }
+  };
+
+  var tl = new _gsap.TimelineMax();
+
   var updatePositions = function updatePositions() {
     if (referenceElement) {
-      var t1 = new _gsap.TimelineMax();
-      t1.to(referenceElement, {
-        duration: FTO ? 0 : ASD.transitionDuration || 0,
-        // FTO ? 0 : ASD.duration, 
-        // duration: ASD.transitionDuration, // FTO ? 0 : ASD.duration, 
-        width: LOC.W + parseInt(ASD.ringWidth) * 2,
-        height: LOC.H + parseInt(ASD.ringWidth) * 2,
-        x: LOC.L - parseInt(ASD.ringWidth),
-        y: LOC.T - parseInt(ASD.ringWidth),
+      tl.to(referenceElement, {
+        duration: 1,
+        //FTO ? 0 : ASD.transitionDuration, 
+        width: LOC.W,
+        height: LOC.H,
+        x: LOC.L,
+        y: LOC.T,
         borderWidth: ASD.ringWidth,
         borderColor: ASD.ringColor,
         borderRadius: '.5rem',
         boxShadow: '0 0 10000px 10000px rgba(150,150,150,.8)'
       }, 0);
-      FTO && setFTO(false);
+      FTO = false;
+    } else {
+      console.log("Collection | updatePositions() - no reference element");
     }
   };
 
   (0, _react.useEffect)(function () {
+    LOC = props.state.location;
+    ASD = props.state.activeStepData;
+
     if (update && props.state.guideOpen) {
       updatePositions();
       update();
     }
-
-    LOC = props.state.location;
-    ASD = props.state.activeStepData;
-  }, [props.state]); //~ A.1 - state.guideOpen set to true => setShowElements(true)
-
+  }, [props.state]);
   (0, _react.useEffect)(function () {
     props.state.guideOpen ? handleGuideOpen() : handleGuideClose();
   }, [props.state.guideOpen]);
-  var clonedBrochureData = {
+  var dataForClone = {
     /// tour / steps
     tour: props.state.activeTour,
     stepTime: props.state.apValue,
@@ -196,138 +196,39 @@ var Collection = function Collection(props) {
     /// adv data
     debugMode: props.state.debug
   };
-  var theme = {
-    text: '#fff',
-    background: '#000',
-    primary: '#20c',
-    secondary: '#aaa',
-    tertiary: '',
-    spacing: ['0', '.2em', '.4em', '.8em', '1.6em'],
-    fontSize: ['.6em', '.8em', '1em', '1.2em', '1.4em'],
-    maxWidth: '80vw',
-    minWidth: '10rem',
-    width: '20rem'
-  };
-  var border = {
-    primary: {
-      type: '',
-      color: ''
-    },
-    secondary: {
-      type: '1px solid',
-      color: theme.secondary
-    }
-  };
-  var style = {
-    container: _objectSpread(_objectSpread({}, styles.popper), {}, {
-      boxSizing: 'border-box',
-      zIndex: '10001',
-      background: theme.background,
-      color: theme.text,
-      position: LOC.E ? 'absolute' : 'fixed',
-      //! if using 'fixed' - remove SCROLL_TOP from _getLocation()
-      opacity: .2,
-      display: 'none'
-    }),
-    header: {
-      fontSize: theme.fontSize[2],
-      borderBottom: border.secondary.type,
-      borderColor: border.secondary.color,
-      padding: theme.spacing[2]
-    },
-    content: {
-      fontSize: theme.fontSize[1],
-      padding: theme.spacing[2]
-    },
-    footer: {
-      padding: theme.spacing[2],
-      display: 'flex',
-      justifyContent: 'space-between'
-    },
-    exitButton: {
-      color: 'red'
-    }
-  };
 
-  var NoBrochure = function NoBrochure() {
-    return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", {
-      style: style.header,
-      className: "header"
-    }, ASD.step, " - ", ASD.title), /*#__PURE__*/_react["default"].createElement("div", {
-      style: style.content,
-      className: "content"
-    }, ASD.content), /*#__PURE__*/_react["default"].createElement("div", {
-      style: style.footer,
-      className: "footer"
-    }, /*#__PURE__*/_react["default"].createElement("button", {
-      style: style.exitButton,
-      onClick: function onClick() {
-        return _animatour["default"].close();
-      }
-    }, ASD.exitLabel), /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("button", {
-      style: style.prevButton,
-      onClick: function onClick() {
-        return _animatour["default"].play();
-      }
-    }, "Play"), /*#__PURE__*/_react["default"].createElement("button", {
-      style: style.prevButton,
-      onClick: function onClick() {
-        return _animatour["default"].pause();
-      }
-    }, "Pause"), /*#__PURE__*/_react["default"].createElement("button", {
-      style: style.prevButton,
-      onClick: function onClick() {
-        return _animatour["default"].prev();
-      }
-    }, ASD.prevLabel), /*#__PURE__*/_react["default"].createElement("button", {
-      style: style.nextButton,
-      onClick: function onClick() {
-        return _animatour["default"].next();
-      }
-    }, ASD.nextLabel), /*#__PURE__*/_react["default"].createElement("button", {
-      onMouseOver: function onMouseOver() {
-        return console.log('TEST on mouse over');
-      },
-      onClick: function onClick() {
-        return console.log('TEST click');
-      }
-    }, "TEST"))), props.children, props.state.apActive && /*#__PURE__*/_react["default"].createElement("progress", {
-      id: "apv",
-      style: {
-        width: '100%',
-        margin: '0'
-      },
-      value: ASD.stepDuration - props.state.apValue,
-      max: ASD.stepDuration
-    }));
-  };
+  var baseStylesForClone = _objectSpread({
+    zIndex: '10001'
+  }, styles.popper);
 
-  var determineActiveBrochure = function determineActiveBrochure() {
+  var cloneBrochureWithData = function cloneBrochureWithData() {
     if (props.state.modal && /*#__PURE__*/_react["default"].isValidElement(props.state.modal)) {
-      // console.log('Collection | using supplied brochure')
-      return /*#__PURE__*/_react["default"].cloneElement(props.state.modal, _objectSpread({}, clonedBrochureData));
-    } else {
-      // console.log('Collection | using built-in brochure')
-      return /*#__PURE__*/_react["default"].createElement(NoBrochure, null);
+      return /*#__PURE__*/_react["default"].cloneElement(props.state.modal, _objectSpread({}, dataForClone));
     }
   };
 
+  var clonedBrochure = cloneBrochureWithData();
   return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", {
     ref: setReferenceElement,
     style: {
-      boxSizing: 'border-box',
+      // boxSizing: 'border-box',
       position: "absolute",
       display: 'none',
-      border: '1px solid transparent',
+      // border: `${ASD.ringWidth}px solid`,
+      // borderColor: ASD.ringColor,
+      // borderRadius: ASD.ringRadius,
       zIndex: '10000',
-      opacity: .2
+      opacity: .5 // transition: `${ASD.transitionDuration / 1000}s`,
+      // transform: `translate(${LOC.L}px, ${LOC.T}px)`,
+      // width: `${LOC.W}px`,
+      // height: `${LOC.H}px`,
+
     }
   }), /*#__PURE__*/_react["default"].createElement("div", {
     ref: setPopperElement,
-    style: style.container,
-    className: "brochure1",
+    style: baseStylesForClone,
     id: "BROCHURE"
-  }, determineActiveBrochure()));
+  }, clonedBrochure));
 };
 
 var _default = Collection;

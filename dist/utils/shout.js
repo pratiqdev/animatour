@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = exports.shout = void 0;
+exports["default"] = void 0;
 
 /**
  * Post a branded message to the console
@@ -28,6 +28,5 @@ var shout = {
     console.log('%c' + _Array.isArray(msg) ? msg.join('\n') : msg, "color:blue");
   }
 };
-exports.shout = shout;
 var _default = shout;
 exports["default"] = _default;

@@ -1,18 +1,21 @@
+import React from 'react'
 import shout from '../utils/shout'
 import createSteps from '../utils/createSteps'
 
-let totalNumberOfBrochureVariants = 1 // (2) - 0,1
+import {B1, B2, B3} from '../ui/brochure'
+
 
 class Tour{
     // x is config
-    constructor(tourId, config, state){
+    constructor(data){
+        const {tourId, config, globalSettings} = data
 
         if(!tourId){
             shout.error(`Must provide at least a tour name when creating a new tour: 'newTour('tour id', {...config})'`);
             return false
           }
         /// alert user of incorrect keys
-        Object.keys(x).forEach(key =>{
+        Object.keys(config).forEach(key =>{
             switch(key){
                 case 'step':
                 case 'useStep':
@@ -29,14 +32,33 @@ class Tour{
         //? how should tour settings be defined??
         //> step settings have precedence over tour settings
         //> tour settings have precedence over default settings...
+        //>
+        //? how will steps access tour settings?
+        //> globalSettings and tourSettings should be passed to createSteps / Step
         //>_______________________________________________________________________________________________________________________
 
-        this.stepDuration       = config.stepDuration || state.globalSettings
+        /** @deprecated use 'tourSettings.stepDuration' */
+        this.stepDuration       = config.stepDuration ?? globalSettings.stepDuration
+
         this.tourSettings = {
-            stepDuration: config.stepDuration,
+            stepDuration: config.stepDuration               ?? globalSettings.stepDuration,
+            transitionDuration: config.transitionDuration   ?? globalSettings.transitionDuration,
+
+            // labels
+            closeLabel: config.closeLabel                   ?? globalSettings.closeLabel,
+            nextLabel:  config.nextLabel                    ?? globalSettings.nextLabel,
+            prevLabel:  config.prevLabel                    ?? globalSettings.prevLabel,
+
+            // ring
+            ringMargin: config.ringMargin                   ?? globalSettings.ringMargin,
+            ringColor:  config.ringColor                    ?? globalSettings.ringColor,
+            ringWidth:  config.ringWidth                    ?? globalSettings.ringWidth,
         }
 
-        this.steps              = createSteps({steps: config.steps, state})      
+        this.steps              = createSteps({
+                                        newSteps: config.steps, 
+                                        tourSettings: this.tourSettings, 
+                                    })      
 
         /// currentStep 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,8 +69,8 @@ class Tour{
                 this.currentStep = 0
             }
             else if(config.currentStep > this.steps.length - 1){
-                shout.warn(`newTour() - currentStep \n currentStep was greater than the number of steps \n defaulting to ${this.steps.length - 1} (last step)`)
-                this.currentStep = this.steps.length - 1
+                shout.warn(`newTour() - currentStep \n currentStep was greater than the number of steps \n defaulting to ${this.steps.length === 0 ? 0 : this.steps.length - 1} (last step)`)
+                this.currentStep = this.steps.length === 0 ? 0 : this.steps.length - 1
             }
             else{
                 this.currentStep = config.currentStep
@@ -61,18 +83,20 @@ class Tour{
         /// if no modal supplied - use default (0) built-in modal
         
             if(!config.modal){
-                this.modal = <B1 />
+                this.modal = <B3 />
+                console.log('Tour | using default modal: <B3 />')
             }else{
                 if(typeof config.modal === 'number'){
                     switch(config.modal){
-                        case 0: {}; break;
+                        case 0: {console.log('Tour | using modal: 0')}; break;
                         default: {
                             shout.warn(`newTour() - currentStep \n currentStep was greater than the number of steps \n defaulting to ${this.steps.length - 1} (last step)`)
                         }
                     }
                 }
                 else if(config.modal && React.isValidElement(config.modal)){
-                    
+                    this.modal = config.modal
+                    console.log('Tour | using modal from tour creation')
                 }
             }
         

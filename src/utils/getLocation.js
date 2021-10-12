@@ -62,6 +62,11 @@ const _getLocation = (data, guideOpen, defaultLocation, exitLocation) => {
         
         if(EL != null){ /// if an element selector was found - return the location of the element and window dimensions 
             const EL_RECT = EL.getBoundingClientRect();
+            // console.log('getLocation | element found. rect: ',EL_RECT)
+
+            console.log(`getLocation | MARGIN: ${D.margin}`)
+            console.log(`getLocation | LEFT: ${EL_RECT.left - D.margin}`)
+            console.log(`getLocation | TOP: ${EL_RECT.top + LOC.S - D.margin}`)
             
             LOC.E = true
             LOC.L = Math.floor(EL_RECT.left - D.margin)
@@ -75,37 +80,12 @@ const _getLocation = (data, guideOpen, defaultLocation, exitLocation) => {
             LOC.H = 0
             LOC.W = 0
 
-            switch(defaultLocation){
-                case 'top-center':
-                case 'top': {
-                    LOC.T = 0 + marg;
-                    LOC.L = WINDOW_W /2;
-                }; break;
-                default:{ /// default of center-center
-                    LOC.T = WINDOW_H /2;
-                    LOC.L = WINDOW_W /2;
-                }
-            }
+            LOC.T = WINDOW_H /2;
+            LOC.L = WINDOW_W /2;
+                
+            
         }
 
-    // }else{
-
-    //     LOC.E = false
-    //     LOC.H = 0
-    //     LOC.W = 0       
-
-    //     //- Select the appropriate location for the exit reference element ---------------------------------------------------------------------
-    //     switch(exitLocation){
-    //         case 'top': {
-    //             LOC.T = 0 - LOC.WH;
-    //             LOC.L = LOC.WW /2;
-    //         }; break;
-    //         default: {
-    //             LOC.T = LOC.WH /2;
-    //             LOC.L = LOC.WW /2;
-    //         }
-    //     }
-    // }
 
     return LOC
 }

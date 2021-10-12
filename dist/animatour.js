@@ -69,6 +69,9 @@ var animatour = {
   },
   pause: function pause() {
     w('pause') && x.pause();
+  },
+  test: function test() {
+    w('test') && x.test();
   }
 };
 var _default = animatour;

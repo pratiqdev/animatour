@@ -13,11 +13,9 @@ var _animatour = _interopRequireDefault(require("./animatour"));
 
 var _shout = _interopRequireDefault(require("./utils/shout"));
 
-var _getLocation2 = _interopRequireDefault(require("./utils/getLocation"));
-
 var _createSteps2 = _interopRequireDefault(require("./utils/createSteps"));
 
-var _originalDefaults2 = _interopRequireDefault(require("./utils/originalDefaults"));
+var _defaultSettings2 = _interopRequireDefault(require("./utils/defaultSettings"));
 
 var _scrollToElement2 = _interopRequireDefault(require("./utils/scrollToElement"));
 
@@ -26,6 +24,12 @@ var _Collection = _interopRequireDefault(require("./ui/Collection"));
 var _Tour = _interopRequireDefault(require("./classes/Tour"));
 
 var _DataList = _interopRequireDefault(require("./ui/DataList"));
+
+var _gsap = _interopRequireWildcard(require("gsap"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -51,6 +55,7 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+// let numberOfRenders = 0
 var Main = /*#__PURE__*/function (_React$Component) {
   _inherits(Main, _React$Component);
 
@@ -64,33 +69,112 @@ var Main = /*#__PURE__*/function (_React$Component) {
     _this = _super.call(this, props);
     _this.state = {
       /// default
-      defaultSettings: _originalDefaults2["default"],
-      /// global scoped state
+      globalSettings: _defaultSettings2["default"],
+      /// dev config vars
       requestRef: /*#__PURE__*/_react["default"].createRef(),
       apHandle: /*#__PURE__*/_react["default"].createRef(),
+      mainProps: props,
+      debug: 0,
+      perf: 'X',
+      /// global vars
       apValue: 0,
       apActive: false,
-      perf: 'X',
-      debug: true,
-      mainProps: props,
       modal: null,
       activeTour: false,
       activeStepData: false,
       guideOpen: false,
       location: false,
+      timeline: new _gsap.TimelineMax(),
       list: []
     };
+    console.log('Brochure instantiated');
     _this.updateLocation = _this.updateLocation.bind(_assertThisInitialized(_this));
     return _this;
-  } //= Utilities
+  } //= Debug
   //= ======================================================================================================================================
-  //----------------------------------------------------------------------------------------------------------------------------------------
 
 
   _createClass(Main, [{
+    key: "setDebugMode",
+    value: function setDebugMode(val) {
+      if (typeof val === 'number' && val >= 0 && val <= 3) {
+        this.setState({
+          debug: val
+        });
+      } else {
+        _shout["default"].error('Debug mode must be between 0 and 3. Debug levels:', '0 - logging disabled', '1 - important logs', '2 - important + basic logs', '3 - important + basic + any logs');
+      }
+    } //----------------------------------------------------------------------------------------------------------------------------------------
+
+  }, {
+    key: "log",
+    value: function log(x) {
+      if (this.state.debug >= x.d) {
+        console.log('----------------------------------------');
+        console.log(x.f);
+        x.v && console.log('%c' + x.v, "color:blue");
+      }
+    } //= Startup
+    //= ======================================================================================================================================
+
+  }, {
+    key: "init",
+    value: function init() {
+      var _this2 = this;
+
+      this.setState({
+        activeStepData: this.getStepData(),
+        // location: _getLocation(null, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)
+        location: this.getLocation()
+      }, function () {
+        return _this2.log({
+          d: 1,
+          f: 'init()',
+          v: _this2.state
+        });
+      });
+    } //----------------------------------------------------------------------------------------------------------------------------------------
+
+  }, {
+    key: "run",
+    value: function run() {
+      var _this3 = this;
+
+      this.log({
+        d: 1,
+        f: 'run()'
+      });
+      this.setState({
+        guideOpen: true,
+        activeTour: this.useTourOrActive(),
+        activeStepData: this.getStepData()
+      }, function () {
+        (0, _scrollToElement2["default"])(_this3.activeStepData && _this3.activeStepData.element);
+
+        _this3.enableAutoProgression();
+
+        _this3.setState(function (prevState) {
+          prevState.apValue = _this3.state.activeStepData.stepDuration; // pull the modal from the active tour
+
+          prevState.modal = _this3.state.list.find(function (x) {
+            return x.id === _this3.state.activeTour;
+          }).modal;
+          return prevState;
+        });
+
+        _this3.state.requestRef.current = requestAnimationFrame(_this3.updateLocation);
+      });
+    } //= Utilities
+    //= ======================================================================================================================================
+
+  }, {
     key: "useTourOrActive",
     value: function useTourOrActive(tourId) {
-      /// if tour exists
+      this.log({
+        d: 1,
+        f: 'useTourOrActive()'
+      }); /// if tour exists
+
       if (tourId) {
         if (!this.state.list.find(function (x) {
           return x.id === tourId;
@@ -118,6 +202,12 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "verifyTourExists",
     value: function verifyTourExists(tourId) {
+      this.log({
+        d: 1,
+        f: 'verifyTourExists()',
+        v: "tourId: ".concat(tourId)
+      });
+
       if (tourId) {
         if (typeof this.state.list.find(function (x) {
           return x.id === tourId;
@@ -136,28 +226,36 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "enableAutoProgression",
     value: function enableAutoProgression() {
-      var _this2 = this;
+      var _this4 = this;
 
+      this.log({
+        d: 1,
+        f: 'enableAutoProgression()'
+      });
       clearTimeout(this.state.apHandle);
       this.setState({
         apActive: true
       });
       var ASD = this.state.activeStepData;
-      var APTI = this.state.defaultSettings.autoProgressionTimingIncrement;
-      console.log("EAP | stepDuration: ".concat(ASD.stepDuration, ", apValue: ").concat(this.state.apValue));
+      var APTI = this.state.globalSettings.autoProgressionTimingIncrement;
+      this.log({
+        d: 2,
+        f: 'enableAutoProgression()',
+        v: "EAP | stepDuration: ".concat(ASD.stepDuration, ", apValue: ").concat(this.state.apValue)
+      });
 
       var updateApValue = function updateApValue() {
-        clearTimeout(_this2.state.apHandle);
-        _this2.state.apHandle = setTimeout(function () {
-          if (_this2.state.apValue < APTI) {
-            _this2.setState({
+        clearTimeout(_this4.state.apHandle);
+        _this4.state.apHandle = setTimeout(function () {
+          if (_this4.state.apValue < APTI) {
+            _this4.setState({
               apValue: 0
             });
 
-            _this2.next();
+            _this4.next();
           } else {
-            _this2.setState({
-              apValue: _this2.state.apValue - APTI
+            _this4.setState({
+              apValue: _this4.state.apValue - APTI
             }, function () {
               return updateApValue();
             });
@@ -181,6 +279,10 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "disableAutoProgression",
     value: function disableAutoProgression() {
+      this.log({
+        d: 1,
+        f: 'disableAutoProgression()'
+      });
       clearTimeout(this.state.apHandle);
       this.setState({
         apActive: false
@@ -192,7 +294,9 @@ var Main = /*#__PURE__*/function (_React$Component) {
     value: function getStepData(STEP) {
       var _this$state$list$find,
           _this$state$list$find2,
-          _this3 = this,
+          _this$state$list$find3,
+          _this$state$list$find4,
+          _this5 = this,
           _findStep,
           _findStep2,
           _findStep3,
@@ -205,116 +309,337 @@ var Main = /*#__PURE__*/function (_React$Component) {
           _findStep10,
           _findStep11;
 
+      this.log({
+        d: 1,
+        f: 'getStepData()'
+      });
       var D = {};
 
-      if (!this.state.activeTour || this.state.activeTour == false || this.state.activeTour == null || this.state.activeTour === '' || !this.useTourOrActive()) {
+      if (!this.useTourOrActive()) {
         // console.log('getStepData() | active tour is false or null! (1)')
         return false;
       }
 
-      D.tour = this.state.activeTour; // console.log(`getStepData() | active tour: ${D.tour}`)
-
+      D.tour = this.state.activeTour;
       D.totalSteps = ((_this$state$list$find = this.state.list.find(function (x) {
         return x.id === D.tour;
-      })) === null || _this$state$list$find === void 0 ? void 0 : (_this$state$list$find2 = _this$state$list$find.steps) === null || _this$state$list$find2 === void 0 ? void 0 : _this$state$list$find2.length) - 1 || 0; /// if step is not specified - find the current step
+      })) === null || _this$state$list$find === void 0 ? void 0 : (_this$state$list$find2 = _this$state$list$find.steps) === null || _this$state$list$find2 === void 0 ? void 0 : _this$state$list$find2.length) === 0 ? 0 : ((_this$state$list$find3 = this.state.list.find(function (x) {
+        return x.id === D.tour;
+      })) === null || _this$state$list$find3 === void 0 ? void 0 : (_this$state$list$find4 = _this$state$list$find3.steps) === null || _this$state$list$find4 === void 0 ? void 0 : _this$state$list$find4.length) - 1; /// if step is not specified - find the current step
 
       if (typeof STEP === 'number' && STEP >= 0 && STEP <= D.totalSteps) {
         D.step = STEP;
       } else {
-        D.step = this.state.list.find(function (x) {
+        var _this$state$list$find5;
+
+        D.step = (_this$state$list$find5 = this.state.list.find(function (x) {
           return x.id === D.tour;
-        }).currentStep;
+        }).currentStep) !== null && _this$state$list$find5 !== void 0 ? _this$state$list$find5 : 0;
       }
 
       var findStep = function findStep(t, s) {
-        var _this3$state$list$fin;
+        var _this5$state$list$fin;
 
-        return (_this3$state$list$fin = _this3.state.list.find(function (x) {
+        return (_this5$state$list$fin = _this5.state.list.find(function (x) {
           return x.id === t;
-        })) === null || _this3$state$list$fin === void 0 ? void 0 : _this3$state$list$fin.steps[s];
+        })) === null || _this5$state$list$fin === void 0 ? void 0 : _this5$state$list$fin.steps[s];
       };
 
       D.element = (_findStep = findStep(D.tour, D.step)) === null || _findStep === void 0 ? void 0 : _findStep.element;
-      D.margin = ((_findStep2 = findStep(D.tour, D.step)) === null || _findStep2 === void 0 ? void 0 : _findStep2.margin) || this.state.defaultSettings.ringMargin;
-      D.ringColor = ((_findStep3 = findStep(D.tour, D.step)) === null || _findStep3 === void 0 ? void 0 : _findStep3.ringColor) || this.state.defaultSettings.ringColor;
-      D.ringWidth = ((_findStep4 = findStep(D.tour, D.step)) === null || _findStep4 === void 0 ? void 0 : _findStep4.ringWidth) || this.state.defaultSettings.ringWidth;
-      D.closeLabel = ((_findStep5 = findStep(D.tour, D.step)) === null || _findStep5 === void 0 ? void 0 : _findStep5.closeLabel) || this.state.defaultSettings.closeLabel;
-      D.nextLabel = ((_findStep6 = findStep(D.tour, D.step)) === null || _findStep6 === void 0 ? void 0 : _findStep6.nextLabel) || this.state.defaultSettings.nextLabel;
-      D.prevLabel = ((_findStep7 = findStep(D.tour, D.step)) === null || _findStep7 === void 0 ? void 0 : _findStep7.prevLabel) || this.state.defaultSettings.prevLabel;
-      D.stepDuration = ((_findStep8 = findStep(D.tour, D.step)) === null || _findStep8 === void 0 ? void 0 : _findStep8.stepDuration) || this.state.defaultSettings.stepDuration;
-      D.transitionDuration = ((_findStep9 = findStep(D.tour, D.step)) === null || _findStep9 === void 0 ? void 0 : _findStep9.transitionDuration) || this.state.defaultSettings.transitionDuration;
-      D.title = ((_findStep10 = findStep(D.tour, D.step)) === null || _findStep10 === void 0 ? void 0 : _findStep10.title) || "Step ".concat(D.step);
-      D.content = ((_findStep11 = findStep(D.tour, D.step)) === null || _findStep11 === void 0 ? void 0 : _findStep11.content) || "";
+      D.ringMargin = (_findStep2 = findStep(D.tour, D.step)) === null || _findStep2 === void 0 ? void 0 : _findStep2.ringMargin; //|| this.state.globalSettings.ringMargin
+
+      D.ringColor = (_findStep3 = findStep(D.tour, D.step)) === null || _findStep3 === void 0 ? void 0 : _findStep3.ringColor; //|| this.state.globalSettings.ringColor
+
+      D.ringWidth = (_findStep4 = findStep(D.tour, D.step)) === null || _findStep4 === void 0 ? void 0 : _findStep4.ringWidth; //|| this.state.globalSettings.ringWidth
+
+      D.closeLabel = (_findStep5 = findStep(D.tour, D.step)) === null || _findStep5 === void 0 ? void 0 : _findStep5.closeLabel; //|| this.state.globalSettings.closeLabel
+
+      D.nextLabel = (_findStep6 = findStep(D.tour, D.step)) === null || _findStep6 === void 0 ? void 0 : _findStep6.nextLabel; //|| this.state.globalSettings.nextLabel
+
+      D.prevLabel = (_findStep7 = findStep(D.tour, D.step)) === null || _findStep7 === void 0 ? void 0 : _findStep7.prevLabel; //|| this.state.globalSettings.prevLabel
+
+      D.stepDuration = (_findStep8 = findStep(D.tour, D.step)) === null || _findStep8 === void 0 ? void 0 : _findStep8.stepDuration; //|| this.state.globalSettings.stepDuration
+
+      D.transitionDuration = (_findStep9 = findStep(D.tour, D.step)) === null || _findStep9 === void 0 ? void 0 : _findStep9.transitionDuration; //|| this.state.globalSettings.transitionDuration
+
+      D.title = (_findStep10 = findStep(D.tour, D.step)) === null || _findStep10 === void 0 ? void 0 : _findStep10.title; //|| `Step ${D.step}`
+
+      D.content = (_findStep11 = findStep(D.tour, D.step)) === null || _findStep11 === void 0 ? void 0 : _findStep11.content; //|| ``
+
+      this.log({
+        d: 2,
+        f: "getStepData(".concat(D.step, ") - activeTour: ").concat(D.tour),
+        v: D
+      });
       return D;
     } //----------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "updateLocation",
     value: function updateLocation() {
+      // this.log({
+      //   d:3,
+      //   f: `updateLocation(${this.state.activeStepData.element})`,
+      //   v:loc
+      // })
       var t0 = performance.now();
-      this.setState({
-        location: (0, _getLocation2["default"])(this.getStepData(), this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)
-      });
+      var loc = this.getLocation();
       var t1 = performance.now();
-      this.setState({
-        perf: t1 - t0
-      });
 
       if (this.state.guideOpen) {
+        this.setState({
+          location: loc,
+          perf: t1 - t0
+        });
         this.state.requestRef.current = requestAnimationFrame(this.updateLocation);
       } else {
         this.setState({
-          perf: 'X'
+          perf: 'X',
+          location: loc
         });
         cancelAnimationFrame(this.state.requestRef.current);
       }
     } //----------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
-    key: "init",
-    value: function init() {
-      var _this4 = this;
+    key: "getLocation",
+    value: function getLocation() {
+      var ASD = this.state.activeStepData; // this.log({
+      //   d:3,
+      //   f: `getLocation(${ASD.element})`,
+      //   v:ASD
+      // })
 
-      this.setState({
-        activeStepData: this.getStepData(),
-        location: (0, _getLocation2["default"])(null, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)
-      }, function () {
-        return console.log('INIT', _this4.state);
-      });
+      var LOC = {
+        /** Scroll Top */
+        ST: window.pageYOffset || (document.body.parentNode || document.body).scrollTop,
+
+        /** Window Width */
+        WW: Math.floor(window.innerWidth || 0),
+
+        /** Window Height */
+        WH: Math.floor(window.innerHeight || 0),
+
+        /** Element Exists */
+        E: null,
+
+        /** Height */
+        H: null,
+
+        /** Width */
+        W: null,
+
+        /** Top Offset */
+        T: null,
+
+        /** Left Offset */
+        L: null
+      };
+
+      var setDefaultLoc = function setDefaultLoc() {
+        // console.log('set default location')
+        LOC.E = false;
+        LOC.H = 0;
+        LOC.W = 0;
+        LOC.T = LOC.WH / 2;
+        LOC.L = LOC.WW / 2;
+      };
+
+      if (ASD && ASD.element !== '' && typeof ASD.element !== 'null') {
+        var EL = document.querySelector(ASD.element) || null; // element could not be found
+
+        if (!EL) {
+          setDefaultLoc();
+          return LOC;
+        } else {
+          var EL_RECT = EL.getBoundingClientRect();
+          LOC.E = true;
+          LOC.L = Math.floor(EL_RECT.left - ASD.ringMargin);
+          LOC.T = Math.floor(EL_RECT.top + LOC.ST - ASD.ringMargin);
+          LOC.H = Math.floor(EL_RECT.height + ASD.ringMargin * 2);
+          LOC.W = Math.floor(EL_RECT.width + ASD.ringMargin * 2);
+          return LOC;
+        }
+      } // no ASD or element is null
+      else {
+        setDefaultLoc();
+        return LOC;
+      }
     } //----------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
-    key: "run",
-    value: function run() {
-      var _this5 = this;
+    key: "scroll",
+    value: function scroll() {
+      var ELEMENT = null;
+      var BEHAVIOR = this.state.activeStepData.scrollBehavior;
+      var V_ALIGN = this.state.activeStepData.scrollAlignmentVertical;
+      var H_ALIGN = this.state.activeStepData.scrollAlignmentHorizontal;
 
-      console.log("RUN");
-      this.setState({
-        guideOpen: true,
-        activeTour: this.useTourOrActive(),
-        activeStepData: this.getStepData()
-      }, function () {
-        (0, _scrollToElement2["default"])(_this5.activeStepData && _this5.activeStepData.element);
+      var alignmentShout = function alignmentShout() {
+        _shout["default"].warn("Scroll alignment must be a hyphenated combitaion of values 'start, end, center or nearest'", 'The first value defines vertical alignment, the second value defines horizontal alignment', "eg: 'start-center', 'end-end'", "Defaulting to 'center-center'");
+      };
 
-        _this5.enableAutoProgression();
+      var behaviorShout = function behaviorShout() {
+        _shout["default"].warn("Scroll behavior must be either 'smooth' or 'auto'.", "Defaulting to 'smooth'");
+      };
 
-        _this5.setState(function (prevState) {
-          prevState.apValue = _this5.state.activeStepData.stepDuration;
-          prevState.modal = _this5.state.list.find(function (x) {
-            return x.id === _this5.state.activeTour;
-          }).modal;
-          return prevState;
-        });
+      var selectorShout = function selectorShout() {
+        _shout["default"].warn("Scrolling requires a selector that must be a string of the elements className or id", "eg: '.my-element', '#other-element'");
+      }; /// confirm the selector is valid and the element exists
 
-        _this5.state.requestRef.current = requestAnimationFrame(_this5.updateLocation);
+
+      if (selector && typeof selector === 'string' && selector !== '') {
+        ELEMENT = document.querySelector(selector) || null;
+
+        if (!ELEMENT) {
+          _shout["default"].warn("No element was found by the selector ".concat(selector));
+
+          return false;
+        }
+      } else {
+        return false;
+      } /// determine the intended scroll behavior
+
+
+      if (behavior && typeof behavior === 'string') {
+        switch (behavior) {
+          case 'auto':
+            BEHAVIOR = 'auto';
+            break;
+
+          case 'smooth':
+            BEHAVIOR = 'smooth';
+            break;
+
+          default:
+            {
+              BEHAVIOR = 'smooth';
+            }
+        }
+      } else {
+        BEHAVIOR = 'smooth'; // behaviorShout()
+      } /// determine the intended vertical/horizontal alignment
+
+
+      if (alignment && typeof alignment === 'string') {
+        switch (alignment.split('-')[0]) {
+          case 'start':
+            V_ALIGN = 'start';
+            break;
+
+          case 'end':
+            V_ALIGN = 'end';
+            break;
+
+          case 'center':
+            V_ALIGN = 'smooth';
+            break;
+
+          case 'near':
+          case 'nearest':
+            V_ALIGN = 'nearest';
+            break;
+
+          default:
+            {
+              V_ALIGN = 'center';
+            }
+        }
+
+        switch (alignment.split('-')[1]) {
+          case 'start':
+            H_ALIGN = 'start';
+            break;
+
+          case 'end':
+            H_ALIGN = 'end';
+            break;
+
+          case 'mid':
+          case 'middle':
+          case 'center':
+            H_ALIGN = 'smooth';
+            break;
+
+          case 'near':
+          case 'nearest':
+            H_ALIGN = 'nearest';
+            break;
+
+          default:
+            {
+              H_ALIGN = 'center';
+            }
+        }
+      } else {
+        H_ALIGN = 'center';
+        V_ALIGN = 'center'; // alignmentShout()
+      } //   function getScrollParent(node) {
+      //     const isElement = node instanceof HTMLElement;
+      //     const overflowY = isElement && window.getComputedStyle(node).overflowY;
+      //     const isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
+      //     if (!node) {
+      //       return null;
+      //     } else if (isScrollable && node.scrollHeight >= node.clientHeight) {
+      //       return node;
+      //     }
+      //     return getScrollParent(node.parentNode) || document.body;
+      //   }
+      // function isInViewport(element) {
+      //   const rect = element.getBoundingClientRect();
+      //   return (
+      //       rect.top >= 0 &&
+      //       rect.left >= 0 &&
+      //       rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      //       rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      //   );
+      // }
+
+
+      ELEMENT.scrollIntoView({
+        behavior: BEHAVIOR,
+        block: V_ALIGN,
+        inline: H_ALIGN
       });
+    } //= Validation
+    //= ======================================================================================================================================
+
+  }, {
+    key: "handleConfigValidation",
+    value: function handleConfigValidation(config) {}
+  }, {
+    key: "validate",
+    value: function validate(_ref) {
+      var value = _ref.value,
+          valid = _ref.valid,
+          error = _ref.error;
+      var useValue = null;
+
+      if (valid.includes(value)) {
+        useValue = value;
+      } else {
+        useValue = Array.isArray(valid) ? valid[0] : valid;
+
+        if (error) {
+          console.log(error, "\nUsing default value: ".concat(useValue));
+        } else {
+          console.log("ERROR: Value is not valid. \nUsing default value: ".concat(useValue));
+        }
+      }
+
+      return useValue;
     } //= Tours
     //= ======================================================================================================================================
-    //----------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "newTour",
     value: function newTour(tourId, config) {
+      this.log({
+        d: 1,
+        f: "newTour(".concat(tourId, ")"),
+        v: config
+      });
+
       if (this.verifyTourExists(tourId)) {
         _shout["default"].error("newTour() \n A tour with the id '".concat(tourId, "' already exists"));
 
@@ -323,7 +648,11 @@ var Main = /*#__PURE__*/function (_React$Component) {
 
       var LIST = this.state.list; // create a new Tour and push to list => requires tour id, tour config and current state
 
-      LIST.push(new _Tour["default"](tourId, config, this.state));
+      LIST.push(new _Tour["default"]({
+        tourId: tourId,
+        config: config,
+        globalSettings: this.state.globalSettings
+      }));
       this.setState({
         list: LIST,
         activeTour: tourId
@@ -348,17 +677,23 @@ var Main = /*#__PURE__*/function (_React$Component) {
       if (!TOUR) {
         _shout["default"].error("No tour found for '".concat(useTour, "'"));
       } else {
-        console.log("getTour(".concat(useTour, ")"));
+        this.log({
+          d: 1,
+          f: "getTour(".concat(tourId, ")")
+        });
         return TOUR;
       }
     } //= Steps 
     //= ======================================================================================================================================
-    //----------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "addSteps",
     value: function addSteps(tourId, newSteps) {
-      console.log("ADD STEPS ".concat(tourId));
+      this.log({
+        d: 1,
+        f: "addSteps(".concat(tourId, ")"),
+        v: newSteps
+      });
       STEPS = (0, _createSteps2["default"])(newSteps, this.state.list.find(function (x) {
         return x.id === tourId;
       }).steps);
@@ -372,7 +707,10 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "next",
     value: function next(tourId) {
-      console.log("NEXT ".concat(tourId));
+      this.log({
+        d: 1,
+        f: "next(".concat(tourId, ")")
+      });
       var useTour = this.useTourOrActive(tourId);
 
       if (!useTour) {
@@ -398,10 +736,10 @@ var Main = /*#__PURE__*/function (_React$Component) {
         return x.id === useTour;
       }).steps[STEP].element;
       (0, _scrollToElement2["default"])(ELEMENT);
-      var ASD = this.getStepData(STEP);
-      console.log("Brochure | next() - transitionDuration: ".concat(ASD.transitionDuration)); // console.log('ASD + location', ASD, this.state.location)
+      var ASD = this.getStepData(STEP); // this.log(`Brochure | next() - transitionDuration: ${ASD.transitionDuration}`)
+      // this.log('ASD + location', ASD, this.state.location)
 
-      if (this.state.defaultSettings.enableAutoProgressionOnNext) {
+      if (this.state.globalSettings.enableAutoProgressionOnNext) {
         this.enableAutoProgression();
       } else {
         this.disableAutoProgression();
@@ -420,7 +758,10 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "prev",
     value: function prev(tourId) {
-      console.log("PREV ".concat(tourId));
+      this.log({
+        d: 1,
+        f: "prev(".concat(tourId, ")")
+      });
       var useTour = this.useTourOrActive(tourId);
 
       if (!useTour) {
@@ -444,11 +785,11 @@ var Main = /*#__PURE__*/function (_React$Component) {
 
       var ELEMENT = this.state.list.find(function (x) {
         return x.id === useTour;
-      }).steps[STEP].element; // console.log(`prev | step: ${STEP}`)
+      }).steps[STEP].element; // this.log(`prev | step: ${STEP}`)
 
-      var ASD = this.getStepData(STEP); // console.log('ASD + location', ASD, this.state.location)
+      var ASD = this.getStepData(STEP); // this.log('ASD + location', ASD, this.state.location)
 
-      if (this.state.defaultSettings.enableAutoProgressionOnPrev) {
+      if (this.state.globalSettings.enableAutoProgressionOnPrev) {
         this.enableAutoProgression(ASD);
       } else {
         this.disableAutoProgression();
@@ -471,9 +812,11 @@ var Main = /*#__PURE__*/function (_React$Component) {
     value: function reset(tourId) {
       var _this6 = this;
 
-      console.log("RESET ".concat(tourId));
       var useTour = this.useTourOrActive(tourId);
-      console.log("reset | tour: ".concat(tourId, " - ").concat(useTour));
+      this.log({
+        d: 1,
+        f: "reset(".concat(tourId, ") - useTour: ").concat(useTour)
+      });
 
       if (!useTour) {
         _shout["default"].error("Unable to reset a tour without starting a tour first. Tours will automatically start from step 0 unless 'currentStep' is set at tour creation.");
@@ -501,8 +844,11 @@ var Main = /*#__PURE__*/function (_React$Component) {
     value: function start(tourId) {
       var _this7 = this;
 
-      console.log("START ".concat(tourId));
-      var useTour = this.useTourOrActive(tourId); //  const setActiveStepData = () => {
+      var useTour = this.useTourOrActive(tourId);
+      this.log({
+        d: 1,
+        f: "start(".concat(tourId, ") - useTour: ").concat(useTour)
+      }); //  const setActiveStepData = () => {
       //    let ASD = 'not defined yet'
       //    ASD = this.getStepData()
       //    _scrollToElement(ASD.element)
@@ -526,47 +872,41 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "play",
     value: function play() {
-      console.log('PLAY');
+      this.log({
+        d: 1,
+        f: 'play()'
+      });
       this.enableAutoProgression();
     } //----------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "pause",
     value: function pause() {
-      console.log('PAUSE');
+      this.log({
+        d: 1,
+        f: 'pause()'
+      });
       this.disableAutoProgression();
     } //= Brochure 
     //= ======================================================================================================================================
-    //----------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "open",
     value: function open() {
-      console.log('OPEN');
-      this.run(); // used as callback for setState function
-      // let useTour = this.useTourOrActive()
-      // // console.log(`open('${useTour}')`)
-      // if(!useTour){
-      //   shout.error('Not able to open guide without starting a tour first.','Use animatour.start("My Tour") to start a tour and open the guide)')
-      //   return false
-      // }
-      // const setActiveStepData = () => {
-      //   let ASD = 'not defined yet'
-      //   ASD = this.getStepData()
-      //   // console.log(`open(id:${tourId}, useTour:${useTour}) - ASD`, ASD) 
-      //   this.setState({ activeStepData: ASD })
-      //   // this.init()
-      //   // console.log(`active tour: ${this.state.activeTour}`)
-      // }
-      // if(useTour){
-      //   this.setState({guideOpen: true, activeTour: useTour}, () => setActiveStepData())
-      // }
+      this.log({
+        d: 1,
+        f: 'open()'
+      });
+      this.run();
     } //----------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "close",
     value: function close() {
-      console.log('CLOSE');
+      this.log({
+        d: 1,
+        f: 'close()'
+      });
       this.setState({
         guideOpen: false
       });
@@ -585,12 +925,14 @@ var Main = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
+      // numberOfRenders++
+      // console.log(`Main | render() - ${numberOfRenders} - frames: ${this.state.requestRef.current}`)
       return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", {
         style: {
           position: 'fixed',
           top: '0',
           left: '0',
-          background: '#9f9',
+          background: '#f66',
           padding: '5px',
           width: '2rem',
           zIndex: '9999999'
