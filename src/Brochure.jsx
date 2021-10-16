@@ -24,34 +24,40 @@ class Main extends React.Component {
       globalSettings: _defaultSettings,
 
       /// dev config vars
-      requestRef: React.createRef(),
-      apHandle: React.createRef(),
+      // requestRef: React.createRef(), //! => collection
+      // apHandle: React.createRef(), //! => collection
 
       mainProps: props,
-      debug: 0,
-      perf: 'X',
+      debug: 3, //! => Shout
+      // perf: 'X', //! => Collection
 
       /// global vars
-      apValue: 0,
-      apActive: false,
+      // apValue: 0, //! => Collection
+      // apActive: false, //! => collection
       modal: null,
       activeTour: false,
       activeStepData: false,
       guideOpen: false,
-      location: false,
-      timeline: new TimelineMax(),
+      // location: false, //! => Collection
+      // timeline: new TimelineMax(), //! => Collection
 
       list:[]
     }
 
     console.log('Brochure instantiated')
-    this.updateLocation = this.updateLocation.bind(this);
+    // this.updateLocation = this.updateLocation.bind(this); //! => Collection
 
 
 
 
 
   }
+
+  //~_______________________________________________________________________ 
+  //~ state variables stored here should ONLY UPDATE ON STEP CHANGE          
+  //~ constantly changing variables should exist in the Collection component 
+  //~_______________________________________________________________________ 
+
 
 
 
@@ -101,7 +107,7 @@ class Main extends React.Component {
     this.setState({
       activeStepData: this.getStepData(), 
       // location: _getLocation(null, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)
-      location: this.getLocation()
+      // location: this.getLocation() //! moved to Collection
     }, ()=> this.log({
       d:1,
       f:'init()',
@@ -110,26 +116,28 @@ class Main extends React.Component {
   }
   
   //----------------------------------------------------------------------------------------------------------------------------------------
+  //  start the sequence
   run (){
     this.log({
       d:1,
       f:'run()'
     })
 
+    // setup start sequence
     this.setState({
       guideOpen: true,
       activeTour: this.useTourOrActive(),
       activeStepData: this.getStepData(),
     }, ()=>{
-      _scrollToElement(this.activeStepData && this.activeStepData.element)
-      this.enableAutoProgression()
+      // _scrollToElement(this.activeStepData && this.activeStepData.element) //! => Collection
+      // this.enableAutoProgression()//! => Collection
       this.setState(prevState => {
-        prevState.apValue = this.state.activeStepData.stepDuration
+        // prevState.apValue = this.state.activeStepData.stepDuration //! => Collection
         // pull the modal from the active tour
         prevState.modal = this.state.list.find(x=>x.id === this.state.activeTour).modal
         return prevState
       })
-      this.state.requestRef.current = requestAnimationFrame(this.updateLocation);
+      // this.state.requestRef.current = requestAnimationFrame(this.updateLocation);//! => Collection
     })
   }
 
@@ -194,54 +202,46 @@ class Main extends React.Component {
   }
   //----------------------------------------------------------------------------------------------------------------------------------------
 
-  enableAutoProgression (){
-    this.log({
-      d:1,
-      f:'enableAutoProgression()'
-    })
+  // enableAutoProgression (){ //! => Collection
+ 
+  //   clearTimeout(this.state.apHandle)
+  //   this.setState({apActive: true})
 
-    clearTimeout(this.state.apHandle)
-    this.setState({apActive: true})
+  //   let ASD = this.state.activeStepData
+  //   let APTI = this.state.globalSettings.autoProgressionTimingIncrement
+ 
+  //     const updateApValue = () => {
+  //       clearTimeout(this.state.apHandle)
+  //       this.state.apHandle = setTimeout(() => {
+  //         if(this.state.apValue < APTI){
+  //           this.setState({apValue: 0})
+  //           this.next()
+  //         }else{
+  //           this.setState({apValue: this.state.apValue - APTI}, ()=> updateApValue())
+  //         }
+  //       }, APTI);
+  //     }
 
-    let ASD = this.state.activeStepData
-    let APTI = this.state.globalSettings.autoProgressionTimingIncrement
-    this.log({
-      d:2,
-      f: 'enableAutoProgression()',
-      v:`EAP | stepDuration: ${ASD.stepDuration}, apValue: ${this.state.apValue}`
-    })
-
-      const updateApValue = () => {
-        clearTimeout(this.state.apHandle)
-        this.state.apHandle = setTimeout(() => {
-          if(this.state.apValue < APTI){
-            this.setState({apValue: 0})
-            this.next()
-          }else{
-            this.setState({apValue: this.state.apValue - APTI}, ()=> updateApValue())
-          }
-        }, APTI);
-      }
-
-    if(ASD && ASD.stepDuration !== 0){
-      if(this.state.apValue === 0){
-        this.setState({apValue: ASD.stepDuration}, ()=> updateApValue())
-      }else{
-        updateApValue()
-      }
-    }
-  }
+  //   if(ASD && ASD.stepDuration !== 0){
+  //     if(this.state.apValue === 0){
+  //       this.setState({apValue: ASD.stepDuration}, ()=> updateApValue())
+  //     }else{
+  //       updateApValue()
+  //     }
+  //   }
+  // }
+  
 
   //----------------------------------------------------------------------------------------------------------------------------------------
-  disableAutoProgression (){
-    this.log({
-      d:1,
-      f:'disableAutoProgression()'
-    })
-    clearTimeout(this.state.apHandle)
-    this.setState({apActive: false})
-    // this.state.apValue = 0
-  }
+  // disableAutoProgression (){ //! => Collection
+  //   this.log({
+  //     d:1,
+  //     f:'disableAutoProgression()'
+  //   })
+  //   clearTimeout(this.state.apHandle)
+  //   this.setState({apActive: false})
+  //   // this.state.apValue = 0
+  // }
 
   //----------------------------------------------------------------------------------------------------------------------------------------
   getStepData (STEP){
@@ -298,228 +298,200 @@ class Main extends React.Component {
     return D
   }
 
-  //----------------------------------------------------------------------------------------------------------------------------------------
-  updateLocation (){
+  //----------------------------------------------------------------------------------------------------------------------------------------! getLocation() - moved to Collection
+  // getLocation(){
     
-    // this.log({
-    //   d:3,
-    //   f: `updateLocation(${this.state.activeStepData.element})`,
-    //   v:loc
-    // })
+  //   let ASD = this.state.activeStepData
+  //   // this.log({
+  //   //   d:3,
+  //   //   f: `getLocation(${ASD.element})`,
+  //   //   v:ASD
+  //   // })
     
+  //   let LOC = {
 
-    const t0 = performance.now()
-    let loc = this.getLocation()
-    const t1 = performance.now()
-
-    if(this.state.guideOpen){
-      this.setState({
-        location: loc,
-        perf: t1-t0
-      })
-      this.state.requestRef.current = requestAnimationFrame(this.updateLocation);
-
-    }else{
-      this.setState({
-        perf:'X', 
-        location: loc
-      })
-      cancelAnimationFrame(this.state.requestRef.current);
-    }
-  }
-
-  //----------------------------------------------------------------------------------------------------------------------------------------
-  getLocation(){
-    
-    let ASD = this.state.activeStepData
-    // this.log({
-    //   d:3,
-    //   f: `getLocation(${ASD.element})`,
-    //   v:ASD
-    // })
-    
-    let LOC = {
-
-      /** Scroll Top */
-      ST: window.pageYOffset || (document.body.parentNode || document.body).scrollTop,
-      /** Window Width */
-      WW: Math.floor(window.innerWidth || 0),
-      /** Window Height */
-      WH: Math.floor(window.innerHeight || 0),
-      /** Element Exists */
-      E: null,
-      /** Height */
-      H: null,
-      /** Width */
-      W: null,
-      /** Top Offset */
-      T: null,
-      /** Left Offset */
-      L: null,
-    }
+  //     /** Scroll Top */
+  //     ST: window.pageYOffset || (document.body.parentNode || document.body).scrollTop,
+  //     /** Window Width */
+  //     WW: Math.floor(window.innerWidth || 0),
+  //     /** Window Height */
+  //     WH: Math.floor(window.innerHeight || 0),
+  //     /** Element Exists */
+  //     E: null,
+  //     /** Height */
+  //     H: null,
+  //     /** Width */
+  //     W: null,
+  //     /** Top Offset */
+  //     T: null,
+  //     /** Left Offset */
+  //     L: null,
+  //   }
 
 
-    const setDefaultLoc = () => {
-      // console.log('set default location')
-      LOC.E = false
-      LOC.H = 0
-      LOC.W = 0
-      LOC.T = LOC.WH / 2;
-      LOC.L = LOC.WW / 2;
-    }
+  //   const setDefaultLoc = () => {
+  //     // console.log('set default location')
+  //     LOC.E = false
+  //     LOC.H = 0
+  //     LOC.W = 0
+  //     LOC.T = LOC.WH / 2;
+  //     LOC.L = LOC.WW / 2;
+  //   }
 
-    if(ASD && ASD.element !== '' && typeof ASD.element !== 'null'){
-        let EL = document.querySelector( ASD.element ) || null
-      // element could not be found
-      if(!EL){
-        setDefaultLoc()
-        return LOC
-      }else{
-        const EL_RECT = EL.getBoundingClientRect();
-        LOC.E = true
-        LOC.L = Math.floor(EL_RECT.left - ASD.ringMargin)
-        LOC.T = Math.floor(EL_RECT.top + LOC.ST - ASD.ringMargin) 
-        LOC.H = Math.floor(EL_RECT.height + (ASD.ringMargin * 2))
-        LOC.W = Math.floor(EL_RECT.width + (ASD.ringMargin * 2))
-        return LOC
-      }
-    }
-    // no ASD or element is null
-    else{ 
-      setDefaultLoc()
-      return LOC
-    }
-    
-  }
-
-  //----------------------------------------------------------------------------------------------------------------------------------------
-  scroll(){
-    let ELEMENT = null
-
-    let BEHAVIOR =  this.state.activeStepData.scrollBehavior
-    let V_ALIGN =   this.state.activeStepData.scrollAlignmentVertical
-    let H_ALIGN =   this.state.activeStepData.scrollAlignmentHorizontal
-
-
-    const alignmentShout = () => {
-      shout.warn(
-        `Scroll alignment must be a hyphenated combitaion of values 'start, end, center or nearest'`, 
-        'The first value defines vertical alignment, the second value defines horizontal alignment',
-        `eg: 'start-center', 'end-end'`,
-        `Defaulting to 'center-center'`
-      )
-    }
-
-    const behaviorShout = () => {
-      shout.warn(
-        `Scroll behavior must be either 'smooth' or 'auto'.`,
-        `Defaulting to 'smooth'`)
-    }
-
-    const selectorShout = () => {
-      shout.warn(
-        `Scrolling requires a selector that must be a string of the elements className or id`,
-        `eg: '.my-element', '#other-element'` 
-      )
-    }
-
-
-    /// confirm the selector is valid and the element exists
-    if(selector && typeof selector === 'string' && selector !== ''){
-        ELEMENT = document.querySelector( selector ) || null
-        if(!ELEMENT){
-          shout.warn(
-            `No element was found by the selector ${selector}`,
-          )
-          return false
-        }
-    }else{
-      return false
-    }
-
-    /// determine the intended scroll behavior
-    if(behavior && typeof behavior === 'string'){
-      switch(behavior){
-        case 'auto': BEHAVIOR = 'auto'; break;
-        case 'smooth': BEHAVIOR = 'smooth'; break;
-        default: {
-          BEHAVIOR = 'smooth'; 
-        }
-      }
-    }else{
-      BEHAVIOR = 'smooth';
-       // behaviorShout()
-    }
-
-    /// determine the intended vertical/horizontal alignment
-    if(alignment && typeof alignment === 'string'){
-      switch(alignment.split('-')[0]){
-        case 'start': V_ALIGN = 'start'; break;
-        case 'end': V_ALIGN = 'end'; break;
-        case 'center': V_ALIGN = 'smooth'; break;
-        case 'near':
-        case 'nearest': V_ALIGN = 'nearest'; break;
-        default: {
-          V_ALIGN = 'center';
-        }
-      }
-      
-      switch(alignment.split('-')[1]){
-        case 'start': H_ALIGN = 'start'; break;
-        case 'end': H_ALIGN = 'end'; break;
-        case 'mid':
-        case 'middle':
-        case 'center': H_ALIGN = 'smooth'; break;
-        case 'near':
-        case 'nearest': H_ALIGN = 'nearest'; break;
-        default: {
-          H_ALIGN = 'center'; 
-        }
-      }
-    }else{
-      H_ALIGN = 'center';
-      V_ALIGN = 'center'; 
-      // alignmentShout()
-    }
-
-
-
-
-
-  //   function getScrollParent(node) {
-  //     const isElement = node instanceof HTMLElement;
-  //     const overflowY = isElement && window.getComputedStyle(node).overflowY;
-  //     const isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
-    
-  //     if (!node) {
-  //       return null;
-  //     } else if (isScrollable && node.scrollHeight >= node.clientHeight) {
-  //       return node;
+  //   if(ASD && ASD.element !== '' && typeof ASD.element !== 'null'){
+  //       let EL = document.querySelector( ASD.element ) || null
+  //     // element could not be found
+  //     if(!EL){
+  //       setDefaultLoc()
+  //       return LOC
+  //     }else{
+  //       const EL_RECT = EL.getBoundingClientRect();
+  //       LOC.E = true
+  //       LOC.L = Math.floor(EL_RECT.left - ASD.ringMargin)
+  //       LOC.T = Math.floor(EL_RECT.top + LOC.ST - ASD.ringMargin) 
+  //       LOC.H = Math.floor(EL_RECT.height + (ASD.ringMargin * 2))
+  //       LOC.W = Math.floor(EL_RECT.width + (ASD.ringMargin * 2))
+  //       return LOC
   //     }
+  //   }
+  //   // no ASD or element is null
+  //   else{ 
+  //     setDefaultLoc()
+  //     return LOC
+  //   }
     
-  //     return getScrollParent(node.parentNode) || document.body;
+  // }
+
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  
+  
+  // scroll(){
+  //   let ELEMENT = null
+
+  //   let BEHAVIOR =  this.state.activeStepData.scrollBehavior
+  //   let V_ALIGN =   this.state.activeStepData.scrollAlignmentVertical
+  //   let H_ALIGN =   this.state.activeStepData.scrollAlignmentHorizontal
+
+
+  //   const alignmentShout = () => {
+  //     shout.warn(
+  //       `Scroll alignment must be a hyphenated combitaion of values 'start, end, center or nearest'`, 
+  //       'The first value defines vertical alignment, the second value defines horizontal alignment',
+  //       `eg: 'start-center', 'end-end'`,
+  //       `Defaulting to 'center-center'`
+  //     )
+  //   }
+
+  //   const behaviorShout = () => {
+  //     shout.warn(
+  //       `Scroll behavior must be either 'smooth' or 'auto'.`,
+  //       `Defaulting to 'smooth'`)
+  //   }
+
+  //   const selectorShout = () => {
+  //     shout.warn(
+  //       `Scrolling requires a selector that must be a string of the elements className or id`,
+  //       `eg: '.my-element', '#other-element'` 
+  //     )
+  //   }
+
+
+  //   /// confirm the selector is valid and the element exists
+  //   if(selector && typeof selector === 'string' && selector !== ''){
+  //       ELEMENT = document.querySelector( selector ) || null
+  //       if(!ELEMENT){
+  //         shout.warn(
+  //           `No element was found by the selector ${selector}`,
+  //         )
+  //         return false
+  //       }
+  //   }else{
+  //     return false
+  //   }
+
+  //   /// determine the intended scroll behavior
+  //   if(behavior && typeof behavior === 'string'){
+  //     switch(behavior){
+  //       case 'auto': BEHAVIOR = 'auto'; break;
+  //       case 'smooth': BEHAVIOR = 'smooth'; break;
+  //       default: {
+  //         BEHAVIOR = 'smooth'; 
+  //       }
+  //     }
+  //   }else{
+  //     BEHAVIOR = 'smooth';
+  //      // behaviorShout()
+  //   }
+
+  //   /// determine the intended vertical/horizontal alignment
+  //   if(alignment && typeof alignment === 'string'){
+  //     switch(alignment.split('-')[0]){
+  //       case 'start': V_ALIGN = 'start'; break;
+  //       case 'end': V_ALIGN = 'end'; break;
+  //       case 'center': V_ALIGN = 'smooth'; break;
+  //       case 'near':
+  //       case 'nearest': V_ALIGN = 'nearest'; break;
+  //       default: {
+  //         V_ALIGN = 'center';
+  //       }
+  //     }
+      
+  //     switch(alignment.split('-')[1]){
+  //       case 'start': H_ALIGN = 'start'; break;
+  //       case 'end': H_ALIGN = 'end'; break;
+  //       case 'mid':
+  //       case 'middle':
+  //       case 'center': H_ALIGN = 'smooth'; break;
+  //       case 'near':
+  //       case 'nearest': H_ALIGN = 'nearest'; break;
+  //       default: {
+  //         H_ALIGN = 'center'; 
+  //       }
+  //     }
+  //   }else{
+  //     H_ALIGN = 'center';
+  //     V_ALIGN = 'center'; 
+  //     // alignmentShout()
   //   }
 
 
 
-  // function isInViewport(element) {
-  //   const rect = element.getBoundingClientRect();
-  //   return (
-  //       rect.top >= 0 &&
-  //       rect.left >= 0 &&
-  //       rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-  //       rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-  //   );
-  // }
+
+
+  // //   function getScrollParent(node) {
+  // //     const isElement = node instanceof HTMLElement;
+  // //     const overflowY = isElement && window.getComputedStyle(node).overflowY;
+  // //     const isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
+    
+  // //     if (!node) {
+  // //       return null;
+  // //     } else if (isScrollable && node.scrollHeight >= node.clientHeight) {
+  // //       return node;
+  // //     }
+    
+  // //     return getScrollParent(node.parentNode) || document.body;
+  // //   }
+
+
+
+  // // function isInViewport(element) {
+  // //   const rect = element.getBoundingClientRect();
+  // //   return (
+  // //       rect.top >= 0 &&
+  // //       rect.left >= 0 &&
+  // //       rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+  // //       rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  // //   );
+  // // }
 
 
 
     
 
 
-  ELEMENT.scrollIntoView({behavior: BEHAVIOR, block: V_ALIGN, inline: H_ALIGN})
+  // ELEMENT.scrollIntoView({behavior: BEHAVIOR, block: V_ALIGN, inline: H_ALIGN})
 
-  }
+  // }
 
     
 
@@ -650,17 +622,17 @@ class Main extends React.Component {
     }
     
     let ELEMENT = this.state.list.find(x => x.id === useTour).steps[STEP].element
-    _scrollToElement(ELEMENT)
+    // _scrollToElement(ELEMENT)
     
     let ASD = this.getStepData(STEP)
     // this.log(`Brochure | next() - transitionDuration: ${ASD.transitionDuration}`)
     // this.log('ASD + location', ASD, this.state.location)
 
-    if(this.state.globalSettings.enableAutoProgressionOnNext){
-      this.enableAutoProgression()
-    }else{
-      this.disableAutoProgression()
-    }
+    // if(this.state.globalSettings.enableAutoProgressionOnNext){
+    //   this.enableAutoProgression()
+    // }else{
+    //   this.disableAutoProgression()
+    // }
     
     this.setState(prevState => {
       prevState.list.find(x => x.id === useTour).currentStep = STEP
@@ -704,11 +676,11 @@ class Main extends React.Component {
     let ASD = this.getStepData(STEP)
     // this.log('ASD + location', ASD, this.state.location)
 
-    if(this.state.globalSettings.enableAutoProgressionOnPrev){
-      this.enableAutoProgression(ASD)
-    }else{
-      this.disableAutoProgression()
-    }
+    // if(this.state.globalSettings.enableAutoProgressionOnPrev){
+    //   this.enableAutoProgression(ASD)
+    // }else{
+    //   this.disableAutoProgression()
+    // }
 
 
 
@@ -719,7 +691,7 @@ class Main extends React.Component {
       /// prevState.guideLocation = this._findGuide(ELEMENT)
       return prevState
     })
-    _scrollToElement(ELEMENT)
+    // _scrollToElement(ELEMENT)
 
   }
   
@@ -744,12 +716,12 @@ class Main extends React.Component {
       prevState.activeStepData = this.getStepData()
       return prevState
     })
-    _scrollToElement(ELEMENT)
+    // _scrollToElement(ELEMENT)
 
   }
 
   //----------------------------------------------------------------------------------------------------------------------------------------
-  start (tourId){
+  start (tourId, startAtStep){
     
     let useTour = this.useTourOrActive(tourId)
     this.log({
@@ -772,7 +744,17 @@ class Main extends React.Component {
       )
       return false
     }else{
-      this.setState({activeTour: useTour}, () => this.run())
+      if(typeof startAtStep !== null){
+        console.log(`starting at step: ${startAtStep}`)
+        this.setState(prevState => {
+          prevState.activeTour = useTour
+          prevState.list.filter(x=> x.tourId === useTour).currentStep = startAtStep
+          return prevState
+        }, () => this.run())
+      }else{
+        console.log(`starting at current step`)
+        this.setState({activeTour: useTour}, () => this.run())
+      }
     }
   }
 
@@ -783,7 +765,7 @@ class Main extends React.Component {
       f:'play()'
     })
 
-    this.enableAutoProgression()
+    // this.enableAutoProgression()
   }
 
   //----------------------------------------------------------------------------------------------------------------------------------------
@@ -793,7 +775,7 @@ class Main extends React.Component {
       f:'pause()'
     })
 
-    this.disableAutoProgression()
+    // this.disableAutoProgression()
   }
 
 
@@ -826,7 +808,7 @@ class Main extends React.Component {
     })
 
     this.setState({guideOpen: false})
-    this.disableAutoProgression()
+    // this.disableAutoProgression()
   }
 
 
@@ -843,19 +825,15 @@ class Main extends React.Component {
     this.init()
   }
 
-  componentWillUnmount(){
-    cancelAnimationFrame(this.state.requestRef.current);
-  }
 
   render(){
-    // numberOfRenders++
-    // console.log(`Main | render() - ${numberOfRenders} - frames: ${this.state.requestRef.current}`)
     return(
       <>
-      <div style={{position: 'fixed', top: '0', left: '0', background: '#f66', padding: '5px', width: '2rem', zIndex: '9999999'}}>{this.state.perf}</div>
+      {/* <div style={{position: 'fixed', top: '0', left: '0', background: '#f66', padding: '5px', width: '2rem', zIndex: '9999999'}}>{this.state.perf}</div> */}
       <DataList data={this.state} />
         <Collection
           state={this.state}
+          ASD={this.state.activeStepData}
         />
       </>
     )

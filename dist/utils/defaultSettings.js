@@ -16,7 +16,7 @@ var defaultSettings = {
   ringShadowColor: 'rgba(150,150,150,.8)',
   ringShadowWidth: '10000px',
   /// durations
-  transitionDuration: 800,
+  transitionDuration: .8,
   stepDuration: 0,
   /// labels
   closeLabel: 'Exit',

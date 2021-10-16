@@ -57,8 +57,8 @@ var animatour = {
   close: function close() {
     w('close') && x.close();
   },
-  start: function start(a) {
-    w('start') && x.start(a);
+  start: function start(a, b) {
+    w('start') && x.start(a, b);
   },
   reset: function reset(a) {
     w('reset') && x.reset(a);

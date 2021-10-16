@@ -71,26 +71,31 @@ var Main = /*#__PURE__*/function (_React$Component) {
       /// default
       globalSettings: _defaultSettings2["default"],
       /// dev config vars
-      requestRef: /*#__PURE__*/_react["default"].createRef(),
-      apHandle: /*#__PURE__*/_react["default"].createRef(),
+      // requestRef: React.createRef(), //! => collection
+      // apHandle: React.createRef(), //! => collection
       mainProps: props,
-      debug: 0,
-      perf: 'X',
+      debug: 3,
+      //! => Shout
+      // perf: 'X', //! => Collection
       /// global vars
-      apValue: 0,
-      apActive: false,
+      // apValue: 0, //! => Collection
+      // apActive: false, //! => collection
       modal: null,
       activeTour: false,
       activeStepData: false,
       guideOpen: false,
-      location: false,
-      timeline: new _gsap.TimelineMax(),
+      // location: false, //! => Collection
+      // timeline: new TimelineMax(), //! => Collection
       list: []
     };
-    console.log('Brochure instantiated');
-    _this.updateLocation = _this.updateLocation.bind(_assertThisInitialized(_this));
+    console.log('Brochure instantiated'); // this.updateLocation = this.updateLocation.bind(this); //! => Collection
+
     return _this;
-  } //= Debug
+  } //~_______________________________________________________________________ 
+  //~ state variables stored here should ONLY UPDATE ON STEP CHANGE          
+  //~ constantly changing variables should exist in the Collection component 
+  //~_______________________________________________________________________ 
+  //= Debug
   //= ======================================================================================================================================
 
 
@@ -123,9 +128,9 @@ var Main = /*#__PURE__*/function (_React$Component) {
       var _this2 = this;
 
       this.setState({
-        activeStepData: this.getStepData(),
-        // location: _getLocation(null, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)
-        location: this.getLocation()
+        activeStepData: this.getStepData() // location: _getLocation(null, this.state.guideOpen, this.state.defaultLocation, this.state.exitLocation)
+        // location: this.getLocation() //! moved to Collection
+
       }, function () {
         return _this2.log({
           d: 1,
@@ -134,6 +139,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
         });
       });
     } //----------------------------------------------------------------------------------------------------------------------------------------
+    //  start the sequence
 
   }, {
     key: "run",
@@ -143,26 +149,24 @@ var Main = /*#__PURE__*/function (_React$Component) {
       this.log({
         d: 1,
         f: 'run()'
-      });
+      }); // setup start sequence
+
       this.setState({
         guideOpen: true,
         activeTour: this.useTourOrActive(),
         activeStepData: this.getStepData()
       }, function () {
-        (0, _scrollToElement2["default"])(_this3.activeStepData && _this3.activeStepData.element);
-
-        _this3.enableAutoProgression();
-
+        // _scrollToElement(this.activeStepData && this.activeStepData.element) //! => Collection
+        // this.enableAutoProgression()//! => Collection
         _this3.setState(function (prevState) {
-          prevState.apValue = _this3.state.activeStepData.stepDuration; // pull the modal from the active tour
-
+          // prevState.apValue = this.state.activeStepData.stepDuration //! => Collection
+          // pull the modal from the active tour
           prevState.modal = _this3.state.list.find(function (x) {
             return x.id === _this3.state.activeTour;
           }).modal;
           return prevState;
-        });
+        }); // this.state.requestRef.current = requestAnimationFrame(this.updateLocation);//! => Collection
 
-        _this3.state.requestRef.current = requestAnimationFrame(_this3.updateLocation);
       });
     } //= Utilities
     //= ======================================================================================================================================
@@ -222,72 +226,41 @@ var Main = /*#__PURE__*/function (_React$Component) {
         return false;
       }
     } //----------------------------------------------------------------------------------------------------------------------------------------
-
-  }, {
-    key: "enableAutoProgression",
-    value: function enableAutoProgression() {
-      var _this4 = this;
-
-      this.log({
-        d: 1,
-        f: 'enableAutoProgression()'
-      });
-      clearTimeout(this.state.apHandle);
-      this.setState({
-        apActive: true
-      });
-      var ASD = this.state.activeStepData;
-      var APTI = this.state.globalSettings.autoProgressionTimingIncrement;
-      this.log({
-        d: 2,
-        f: 'enableAutoProgression()',
-        v: "EAP | stepDuration: ".concat(ASD.stepDuration, ", apValue: ").concat(this.state.apValue)
-      });
-
-      var updateApValue = function updateApValue() {
-        clearTimeout(_this4.state.apHandle);
-        _this4.state.apHandle = setTimeout(function () {
-          if (_this4.state.apValue < APTI) {
-            _this4.setState({
-              apValue: 0
-            });
-
-            _this4.next();
-          } else {
-            _this4.setState({
-              apValue: _this4.state.apValue - APTI
-            }, function () {
-              return updateApValue();
-            });
-          }
-        }, APTI);
-      };
-
-      if (ASD && ASD.stepDuration !== 0) {
-        if (this.state.apValue === 0) {
-          this.setState({
-            apValue: ASD.stepDuration
-          }, function () {
-            return updateApValue();
-          });
-        } else {
-          updateApValue();
-        }
-      }
-    } //----------------------------------------------------------------------------------------------------------------------------------------
-
-  }, {
-    key: "disableAutoProgression",
-    value: function disableAutoProgression() {
-      this.log({
-        d: 1,
-        f: 'disableAutoProgression()'
-      });
-      clearTimeout(this.state.apHandle);
-      this.setState({
-        apActive: false
-      }); // this.state.apValue = 0
-    } //----------------------------------------------------------------------------------------------------------------------------------------
+    // enableAutoProgression (){ //! => Collection
+    //   clearTimeout(this.state.apHandle)
+    //   this.setState({apActive: true})
+    //   let ASD = this.state.activeStepData
+    //   let APTI = this.state.globalSettings.autoProgressionTimingIncrement
+    //     const updateApValue = () => {
+    //       clearTimeout(this.state.apHandle)
+    //       this.state.apHandle = setTimeout(() => {
+    //         if(this.state.apValue < APTI){
+    //           this.setState({apValue: 0})
+    //           this.next()
+    //         }else{
+    //           this.setState({apValue: this.state.apValue - APTI}, ()=> updateApValue())
+    //         }
+    //       }, APTI);
+    //     }
+    //   if(ASD && ASD.stepDuration !== 0){
+    //     if(this.state.apValue === 0){
+    //       this.setState({apValue: ASD.stepDuration}, ()=> updateApValue())
+    //     }else{
+    //       updateApValue()
+    //     }
+    //   }
+    // }
+    //----------------------------------------------------------------------------------------------------------------------------------------
+    // disableAutoProgression (){ //! => Collection
+    //   this.log({
+    //     d:1,
+    //     f:'disableAutoProgression()'
+    //   })
+    //   clearTimeout(this.state.apHandle)
+    //   this.setState({apActive: false})
+    //   // this.state.apValue = 0
+    // }
+    //----------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "getStepData",
@@ -296,7 +269,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
           _this$state$list$find2,
           _this$state$list$find3,
           _this$state$list$find4,
-          _this5 = this,
+          _this4 = this,
           _findStep,
           _findStep2,
           _findStep3,
@@ -338,11 +311,11 @@ var Main = /*#__PURE__*/function (_React$Component) {
       }
 
       var findStep = function findStep(t, s) {
-        var _this5$state$list$fin;
+        var _this4$state$list$fin;
 
-        return (_this5$state$list$fin = _this5.state.list.find(function (x) {
+        return (_this4$state$list$fin = _this4.state.list.find(function (x) {
           return x.id === t;
-        })) === null || _this5$state$list$fin === void 0 ? void 0 : _this5$state$list$fin.steps[s];
+        })) === null || _this4$state$list$fin === void 0 ? void 0 : _this4$state$list$fin.steps[s];
       };
 
       D.element = (_findStep = findStep(D.tour, D.step)) === null || _findStep === void 0 ? void 0 : _findStep.element;
@@ -372,236 +345,164 @@ var Main = /*#__PURE__*/function (_React$Component) {
         v: D
       });
       return D;
-    } //----------------------------------------------------------------------------------------------------------------------------------------
-
-  }, {
-    key: "updateLocation",
-    value: function updateLocation() {
-      // this.log({
-      //   d:3,
-      //   f: `updateLocation(${this.state.activeStepData.element})`,
-      //   v:loc
-      // })
-      var t0 = performance.now();
-      var loc = this.getLocation();
-      var t1 = performance.now();
-
-      if (this.state.guideOpen) {
-        this.setState({
-          location: loc,
-          perf: t1 - t0
-        });
-        this.state.requestRef.current = requestAnimationFrame(this.updateLocation);
-      } else {
-        this.setState({
-          perf: 'X',
-          location: loc
-        });
-        cancelAnimationFrame(this.state.requestRef.current);
-      }
-    } //----------------------------------------------------------------------------------------------------------------------------------------
-
-  }, {
-    key: "getLocation",
-    value: function getLocation() {
-      var ASD = this.state.activeStepData; // this.log({
-      //   d:3,
-      //   f: `getLocation(${ASD.element})`,
-      //   v:ASD
-      // })
-
-      var LOC = {
-        /** Scroll Top */
-        ST: window.pageYOffset || (document.body.parentNode || document.body).scrollTop,
-
-        /** Window Width */
-        WW: Math.floor(window.innerWidth || 0),
-
-        /** Window Height */
-        WH: Math.floor(window.innerHeight || 0),
-
-        /** Element Exists */
-        E: null,
-
-        /** Height */
-        H: null,
-
-        /** Width */
-        W: null,
-
-        /** Top Offset */
-        T: null,
-
-        /** Left Offset */
-        L: null
-      };
-
-      var setDefaultLoc = function setDefaultLoc() {
-        // console.log('set default location')
-        LOC.E = false;
-        LOC.H = 0;
-        LOC.W = 0;
-        LOC.T = LOC.WH / 2;
-        LOC.L = LOC.WW / 2;
-      };
-
-      if (ASD && ASD.element !== '' && typeof ASD.element !== 'null') {
-        var EL = document.querySelector(ASD.element) || null; // element could not be found
-
-        if (!EL) {
-          setDefaultLoc();
-          return LOC;
-        } else {
-          var EL_RECT = EL.getBoundingClientRect();
-          LOC.E = true;
-          LOC.L = Math.floor(EL_RECT.left - ASD.ringMargin);
-          LOC.T = Math.floor(EL_RECT.top + LOC.ST - ASD.ringMargin);
-          LOC.H = Math.floor(EL_RECT.height + ASD.ringMargin * 2);
-          LOC.W = Math.floor(EL_RECT.width + ASD.ringMargin * 2);
-          return LOC;
-        }
-      } // no ASD or element is null
-      else {
-        setDefaultLoc();
-        return LOC;
-      }
-    } //----------------------------------------------------------------------------------------------------------------------------------------
-
-  }, {
-    key: "scroll",
-    value: function scroll() {
-      var ELEMENT = null;
-      var BEHAVIOR = this.state.activeStepData.scrollBehavior;
-      var V_ALIGN = this.state.activeStepData.scrollAlignmentVertical;
-      var H_ALIGN = this.state.activeStepData.scrollAlignmentHorizontal;
-
-      var alignmentShout = function alignmentShout() {
-        _shout["default"].warn("Scroll alignment must be a hyphenated combitaion of values 'start, end, center or nearest'", 'The first value defines vertical alignment, the second value defines horizontal alignment', "eg: 'start-center', 'end-end'", "Defaulting to 'center-center'");
-      };
-
-      var behaviorShout = function behaviorShout() {
-        _shout["default"].warn("Scroll behavior must be either 'smooth' or 'auto'.", "Defaulting to 'smooth'");
-      };
-
-      var selectorShout = function selectorShout() {
-        _shout["default"].warn("Scrolling requires a selector that must be a string of the elements className or id", "eg: '.my-element', '#other-element'");
-      }; /// confirm the selector is valid and the element exists
-
-
-      if (selector && typeof selector === 'string' && selector !== '') {
-        ELEMENT = document.querySelector(selector) || null;
-
-        if (!ELEMENT) {
-          _shout["default"].warn("No element was found by the selector ".concat(selector));
-
-          return false;
-        }
-      } else {
-        return false;
-      } /// determine the intended scroll behavior
-
-
-      if (behavior && typeof behavior === 'string') {
-        switch (behavior) {
-          case 'auto':
-            BEHAVIOR = 'auto';
-            break;
-
-          case 'smooth':
-            BEHAVIOR = 'smooth';
-            break;
-
-          default:
-            {
-              BEHAVIOR = 'smooth';
-            }
-        }
-      } else {
-        BEHAVIOR = 'smooth'; // behaviorShout()
-      } /// determine the intended vertical/horizontal alignment
-
-
-      if (alignment && typeof alignment === 'string') {
-        switch (alignment.split('-')[0]) {
-          case 'start':
-            V_ALIGN = 'start';
-            break;
-
-          case 'end':
-            V_ALIGN = 'end';
-            break;
-
-          case 'center':
-            V_ALIGN = 'smooth';
-            break;
-
-          case 'near':
-          case 'nearest':
-            V_ALIGN = 'nearest';
-            break;
-
-          default:
-            {
-              V_ALIGN = 'center';
-            }
-        }
-
-        switch (alignment.split('-')[1]) {
-          case 'start':
-            H_ALIGN = 'start';
-            break;
-
-          case 'end':
-            H_ALIGN = 'end';
-            break;
-
-          case 'mid':
-          case 'middle':
-          case 'center':
-            H_ALIGN = 'smooth';
-            break;
-
-          case 'near':
-          case 'nearest':
-            H_ALIGN = 'nearest';
-            break;
-
-          default:
-            {
-              H_ALIGN = 'center';
-            }
-        }
-      } else {
-        H_ALIGN = 'center';
-        V_ALIGN = 'center'; // alignmentShout()
-      } //   function getScrollParent(node) {
-      //     const isElement = node instanceof HTMLElement;
-      //     const overflowY = isElement && window.getComputedStyle(node).overflowY;
-      //     const isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
-      //     if (!node) {
-      //       return null;
-      //     } else if (isScrollable && node.scrollHeight >= node.clientHeight) {
-      //       return node;
-      //     }
-      //     return getScrollParent(node.parentNode) || document.body;
-      //   }
-      // function isInViewport(element) {
-      //   const rect = element.getBoundingClientRect();
-      //   return (
-      //       rect.top >= 0 &&
-      //       rect.left >= 0 &&
-      //       rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      //       rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-      //   );
-      // }
-
-
-      ELEMENT.scrollIntoView({
-        behavior: BEHAVIOR,
-        block: V_ALIGN,
-        inline: H_ALIGN
-      });
-    } //= Validation
+    } //----------------------------------------------------------------------------------------------------------------------------------------! getLocation() - moved to Collection
+    // getLocation(){
+    //   let ASD = this.state.activeStepData
+    //   // this.log({
+    //   //   d:3,
+    //   //   f: `getLocation(${ASD.element})`,
+    //   //   v:ASD
+    //   // })
+    //   let LOC = {
+    //     /** Scroll Top */
+    //     ST: window.pageYOffset || (document.body.parentNode || document.body).scrollTop,
+    //     /** Window Width */
+    //     WW: Math.floor(window.innerWidth || 0),
+    //     /** Window Height */
+    //     WH: Math.floor(window.innerHeight || 0),
+    //     /** Element Exists */
+    //     E: null,
+    //     /** Height */
+    //     H: null,
+    //     /** Width */
+    //     W: null,
+    //     /** Top Offset */
+    //     T: null,
+    //     /** Left Offset */
+    //     L: null,
+    //   }
+    //   const setDefaultLoc = () => {
+    //     // console.log('set default location')
+    //     LOC.E = false
+    //     LOC.H = 0
+    //     LOC.W = 0
+    //     LOC.T = LOC.WH / 2;
+    //     LOC.L = LOC.WW / 2;
+    //   }
+    //   if(ASD && ASD.element !== '' && typeof ASD.element !== 'null'){
+    //       let EL = document.querySelector( ASD.element ) || null
+    //     // element could not be found
+    //     if(!EL){
+    //       setDefaultLoc()
+    //       return LOC
+    //     }else{
+    //       const EL_RECT = EL.getBoundingClientRect();
+    //       LOC.E = true
+    //       LOC.L = Math.floor(EL_RECT.left - ASD.ringMargin)
+    //       LOC.T = Math.floor(EL_RECT.top + LOC.ST - ASD.ringMargin) 
+    //       LOC.H = Math.floor(EL_RECT.height + (ASD.ringMargin * 2))
+    //       LOC.W = Math.floor(EL_RECT.width + (ASD.ringMargin * 2))
+    //       return LOC
+    //     }
+    //   }
+    //   // no ASD or element is null
+    //   else{ 
+    //     setDefaultLoc()
+    //     return LOC
+    //   }
+    // }
+    //----------------------------------------------------------------------------------------------------------------------------------------
+    // scroll(){
+    //   let ELEMENT = null
+    //   let BEHAVIOR =  this.state.activeStepData.scrollBehavior
+    //   let V_ALIGN =   this.state.activeStepData.scrollAlignmentVertical
+    //   let H_ALIGN =   this.state.activeStepData.scrollAlignmentHorizontal
+    //   const alignmentShout = () => {
+    //     shout.warn(
+    //       `Scroll alignment must be a hyphenated combitaion of values 'start, end, center or nearest'`, 
+    //       'The first value defines vertical alignment, the second value defines horizontal alignment',
+    //       `eg: 'start-center', 'end-end'`,
+    //       `Defaulting to 'center-center'`
+    //     )
+    //   }
+    //   const behaviorShout = () => {
+    //     shout.warn(
+    //       `Scroll behavior must be either 'smooth' or 'auto'.`,
+    //       `Defaulting to 'smooth'`)
+    //   }
+    //   const selectorShout = () => {
+    //     shout.warn(
+    //       `Scrolling requires a selector that must be a string of the elements className or id`,
+    //       `eg: '.my-element', '#other-element'` 
+    //     )
+    //   }
+    //   /// confirm the selector is valid and the element exists
+    //   if(selector && typeof selector === 'string' && selector !== ''){
+    //       ELEMENT = document.querySelector( selector ) || null
+    //       if(!ELEMENT){
+    //         shout.warn(
+    //           `No element was found by the selector ${selector}`,
+    //         )
+    //         return false
+    //       }
+    //   }else{
+    //     return false
+    //   }
+    //   /// determine the intended scroll behavior
+    //   if(behavior && typeof behavior === 'string'){
+    //     switch(behavior){
+    //       case 'auto': BEHAVIOR = 'auto'; break;
+    //       case 'smooth': BEHAVIOR = 'smooth'; break;
+    //       default: {
+    //         BEHAVIOR = 'smooth'; 
+    //       }
+    //     }
+    //   }else{
+    //     BEHAVIOR = 'smooth';
+    //      // behaviorShout()
+    //   }
+    //   /// determine the intended vertical/horizontal alignment
+    //   if(alignment && typeof alignment === 'string'){
+    //     switch(alignment.split('-')[0]){
+    //       case 'start': V_ALIGN = 'start'; break;
+    //       case 'end': V_ALIGN = 'end'; break;
+    //       case 'center': V_ALIGN = 'smooth'; break;
+    //       case 'near':
+    //       case 'nearest': V_ALIGN = 'nearest'; break;
+    //       default: {
+    //         V_ALIGN = 'center';
+    //       }
+    //     }
+    //     switch(alignment.split('-')[1]){
+    //       case 'start': H_ALIGN = 'start'; break;
+    //       case 'end': H_ALIGN = 'end'; break;
+    //       case 'mid':
+    //       case 'middle':
+    //       case 'center': H_ALIGN = 'smooth'; break;
+    //       case 'near':
+    //       case 'nearest': H_ALIGN = 'nearest'; break;
+    //       default: {
+    //         H_ALIGN = 'center'; 
+    //       }
+    //     }
+    //   }else{
+    //     H_ALIGN = 'center';
+    //     V_ALIGN = 'center'; 
+    //     // alignmentShout()
+    //   }
+    // //   function getScrollParent(node) {
+    // //     const isElement = node instanceof HTMLElement;
+    // //     const overflowY = isElement && window.getComputedStyle(node).overflowY;
+    // //     const isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
+    // //     if (!node) {
+    // //       return null;
+    // //     } else if (isScrollable && node.scrollHeight >= node.clientHeight) {
+    // //       return node;
+    // //     }
+    // //     return getScrollParent(node.parentNode) || document.body;
+    // //   }
+    // // function isInViewport(element) {
+    // //   const rect = element.getBoundingClientRect();
+    // //   return (
+    // //       rect.top >= 0 &&
+    // //       rect.left >= 0 &&
+    // //       rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    // //       rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    // //   );
+    // // }
+    // ELEMENT.scrollIntoView({behavior: BEHAVIOR, block: V_ALIGN, inline: H_ALIGN})
+    // }
+    //= Validation
     //= ======================================================================================================================================
 
   }, {
@@ -734,16 +635,15 @@ var Main = /*#__PURE__*/function (_React$Component) {
 
       var ELEMENT = this.state.list.find(function (x) {
         return x.id === useTour;
-      }).steps[STEP].element;
-      (0, _scrollToElement2["default"])(ELEMENT);
+      }).steps[STEP].element; // _scrollToElement(ELEMENT)
+
       var ASD = this.getStepData(STEP); // this.log(`Brochure | next() - transitionDuration: ${ASD.transitionDuration}`)
       // this.log('ASD + location', ASD, this.state.location)
-
-      if (this.state.globalSettings.enableAutoProgressionOnNext) {
-        this.enableAutoProgression();
-      } else {
-        this.disableAutoProgression();
-      }
+      // if(this.state.globalSettings.enableAutoProgressionOnNext){
+      //   this.enableAutoProgression()
+      // }else{
+      //   this.disableAutoProgression()
+      // }
 
       this.setState(function (prevState) {
         prevState.list.find(function (x) {
@@ -788,12 +688,11 @@ var Main = /*#__PURE__*/function (_React$Component) {
       }).steps[STEP].element; // this.log(`prev | step: ${STEP}`)
 
       var ASD = this.getStepData(STEP); // this.log('ASD + location', ASD, this.state.location)
-
-      if (this.state.globalSettings.enableAutoProgressionOnPrev) {
-        this.enableAutoProgression(ASD);
-      } else {
-        this.disableAutoProgression();
-      }
+      // if(this.state.globalSettings.enableAutoProgressionOnPrev){
+      //   this.enableAutoProgression(ASD)
+      // }else{
+      //   this.disableAutoProgression()
+      // }
 
       this.setState(function (prevState) {
         prevState.list.find(function (x) {
@@ -803,14 +702,13 @@ var Main = /*#__PURE__*/function (_React$Component) {
         prevState.apValue = ASD.stepDuration || 0; /// prevState.guideLocation = this._findGuide(ELEMENT)
 
         return prevState;
-      });
-      (0, _scrollToElement2["default"])(ELEMENT);
+      }); // _scrollToElement(ELEMENT)
     } //----------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "reset",
     value: function reset(tourId) {
-      var _this6 = this;
+      var _this5 = this;
 
       var useTour = this.useTourOrActive(tourId);
       this.log({
@@ -833,16 +731,15 @@ var Main = /*#__PURE__*/function (_React$Component) {
         prevState.list.find(function (x) {
           return x.id === useTour;
         }).currentStep = 0;
-        prevState.activeStepData = _this6.getStepData();
+        prevState.activeStepData = _this5.getStepData();
         return prevState;
-      });
-      (0, _scrollToElement2["default"])(ELEMENT);
+      }); // _scrollToElement(ELEMENT)
     } //----------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
     key: "start",
-    value: function start(tourId) {
-      var _this7 = this;
+    value: function start(tourId, startAtStep) {
+      var _this6 = this;
 
       var useTour = this.useTourOrActive(tourId);
       this.log({
@@ -861,11 +758,25 @@ var Main = /*#__PURE__*/function (_React$Component) {
 
         return false;
       } else {
-        this.setState({
-          activeTour: useTour
-        }, function () {
-          return _this7.run();
-        });
+        if (typeof startAtStep !== null) {
+          console.log("starting at step: ".concat(startAtStep));
+          this.setState(function (prevState) {
+            prevState.activeTour = useTour;
+            prevState.list.filter(function (x) {
+              return x.tourId === useTour;
+            }).currentStep = startAtStep;
+            return prevState;
+          }, function () {
+            return _this6.run();
+          });
+        } else {
+          console.log("starting at current step");
+          this.setState({
+            activeTour: useTour
+          }, function () {
+            return _this6.run();
+          });
+        }
       }
     } //----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -875,8 +786,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
       this.log({
         d: 1,
         f: 'play()'
-      });
-      this.enableAutoProgression();
+      }); // this.enableAutoProgression()
     } //----------------------------------------------------------------------------------------------------------------------------------------
 
   }, {
@@ -885,8 +795,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
       this.log({
         d: 1,
         f: 'pause()'
-      });
-      this.disableAutoProgression();
+      }); // this.disableAutoProgression()
     } //= Brochure 
     //= ======================================================================================================================================
 
@@ -909,8 +818,7 @@ var Main = /*#__PURE__*/function (_React$Component) {
       });
       this.setState({
         guideOpen: false
-      });
-      this.disableAutoProgression();
+      }); // this.disableAutoProgression()
     }
   }, {
     key: "componentDidMount",
@@ -918,29 +826,13 @@ var Main = /*#__PURE__*/function (_React$Component) {
       this.init();
     }
   }, {
-    key: "componentWillUnmount",
-    value: function componentWillUnmount() {
-      cancelAnimationFrame(this.state.requestRef.current);
-    }
-  }, {
     key: "render",
     value: function render() {
-      // numberOfRenders++
-      // console.log(`Main | render() - ${numberOfRenders} - frames: ${this.state.requestRef.current}`)
-      return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", {
-        style: {
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          background: '#f66',
-          padding: '5px',
-          width: '2rem',
-          zIndex: '9999999'
-        }
-      }, this.state.perf), /*#__PURE__*/_react["default"].createElement(_DataList["default"], {
+      return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement(_DataList["default"], {
         data: this.state
       }), /*#__PURE__*/_react["default"].createElement(_Collection["default"], {
-        state: this.state
+        state: this.state,
+        ASD: this.state.activeStepData
       }));
     }
   }]);

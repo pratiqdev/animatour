@@ -34,14 +34,14 @@ const animatour = {
   open:         () =>         { w('open')                       && x.open() },
   close:        () =>         { w('close')                      && x.close() },
 
-  start:        (a) =>        { w('start')                      && x.start(a) },
+  start:        (a,b) =>      { w('start')                      && x.start(a,b) },
   reset:        (a) =>        { w('reset')                      && x.reset(a) },
 
   // control auto progression
   play:         () =>         { w('play')                       && x.play() },
   pause:        () =>         { w('pause')                      && x.pause() },
 
-  test:        () =>           { w('test')                      && x.test() },
+  test:         () =>         { w('test')                       && x.test() },
 
 
 

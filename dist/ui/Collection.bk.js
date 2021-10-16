@@ -46,44 +46,32 @@ function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Sy
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var FTO = true;
-var externalASD = null; // let globalTimeline = gsap.timeline()
 
 var Collection = function Collection(props) {
   // console.log(`Collection | render()`)
   if (!props.state) {
     console.log('Collection | No state passed to collection');
     return false;
-  } // let LOC = props.state.location
+  }
 
+  var LOC = props.state.location;
+  var ASD = props.state.activeStepData;
 
-  var locationFound;
-  var ASD = props.ASD;
-
-  var _useState = (0, _react.useState)('X'),
+  var _useState = (0, _react.useState)(null),
       _useState2 = _slicedToArray(_useState, 2),
-      perf = _useState2[0],
-      setPerf = _useState2[1]; // console.log('Collection | new instance - asd:', ASD)
-  // request handle
-  // let requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-  // let cancelFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
-
-
-  var requestHandle; /// POPPER _____________________________________________________________________________________________________________________________
+      referenceElement = _useState2[0],
+      setReferenceElement = _useState2[1];
 
   var _useState3 = (0, _react.useState)(null),
       _useState4 = _slicedToArray(_useState3, 2),
-      referenceElement = _useState4[0],
-      setReferenceElement = _useState4[1];
+      popperElement = _useState4[0],
+      setPopperElement = _useState4[1];
 
   var _useState5 = (0, _react.useState)(null),
       _useState6 = _slicedToArray(_useState5, 2),
-      popperElement = _useState6[0],
-      setPopperElement = _useState6[1];
+      arrowElement = _useState6[0],
+      setArrowElement = _useState6[1]; // console.log(`Collection | usePopper()`)
 
-  var _useState7 = (0, _react.useState)(null),
-      _useState8 = _slicedToArray(_useState7, 2),
-      arrowElement = _useState8[0],
-      setArrowElement = _useState8[1];
 
   var _usePopper = (0, _reactPopper.usePopper)(referenceElement, popperElement, {
     modifiers: [{
@@ -101,189 +89,89 @@ var Collection = function Collection(props) {
   }),
       styles = _usePopper.styles,
       attributes = _usePopper.attributes,
-      update = _usePopper.update; /// GET LOCATION _______________________________________________________________________________________________________________________
-
-
-  var getLocationOfElement = function getLocationOfElement() {
-    // console.log(`Collection | getLocationOfElement - element: ${ASD.element}`)
-    var LOC = {
-      /** Scroll Top */
-      ST: window.pageYOffset || (document.body.parentNode || document.body).scrollTop,
-
-      /** Window Width */
-      WW: Math.floor(window.innerWidth || 0),
-
-      /** Window Height */
-      WH: Math.floor(window.innerHeight || 0),
-
-      /** Element Exists */
-      E: null,
-
-      /** Height */
-      H: null,
-
-      /** Width */
-      W: null,
-
-      /** Top Offset */
-      T: null,
-
-      /** Left Offset */
-      L: null
-    };
-
-    var setDefaultLoc = function setDefaultLoc() {
-      //   console.log('Collection | getLocationOfElement - set default location')
-      LOC.E = false;
-      LOC.H = 0;
-      LOC.W = 0;
-      LOC.T = LOC.WH / 2;
-      LOC.L = LOC.WW / 2;
-    };
-
-    if (props.ASD && props.ASD.element !== '' && typeof props.ASD.element !== 'null') {
-      var EL = document.querySelector(props.ASD.element) || null; // element could not be found
-
-      if (!EL) {
-        setDefaultLoc();
-        return LOC;
-      } else {
-        var EL_RECT = EL.getBoundingClientRect();
-        LOC.E = true;
-        LOC.L = Math.round(EL_RECT.left - props.ASD.ringMargin);
-        LOC.T = Math.round(EL_RECT.top + LOC.ST - props.ASD.ringMargin);
-        LOC.H = Math.round(EL_RECT.height + props.ASD.ringMargin * 2);
-        LOC.W = Math.round(EL_RECT.width + props.ASD.ringMargin * 2); // console.log('Collection | getLocationOfElement - set element location:', LOC)
-
-        return LOC;
-      }
-    } else {
-      setDefaultLoc();
-      return LOC;
-    }
-  }; // let localTimeline = gsap.timeline()
-
-
-  var tween;
-
-  var animateToPosition = function animateToPosition() {
-    if (referenceElement) {
-      locationFound = getLocationOfElement();
-
-      if (ASD.step == 5) {
-        console.log("Collection | animateToPosition - el 5 LEFT: ".concat(locationFound.L));
-      } // let superLocalTimeline = gsap.timeline()
-
-
-      tween = _gsap["default"].to(referenceElement, {
-        duration: 1,
-        //ASD.transitionDuration, 
-        width: locationFound.W,
-        height: locationFound.H,
-        x: locationFound.L,
-        y: locationFound.T,
-        borderWidth: ASD.ringWidth,
-        borderColor: ASD.ringColor,
-        borderRadius: '.5rem',
-        boxShadow: '0 0 10000px 10000px rgba(150,150,150,.8)',
-        // onComplete: console.log('Collection | gsap anim completed'),
-        // onUpdate: console.log('Collection | gsap update'),
-        repeatRefresh: true,
-        overwrite: 'auto'
-      });
-
-      if (FTO) {
-        FTO = false;
-      }
-
-      update();
-    } else {
-      console.error("Collection | updatePositions() - no reference element");
-    }
-  }; /// RUN SEQUENCE _______________________________________________________________________________________________________________________
-
-
-  var runSequence = function runSequence() {
-    if (props.state.guideOpen) {
-      // console.log(`Collection | running`)
-      var t0 = performance.now();
-      animateToPosition();
-      var t1 = performance.now();
-      setPerf(t1 - t0);
-      requestHandle = window.requestAnimationFrame(runSequence);
-    }
-  }; /// OPEN / CLOSE _______________________________________________________________________________________________________________________
-
+      update = _usePopper.update;
 
   var handleGuideOpen = function handleGuideOpen() {
-    FTO = true; // console.log('Collection | handleGuideOpen')
+    FTO = true;
+    console.log('Collection | handleGuideOpen');
 
     if (referenceElement) {
+      console.log('Collection | opening');
+
       _gsap["default"].to([referenceElement, popperElement], {
         display: 'block',
-        duration: ASD.transitionDuration,
+        duration: 3 || ASD.transitionDuration,
         // FTO ? 0 : ASD.duration, 
-        autoAlpha: 1
+        opacity: 1
       });
     }
   };
 
   var handleGuideClose = function handleGuideClose() {
-    // console.log(`Collection | handleGuideClose - guideOpen: ${props.state.guideOpen}`)
+    console.log('Collection | handleGuideClose');
+
     if (referenceElement) {
+      console.log('Collection | closing');
       var tl_close = new _gsap.TimelineMax();
       tl_close.to([referenceElement, popperElement], {
-        duration: ASD.transitionDuration,
+        duration: 3 || ASD.transitionDuration,
         // FTO ? 0 : ASD.duration, 
-        autoAlpha: 0
+        opacity: .5
       }, 0);
+      tl_close.to([referenceElement, popperElement], {
+        display: 'none'
+      }, 3 || ASD.transitionDuration);
     }
-  }; /// RUN SEQUENCE ON PROPS CHANGE _______________________________________________________________________________________________________
+  };
 
+  var tl = new _gsap.TimelineMax();
+
+  var updatePositions = function updatePositions() {
+    if (referenceElement) {
+      tl.to(referenceElement, {
+        duration: 1,
+        //FTO ? 0 : ASD.transitionDuration, 
+        width: LOC.W,
+        height: LOC.H,
+        x: LOC.L,
+        y: LOC.T,
+        borderWidth: ASD.ringWidth,
+        borderColor: ASD.ringColor,
+        borderRadius: '.5rem',
+        boxShadow: '0 0 10000px 10000px rgba(150,150,150,.8)'
+      }, 0);
+      FTO = false;
+    } else {
+      console.log("Collection | updatePositions() - no reference element");
+    }
+  };
 
   (0, _react.useEffect)(function () {
-    ASD = props.ASD; // console.log(`Collection | useEffect - props change - ASD:`, ASD)
+    LOC = props.state.location;
+    ASD = props.state.activeStepData;
 
-    if (props.state.guideOpen) {
-      console.log('Collection | run sequence');
-      runSequence(); // handleGuideOpen()
-    } else {
-      // handleGuideClose()
-      console.log('Collection | stopped');
-      window.cancelAnimationFrame(requestHandle);
-      setPerf('X');
+    if (update && props.state.guideOpen) {
+      updatePositions();
+      update();
     }
-
-    return function () {
-      window.cancelAnimationFrame(requestHandle);
-      tween = null;
-      console.log('Collection | nullified the tween');
-    };
-  }, [props]); /// HANDLE GUIDE OPEN / CLOSE __________________________________________________________________________________________________________
-
+  }, [props.state]);
   (0, _react.useEffect)(function () {
-    // console.log(`Collection | useEffect - guideOpen change`)
-    if (props.state.guideOpen) {
-      handleGuideOpen();
-    } else {
-      handleGuideClose();
-    }
-  }, [props.state.guideOpen]); /// CLONING ____________________________________________________________________________________________________________________________
-
+    props.state.guideOpen ? handleGuideOpen() : handleGuideClose();
+  }, [props.state.guideOpen]);
   var dataForClone = {
     /// tour / steps
     tour: props.state.activeTour,
     stepTime: props.state.apValue,
-    stepTimeTotal: props.ASD.stepDuration,
+    stepTimeTotal: props.state.activeStepData.stepDuration,
     /// content
-    currentStep: props.ASD.step,
-    totalSteps: props.ASD.totalSteps,
-    title: props.ASD.title,
-    content: props.ASD.content,
+    currentStep: props.state.activeStepData.step,
+    totalSteps: props.state.activeStepData.totalSteps,
+    title: props.state.activeStepData.title,
+    content: props.state.activeStepData.content,
     /// labels
-    closeLabel: props.ASD.closeLabel,
-    nextLabel: props.ASD.nextLabel,
-    prevLabel: props.ASD.prevLabel,
+    closeLabel: props.state.activeStepData.closeLabel,
+    nextLabel: props.state.activeStepData.nextLabel,
+    prevLabel: props.state.activeStepData.prevLabel,
     /// controls
     next: function next() {
       return _animatour["default"].next();
@@ -304,7 +192,7 @@ var Collection = function Collection(props) {
       return _animatour["default"].reset();
     },
     /// animations
-    transitionDuration: props.ASD.duration,
+    transitionDuration: props.state.activeStepData.duration,
     /// adv data
     debugMode: props.state.debug
   };
@@ -319,33 +207,20 @@ var Collection = function Collection(props) {
     }
   };
 
-  var brochureClone = cloneBrochureWithData();
+  var clonedBrochure = cloneBrochureWithData();
   return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", {
-    style: {
-      position: 'fixed',
-      top: '0',
-      left: '0',
-      background: '#f66',
-      padding: '5px',
-      width: '2rem',
-      zIndex: '9999999'
-    }
-  }, perf), /*#__PURE__*/_react["default"].createElement("div", {
     ref: setReferenceElement,
-    id: "refElId",
     style: {
       position: "absolute",
       display: 'none',
-      visibility: 'hidden',
       zIndex: '10000',
-      opacity: 0,
-      border: '0px solid transparent'
+      opacity: .5
     }
   }), /*#__PURE__*/_react["default"].createElement("div", {
     ref: setPopperElement,
     style: baseStylesForClone,
     id: "BROCHURE"
-  }, brochureClone));
+  }, clonedBrochure));
 };
 
 var _default = Collection;

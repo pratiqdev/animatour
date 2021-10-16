@@ -13,7 +13,7 @@ const defaultSettings = {
   ringShadowWidth: '10000px',
 
   /// durations
-  transitionDuration: 800,
+  transitionDuration: .8,
   stepDuration:0,
 
   /// labels
